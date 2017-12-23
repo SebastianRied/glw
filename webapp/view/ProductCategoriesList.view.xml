@@ -1,0 +1,42 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout"
+          controllerName="glw.controller.ProductCategoriesList"
+          displayBlock="true">
+    <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
+          class="sapUiResponsiveContentPadding">
+        <Table
+                noDataText="Keine Produkte gefunden"
+                mode="Delete"
+                delete=".onDeleteProductPress"
+                items="{path: 'productCategories>/rows', sorter: [{path: 'value/productGroup'}, {path: 'value/name'}]}">
+            <headerToolbar>
+                <Toolbar>
+                    <Title text="Produkte ({= ${productCategories>/rows}.length})" level="H2"/>
+                    <ToolbarSpacer/>
+                    <Button icon="sap-icon://add" press="onOpenAddProductDialogPress"/>
+                </Toolbar>
+            </headerToolbar>
+            <columns>
+                <Column
+                        width="12em">
+                    <Text text="Produkt"/>
+                </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true">
+                    <Text text="Produktgruppe"/>
+                </Column>
+
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{productCategories>value/name}"/>
+                        <Text text="{parts: ['productCategories>value/productGroup', 'validValues>/productGroups'], formatter: '.formatter.formatValidValue'}"/>
+                    </cells>
+                </ColumnListItem>
+
+            </items>
+        </Table>
+
+    </Page>
+</mvc:View>

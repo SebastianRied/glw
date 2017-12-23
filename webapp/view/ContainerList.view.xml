@@ -1,0 +1,61 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core"
+          controllerName="glw.controller.ContainerList"
+          displayBlock="true">
+    <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
+          class="sapUiResponsiveContentPadding">
+        <Table
+                id="containerTable"
+                mode="Delete"
+                noDataText="Keine Behälter gefunden"
+                delete="onContainerDeletePress"
+                items="{path: 'container>/rows', sorter: {path: 'value/barCode', comparator: '.compareStringAsInt'}}">
+            <headerToolbar>
+                <Toolbar>
+                    <Title text="Behälter" level="H2" width="7rem"/>
+                    <ToolbarSpacer/>
+                    <SearchField liveChange=".onSearchContainer" search=".onSearchContainer"/>
+                    <Button icon="sap-icon://add" press=".onOpenAddContainerDialogPress"/>
+                </Toolbar>
+            </headerToolbar>
+            <columns>
+                <Column
+                        width="12em">
+                    <Text text="Lagerplatz"/>
+                </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        hAlign="End">
+                    <Text text="Behälter"/>
+                </Column>
+
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true">
+                    <Text text="Typ"/>
+                </Column>
+
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true">
+                    <Text text="Produktgruppe"/>
+                </Column>
+
+            </columns>
+            <items>
+                <ColumnListItem vAlign="Middle">
+                    <cells>
+                        <HBox alignItems="Center">
+                            <Button tooltip="Lagerplatz zuordnen" icon="sap-icon://map" type="Transparent" press=".onAssignStorageBinPress"/>
+                            <Text text="{container>value/storageBin}" class="sapUiSmallMarginBegin"/>
+                        </HBox>
+                        <Text text="{container>value/barCode}"/>
+                        <Text text="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"/>
+                        <Text text="{parts: ['container>value/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatProductGroupByProductCategoryId'}"/>
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+
+    </Page>
+</mvc:View>

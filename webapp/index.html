@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Glasstetter Liquids Warehouse</title>
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta charset="UTF-8">
+
+	<script id="sap-ui-bootstrap" type="text/javascript"
+			src="resources/sap-ui-core.js"
+			data-sap-ui-theme="sap_belize_plus"
+			data-sap-ui-libs="sap.m"
+			data-sap-ui-bindingSyntax="complex"
+			data-sap-ui-compatVersion="edge"
+			data-sap-ui-preload="async"
+			data-sap-ui-resourceroots='{"glw": "./"}'>
+	</script>
+	<script>
+		sap.ui.getCore().attachInit(function () {
+			sap.ui.require("sap.ui.model.json.JSONModel", function (JSONModel) {
+				var fnSetData = JSONModel.prototype.setData;
+				JSONModel.prototype.setData = function () {
+					this.setSizeLimit(Infinity);
+					fnSetData.apply(this, arguments);
+				};
+			});
+
+			sap.ui.require([
+				"sap/ui/core/Component",
+				"sap/ui/core/ComponentContainer"
+			], function (Component, ComponentContainer) {
+				sap.ui.component({
+					name: "glw",
+					async: true
+				}).then(function (oComponent) {
+					new ComponentContainer({
+						component: oComponent
+					}).placeAt("root");
+				});
+			});
+		});
+	</script>
+
+</head>
+<body class="sapUiBody" id="root" role="application"></body>
+</html>

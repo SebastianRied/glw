@@ -1,0 +1,44 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core"
+          controllerName="glw.controller.StorageBinsList"
+          displayBlock="true">
+    <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
+          class="sapUiResponsiveContentPadding">
+        <Table
+                noDataText="Keine Lagerplätze vorhanden"
+                mode="Delete"
+                delete=".onDeleteStorageBinPress"
+                items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}">
+            <headerToolbar>
+                <Toolbar>
+                    <Title text="Lagerplätze ({= ${storageBins>/rows}.length})" level="H2"/>
+                    <ToolbarSpacer/>
+                    <Button icon="sap-icon://add" press=".onOpenAddStorageBinDialogPress"/>
+                </Toolbar>
+            </headerToolbar>
+            <columns>
+                <Column
+                        width="12em">
+                    <Text text="Lagerplatznummer"/>
+                </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true">
+                    <Text text="Belegt"/>
+                </Column>
+
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{storageBins>value/id}"/>
+                        <core:Icon
+                                src="{= ${storageBins>value/used} === 'true' ? 'sap-icon://complete' : 'sap-icon://border'}"
+                                color="#999999" decorative="false"/>
+                    </cells>
+                </ColumnListItem>
+
+            </items>
+        </Table>
+
+    </Page>
+</mvc:View>

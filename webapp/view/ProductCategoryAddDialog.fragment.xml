@@ -1,0 +1,67 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:f="sap.ui.layout.form"
+        xmlns:l="sap.ui.layout"
+        xmlns:core="sap.ui.core">
+    <Dialog
+            id="ProductCategoryAddDialog"
+            title="Produkt anlegen"
+            class="sapUiResponsiveContentPadding">
+        <content>
+            <f:SimpleForm editable="true"
+                          layout="ResponsiveGridLayout"
+                          labelSpanXL="3"
+                          labelSpanL="3"
+                          labelSpanM="3"
+                          labelSpanS="12"
+                          adjustLabelSpan="false"
+                          emptySpanXL="4"
+                          emptySpanL="4"
+                          emptySpanM="4"
+                          emptySpanS="0"
+                          columnsXL="1"
+                          columnsL="1"
+                          columnsM="1"
+                          singleContainerFullSize="false">
+                <f:content>
+                    <Label text="Produkt"/>
+                    <Input
+                            id="productCategoryInput"
+                            value="{/productCategoryName/value}"
+                            valueState="{/productCategoryName/valueState}"
+                            valueStateText="{/productCategoryName/valueStateText}"/>
+                    <Label text="Produktgruppe"/>
+                    <Select
+                            items="{path: 'validValues>/productGroups'}"
+                            selectedKey="{/productGroup/value}"
+                            forceSelection="false"
+                            valueState="{/productGroup/valueState}"
+                            valueStateText="{/productGroup/valueStateText}">
+                        <items>
+                            <core:Item text="{validValues>value}" key="{validValues>id}"/>
+                        </items>
+                    </Select>
+                    <Label
+                            text="Einheit"
+                            visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
+                    <Text
+                            text="{parts: ['/productGroup/value', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductGroupId'}"
+                            visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
+                    <Label
+                            text="Veredelung"
+                            visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
+                    <Text
+                            text="{parts: ['/productGroup/value', 'validValues>/'], formatter: '.formatter.formatFinishingByProductGroupId'}"
+                            visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
+                </f:content>
+
+            </f:SimpleForm>
+        </content>
+        <beginButton>
+            <Button text="Anlegen" press=".onSaveNewProductPress"/>
+        </beginButton>
+        <endButton>
+            <Button text="Fertig" press=".onCancelAddProductDialogPress"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

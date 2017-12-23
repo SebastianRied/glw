@@ -1,0 +1,118 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" controllerName="glw.controller.App"
+          displayBlock="true">
+    <Page title="{i18n>appTitle}">
+        <FlexBox
+                direction="Column"
+                justifyContent="Left"
+                alignItems="Center"
+                height="100%"
+        >
+            <HBox width="800px" class="glwLaunchpadTileContainer">
+                <GenericTile
+                        id="tileStock"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Bestand"
+                        subheader=""
+                        press=".onTilePress">
+                    <TileContent
+                            unit="Liter"
+                            footer="">
+                        <NumericContent
+                                value="1762"
+                                icon="sap-icon://sys-find"/>
+                    </TileContent>
+                </GenericTile>
+
+                <GenericTile
+                        id="tileGR"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Schnaps"
+                        subheader="einlagern"
+                        press=".onTilePress">
+                    <TileContent
+                            unit=""
+                            footer="">
+                        <ImageContent src="sap-icon://sys-add"/>
+                    </TileContent>
+                </GenericTile>
+
+                <GenericTile
+                        id="tileGM"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Schnaps"
+                        subheader="umlagern"
+                        press=".onTilePress">
+                    <TileContent
+                            unit=""
+                            footer="">
+                        <ImageContent src="sap-icon://move"/>
+                    </TileContent>
+                    <layoutData>
+                        <l:GridData span="L2 M2 S2"/>
+                    </layoutData>
+                </GenericTile>
+
+
+                <GenericTile
+                        id="tileGI"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Schnaps"
+                        subheader="auslagern"
+                        press=".onTilePress">
+                    <TileContent
+                            unit=""
+                            footer="">
+                        <ImageContent src="sap-icon://sys-minus"/>
+                    </TileContent>
+                </GenericTile>
+
+                <GenericTile
+                        id="tileContainer"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Behälter"
+                        subheader="anlegen, anzeigen, löschen"
+                        press=".onTilePress">
+                    <TileContent
+                            unit="Stück"
+                            footer="">
+                        <NumericContent
+                                value="{= ${container>/rows}.length}"
+                                icon="sap-icon://sap-box"/>
+                    </TileContent>
+                </GenericTile>
+
+                <GenericTile
+                        id="tileProductCategories"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Produkte"
+                        subheader="anlegen, anzeigen, löschen"
+                        press=".onTilePress">
+                    <TileContent
+                            unit=""
+                            footer="">
+                        <NumericContent
+                                value="{= ${productCategories>/rows}.length}"
+                                icon=""/>
+                    </TileContent>
+                </GenericTile>
+
+                <GenericTile
+                        id="tileStorageBin"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Lagerplätze"
+                        subheader="anlegen, anzeigen, löschen"
+                        press=".onTilePress">
+                    <TileContent
+                            unit=""
+                            footer="">
+                        <NumericContent
+                                value="{= ${storageBins>/rows}.length}"
+                                icon="sap-icon://map"/>
+                    </TileContent>
+                </GenericTile>
+
+            </HBox>
+        </FlexBox>
+
+    </Page>
+</mvc:View>

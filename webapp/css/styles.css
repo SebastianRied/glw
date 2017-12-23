@@ -1,0 +1,8 @@
+.tileLayout {
+	float: left;
+}
+
+.glwLaunchpadTileContainer {
+	max-width: 800px;
+	display: block;
+}

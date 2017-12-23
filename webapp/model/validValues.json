@@ -1,0 +1,37 @@
+{
+  "_id": "validValues",
+  "type": "validValues",
+  "productGroups": {
+    "FERT": {
+      "id": "FERT",
+      "value": "Schnaps",
+      "batch": true,
+      "numberUnit": "l",
+      "finishing": false
+    },
+    "VERP1": {
+      "id": "VERP1",
+      "value": "Behälter",
+      "batch": false,
+      "numberUnit": "st",
+      "finishing": false
+    },
+    "VERP2": {
+      "id": "VERP2",
+      "value": "Holzfass",
+      "batch": false,
+      "numberUnit": "st",
+      "finishing": true
+    }
+  },
+  "numberUnits": {
+    "st": {
+      "id": "st",
+      "value": "Stück"
+    },
+    "l": {
+      "id": "l",
+      "value": "Liter"
+    }
+  }
+}

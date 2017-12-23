@@ -1,0 +1,107 @@
+{
+	"sap.app": {
+		"id": "glw",
+		"type": "application"
+	},
+	"sap.ui5": {
+		"dependencies": {
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {}
+			}
+		},
+		"rootView": {
+			"viewName": "glw.view.App",
+			"type": "XML",
+			"id": "app"
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "glw.i18n.i18n"
+				}
+			},
+			"container": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "couchDB/glw/_design/docs/_view/container"
+			},
+			"storageBins": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "couchDB/glw/_design/docs/_view/storageBins"
+			},
+			"productCategories": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "couchDB/glw/_design/docs/_view/productCategories"
+			},
+			"validValues": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "couchDB/glw/validValues"
+			}
+		},
+		"resources": {
+			"css": [
+				{
+					"uri": "css/styles.css"
+				}
+			]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "glw.view",
+				"controlId": "app",
+				"clearTarget": false,
+				"controlAggregation": "pages",
+				"bypassed": {
+					"target": [
+						"launchpad"
+					]
+				},
+				"async": true
+			},
+			"routes": [
+				{
+					"pattern": "",
+					"name": "launchpad",
+					"target": "launchpad"
+				}, {
+					"pattern": "Container",
+					"name": "containerList",
+					"target": "containerList"
+				}, {
+					"pattern": "Products",
+					"name": "productCategoriesList",
+					"target": "productCategoriesList"
+				}, {
+					"pattern": "StorageBins",
+					"name": "storageBinsList",
+					"target": "storageBinsList"
+				}
+			],
+			"targets": {
+				"launchpad": {
+					"viewName": "Launchpad",
+					"viewLevel": 1,
+					"viewId": "launchpad"
+				},
+				"containerList": {
+					"viewName": "ContainerList",
+					"viewLevel": 2,
+					"viewId": "containerList"
+				},
+				"productCategoriesList": {
+					"viewName": "ProductCategoriesList",
+					"viewLevel": 2,
+					"viewId": "productCategoriesList"
+				},
+				"storageBinsList": {
+					"viewName": "StorageBinsList",
+					"viewLevel": 2,
+					"viewId": "storageBinsList"
+				}
+			}
+		}
+	}
+}
