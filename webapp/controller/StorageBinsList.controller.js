@@ -98,7 +98,26 @@ sap.ui.define([
 
 		_getAddDialog: function () {
 			return this.byId("StorageBinAddDialog");
-		}
+		},
+		
+		onSearchStorageBin: function (oEvent) {
+			var sValue = oEvent.getParameter("newValue") || oEvent.getParameter("query");
+			var oTable = this._getTable();
+			var oBinding = oTable.getBinding("items");
+			if (!oBinding) {
+				return;
+			}
+			var oFilter;
+			if (sValue) {
+				oFilter = new Filter({path: "value/id", operator: FilterOperator.Contains, value1: sValue});
+			}
+
+			oBinding.filter(oFilter);
+		},
+
+		_getTable: function () {
+			return this.byId("storageBinTable");
+		},
 	});
 
 });

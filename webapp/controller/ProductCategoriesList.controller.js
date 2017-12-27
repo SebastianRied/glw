@@ -19,7 +19,7 @@ sap.ui.define([
 			this.getOwnerComponent().onNavBack();
 		},
 
-		onDeleteProductPress: function (oEvent) {
+		onDeleteProductCategoryPress: function (oEvent) {
 			var oComponent = this.getOwnerComponent();
 			var oContext = oEvent.getParameter("listItem").getBindingContext("productCategories");
 			var fnHandler = function (oResponse) {
@@ -117,7 +117,26 @@ sap.ui.define([
 
 		_getAddDialog: function () {
 			return this.byId("ProductCategoryAddDialog");
-		}
+
+		},
+		onSearchProductCategory: function (oEvent) {
+			var sValue = oEvent.getParameter("newValue") || oEvent.getParameter("query");
+			var oTable = this._getTable();
+			var oBinding = oTable.getBinding("items");
+			if (!oBinding) {
+				return;
+			}
+			var oFilter;
+			if (sValue) {
+				oFilter = new Filter({path: "value/name", operator: FilterOperator.Contains, value1: sValue});
+			}
+
+			oBinding.filter(oFilter);
+		},
+
+		_getTable: function () {
+			return this.byId("productCategoryTable");
+		},
 	});
 
 });

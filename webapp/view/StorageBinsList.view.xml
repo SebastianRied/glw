@@ -4,14 +4,16 @@
     <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
           class="sapUiResponsiveContentPadding">
         <Table
-                noDataText="Keine Lagerplätze vorhanden"
+                id="storageBinTable"
+				noDataText="Keine Lagerplätze vorhanden"
                 mode="Delete"
                 delete=".onDeleteStorageBinPress"
                 items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}">
             <headerToolbar>
                 <Toolbar>
-                    <Title text="Lagerplätze ({= ${storageBins>/rows}.length})" level="H2"/>
+                    <Title text="Lagerplätze ({storageBins>/total_rows})" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
+					<SearchField liveChange=".onSearchStorageBin" search=".onSearchStorageBin"/>
                     <Button icon="sap-icon://add" press=".onOpenAddStorageBinDialogPress"/>
                 </Toolbar>
             </headerToolbar>

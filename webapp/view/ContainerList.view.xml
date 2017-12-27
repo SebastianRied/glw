@@ -11,7 +11,7 @@
                 items="{path: 'container>/rows', sorter: {path: 'value/barCode', comparator: '.compareStringAsInt'}}">
             <headerToolbar>
                 <Toolbar>
-                    <Title text="Behälter" level="H2" width="7rem"/>
+                    <Title text="Behälter ({container>/total_rows})" level="H2" width="7rem"/>
                     <ToolbarSpacer/>
                     <SearchField liveChange=".onSearchContainer" search=".onSearchContainer"/>
                     <Button icon="sap-icon://add" press=".onOpenAddContainerDialogPress"/>

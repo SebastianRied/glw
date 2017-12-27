@@ -179,6 +179,19 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 		return sProductCategoryId;
 	};
 
+	Formatter.formatNumberUnitByProductCategoryId = function (sProductCategoryId, aProductCategories, oValidValues) {
+		if (jQuery.isArray(aProductCategories)) {
+			for (var i = 0; i < aProductCategories.length; i++) {
+				if (aProductCategories[i].id === sProductCategoryId) {
+					var sProductGroup = aProductCategories[i].value.productGroup;
+					return this.formatter.formatNumberUnitByProductGroupId(oValidValues.productGroups[sProductGroup].id, oValidValues);
+				}
+			}
+		}
+
+		return "";
+	};
+
 	Formatter.formatProductCategory = function (sProductCategoryId, aProductCategories) {
 		if (jQuery.isArray(aProductCategories)) {
 			for (var i = 0; i < aProductCategories.length; i++) {
@@ -190,6 +203,19 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 
 		return sProductCategoryId;
 	};
+
+	Formatter.formatProductCategoryByContainerBarCode = function (sContainerBarCode, aContainers, aProductCategories) {
+		if (jQuery.isArray(aContainers)) {
+			for (var i = 0; i < aContainers.length; i++) {
+				if (aContainers[i].value.barCode === sContainerBarCode) {
+					return this.formatter.formatProductCategory(aContainers[i].value.productCategory, aProductCategories);
+				}
+			}
+		}
+
+		return "";
+	};
+
 
 	return Formatter;
 });

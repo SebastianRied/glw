@@ -1,0 +1,150 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core"
+          xmlns:f="sap.ui.layout.form"
+          controllerName="glw.controller.GoodsReceipt"
+          displayBlock="true">
+    <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
+          class="sapUiResponsiveContentPadding">
+        <l:DynamicSideContent
+                id="DynamicSideContent"
+                class="sapUiDSCExplored sapUiContentPadding"
+                containerQuery="true"
+                sideContentVisibility="AlwaysShow"
+                sideContentFallDown="BelowS"
+                breakpointChanged="handleBreakpointChangeEvent"
+                showSideContent="{/showSideContent}">
+            <l:mainContent>
+                <f:SimpleForm editable="true"
+                              layout="ResponsiveGridLayout"
+                              labelSpanXL="3"
+                              labelSpanL="3"
+                              labelSpanM="3"
+                              labelSpanS="12"
+                              adjustLabelSpan="false"
+                              emptySpanXL="1"
+                              emptySpanL="1"
+                              emptySpanM="1"
+                              emptySpanS="0"
+                              columnsXL="1"
+                              columnsL="1"
+                              columnsM="1"
+                              singleContainerFullSize="false"
+                              ariaLabelledBy="formTitle">
+                    <f:toolbar>
+                        <Toolbar>
+                            <Title id="formTitle" text="Schnaps Einlagern" level="H2" titleStyle="H2"/>
+                            <ToolbarSpacer/>
+                            <Button text="Journal" press=".onJournalShow" visible="{= !${/showSideContent}}"/>
+                        </Toolbar>
+                    </f:toolbar>
+                    <f:content>
+
+                        <Label text="Behälter"/>
+                        <ComboBox forceSelection="false"
+                                  showSecondaryValues="true"
+                                  filterSecondaryValues="true"
+                                  items="{path: 'container>/rows', sorter: {path: 'value/barCode'}}"
+                                  selectedKey="{/candidate/container/value}"
+                                  valueState="{/candidate/container/valueState}"
+                                  valueStateText="{/candidate/container/valueStateText}"
+                                  selectionChange="onContainerSelect">
+                            <items>
+                                <core:ListItem text="{container>value/barCode}"
+                                               additionalText="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
+                                               key="{container>value/barCode}"/>
+                            </items>
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </ComboBox>
+                        <Text text="{parts: ['/candidate/container/value', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'}"
+                              class="sapUiTinyMarginBegin"/>
+
+                        <Label text="Lagerplatz"/>
+                        <ComboBox forceSelection="false"
+                                  items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}"
+                                  selectedKey="{/candidate/storageBin/value}"
+                                  valueState="{/candidate/storageBin/valueState}"
+                                  valueStateText="{/candidate/productCategory/valueStateText}">
+                            <items>
+                                <core:Item text="{storageBins>value/id}" key="{storageBins>value/id}"/>
+                            </items>
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </ComboBox>
+
+                        <Label text="Produkt"/>
+                        <Select
+                                items="{path: 'productCategories>/rows', filters: {path: 'value/productGroup', operator: 'StartsWith', value1: 'FERT'}}"
+                                selectedKey="{/candidate/productCategory/value}"
+                                forceSelection="false"
+                                valueState="{/candidate/productCategory/valueState}"
+                                valueStateText="{/candidate/productCategory/valueStateText}">
+                            <items>
+                                <core:Item text="{productCategories>value/name}" key="{productCategories>value/_id}"/>
+                            </items>
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </Select>
+
+                        <Label text="Charge"/>
+                        <DatePicker value="{/candidate/batch/value}" valueState="{/candidate/batch/valueState}"
+                                    valueStateText="{/candidate/batch/valueStateText}">
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </DatePicker>
+
+                        <Label text="Menge"/>
+
+                        <Input type="Number"
+                               textAlign="End"
+                               value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </Input>
+                        <Text text="{parts: ['/candidate/productCategory/value', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                              class="sapUiTinyMarginBegin"/>
+
+
+                        <Label text=""/>
+                        <Button text="Einlagern" type="Emphasized" press=".onAddStock">
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </Button>
+                    </f:content>
+                </f:SimpleForm>
+            </l:mainContent>
+            <l:sideContent>
+                <Toolbar>
+                    <Title level="H2" titleStyle="H2" text="Journal"/>
+                    <ToolbarSpacer/>
+                    <Button text="Schließen" type="Transparent" press="onJournalHide"/>
+                </Toolbar>
+                <l:VerticalLayout
+                        width="100%">
+                    <l:content>
+                        <List
+                                items="{/journal}">
+                            <ObjectListItem
+                                    number="{quantity}"
+                                    numberUnit="{parts: ['numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"
+                                    title="{parts: ['productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
+                                    text="{batch}">
+                                <attributes>
+                                    <ObjectAttribute title="Behälter" text="{parts: ['container', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container})"/>
+                                    <ObjectAttribute title="Lagerplatz" text="{storageBin}"/>
+                                    <ObjectAttribute title="Charge" text="{batch}"/>
+                                </attributes>
+                            </ObjectListItem>
+                        </List>
+                    </l:content>
+                </l:VerticalLayout>
+            </l:sideContent>
+        </l:DynamicSideContent>
+
+    </Page>
+</mvc:View>

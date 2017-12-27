@@ -9,33 +9,104 @@ sap.ui.define([
 ], function (Controller, Formatter, JSONModel, Filter, FilterOperator, MessageToast, ValueState) {
 	'use strict';
 
-	return Controller.extend('glw.controller.ContainerList', {
+	return Controller.extend('glw.controller.GoodsReceipt', {
 		formatter: Formatter,
 		onInit: function () {
+			var oModel = new JSONModel();
+			var oData = {
+				showSideContent: true,
+				candidate: this._createCandidateObject(),
+				journal: []
+			};
 
+			oModel.setData(oData);
+			this.getView().setModel(oModel);
+		},
+
+		_createCandidateObject: function () {
+			return {
+				container: {
+					value: "",
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				storageBin: {
+					value: "",
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				productCategory: {
+					value: "",
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				batch: {
+					value: "",
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				quantity: {
+					value: 0,
+					valueState: ValueState.None,
+					valueStateText: ""
+				}
+			};
 		},
 
 		onNavBack: function () {
 			this.getOwnerComponent().onNavBack();
 		},
 
-		onDeleteContainerPress: function (oEvent) {
-			var oComponent = this.getOwnerComponent();
-			var oContext = oEvent.getParameter("listItem").getBindingContext("container");
-			var fnHandler = function (oResponse) {
-				if (oResponse.response.ok) {
-					MessageToast.show("Der Container '" + oContext.getProperty("value/barCode") + "' wurde gelöscht", {
-						width: "30rem",
-						duration: 2000
-					});
-					oComponent.reloadModel("container");
-				} else {
-					MessageToast.show(oResponse.errorText, {
-						width: "30rem",
-						duration: 2000
-					});
-				}};
-			oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+		onJournalHide: function () {
+			this.getView().getModel().setProperty("/showSideContent", false);
+		},
+
+		onJournalShow: function () {
+			this.getView().getModel().setProperty("/showSideContent", true);
+		},
+
+		onAddStock: function () {
+			var oModel = this.getView().getModel();
+			var aJournal = oModel.getProperty("/journal");
+			var oCandidate = oModel.getProperty("/candidate");
+			aJournal.push(this._createJournalEntry(oCandidate));
+			oModel.setProperty("/journal", aJournal);
+			oModel.setProperty("/candidate", this._createCandidateObject());
+		},
+
+		_getNumberUnit: function (sProductGroup) {
+			var oModel = this.getView().getModel("validValues");
+			var oProductGroup = oModel.getProperty("/productGroups/" + sProductGroup);
+
+			if (oProductGroup) {
+				return oModel.getProperty("/numberUnits/" + oProductGroup.numberUnit);
+			}
+		},
+
+		_createJournalEntry: function (oCandidate) {
+			var oProductCategoryModel = this.getView().getModel("productCategories");
+			var aProductCategories = oProductCategoryModel.getProperty("/rows");
+			var sNumberUnit;
+			for (var i = 0; i < aProductCategories.length; i++) {
+				if (aProductCategories[i].id === oCandidate.productCategory.value) {
+					sNumberUnit = this._getNumberUnit(aProductCategories[i].value.productGroup);
+					sNumberUnit = sNumberUnit && sNumberUnit.id;
+					break;
+				}
+			}
+			return {
+				container: oCandidate.container.value,
+				storageBin: oCandidate.storageBin.value,
+				productCategory: oCandidate.productCategory.value,
+				batch: oCandidate.batch.value,
+				quantity: oCandidate.quantity.value,
+				numberUnit: sNumberUnit
+			};
+		},
+
+		onContainerSelect: function (oEvent) {
+			var oItem = oEvent.getParameter("selectedItem");
+			this.getView().getModel().setProperty("/candidate/storageBin/value", oItem.getBindingContext("container").getProperty("value/storageBin"))
 		},
 
 		onOpenAddContainerDialogPress: function () {
@@ -163,7 +234,7 @@ sap.ui.define([
 			var oContainer = oDialog.getBindingContext("container").getProperty("value");
 			oContainer.storageBin = oDialog.getModel().getProperty("/storageBin/value");
 			var oComponent = this.getOwnerComponent();
-			oComponent.putDocument(oContainer).then(function() {
+			oComponent.putDocument(oContainer).then(function () {
 				oDialog.close();
 				MessageToast.show("Lagerplatz zugeordnet");
 				oComponent.reloadModel("container");
@@ -212,7 +283,8 @@ sap.ui.define([
 						width: "30rem",
 						duration: 2000
 					});
-				}};
+				}
+			};
 			oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
 		},
 

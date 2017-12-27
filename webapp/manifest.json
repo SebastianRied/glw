@@ -78,6 +78,10 @@
 					"pattern": "StorageBins",
 					"name": "storageBinsList",
 					"target": "storageBinsList"
+				}, {
+					"pattern": "GoodsReceipt",
+					"name": "goodsReceipt",
+					"target": "goodsReceipt"
 				}
 			],
 			"targets": {
@@ -100,6 +104,11 @@
 					"viewName": "StorageBinsList",
 					"viewLevel": 2,
 					"viewId": "storageBinsList"
+				},
+				"goodsReceipt": {
+					"viewName": "GoodsReceipt",
+					"viewLevel": 2,
+					"viewId": "goodsReceipt"
 				}
 			}
 		}

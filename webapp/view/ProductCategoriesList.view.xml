@@ -4,14 +4,16 @@
     <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
           class="sapUiResponsiveContentPadding">
         <Table
-                noDataText="Keine Produkte gefunden"
+                id ="productCategoryTable"
+				noDataText="Keine Produkte gefunden"
                 mode="Delete"
-                delete=".onDeleteProductPress"
+                delete=".onDeleteProductCategoryPress"
                 items="{path: 'productCategories>/rows', sorter: [{path: 'value/productGroup'}, {path: 'value/name'}]}">
             <headerToolbar>
                 <Toolbar>
-                    <Title text="Produkte ({= ${productCategories>/rows}.length})" level="H2"/>
+                    <Title text="Produkte ({productCategories>/total_rows})" level="H2" width="7rem"/>
                     <ToolbarSpacer/>
+					<SearchField liveChange=".onSearchProductCategory" search=".onSearchProductCategory"/>
                     <Button icon="sap-icon://add" press="onOpenAddProductDialogPress"/>
                 </Toolbar>
             </headerToolbar>
