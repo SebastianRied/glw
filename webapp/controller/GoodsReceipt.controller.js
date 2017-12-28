@@ -23,7 +23,7 @@ sap.ui.define([
 			this.getView().setModel(oModel);
 		},
 
-		_createCandidateObject: function () {
+		_createCandidateObject: function (oBatch) {
 			return {
 				container: {
 					value: "",
@@ -41,7 +41,7 @@ sap.ui.define([
 					valueStateText: ""
 				},
 				batch: {
-					value: "",
+					value: oBatch,
 					valueState: ValueState.None,
 					valueStateText: ""
 				},
@@ -54,6 +54,8 @@ sap.ui.define([
 		},
 
 		onNavBack: function () {
+			this.getView().getModel().setProperty("/journal", []);
+			this.getView().getModel().setProperty("/candidate", this._createCandidateObject());
 			this.getOwnerComponent().onNavBack();
 		},
 
@@ -69,9 +71,12 @@ sap.ui.define([
 			var oModel = this.getView().getModel();
 			var aJournal = oModel.getProperty("/journal");
 			var oCandidate = oModel.getProperty("/candidate");
-			aJournal.push(this._createJournalEntry(oCandidate));
+			var oJournalEntry = this._createJournalEntry(oCandidate);
+			this._addStock(oJournalEntry);
+			aJournal.push(oJournalEntry);
 			oModel.setProperty("/journal", aJournal);
-			oModel.setProperty("/candidate", this._createCandidateObject());
+			oModel.setProperty("/candidate", this._createCandidateObject(oCandidate.batch.value));
+			oModel.refresh(true);
 		},
 
 		_getNumberUnit: function (sProductGroup) {
@@ -109,102 +114,32 @@ sap.ui.define([
 			this.getView().getModel().setProperty("/candidate/storageBin/value", oItem.getBindingContext("container").getProperty("value/storageBin"))
 		},
 
-		onOpenAddContainerDialogPress: function () {
-			var oView = this.getView();
-			var oDialog = this._getAddDialog();
-			// create dialog lazily
-			if (!oDialog) {
-				// create dialog via fragment factory
-				oDialog = sap.ui.xmlfragment(oView.getId(), "glw.view.ContainerAddDialog", this);
-				oView.addDependent(oDialog);
-				var oModel = new JSONModel();
-				oModel.setData({
-					containerBarCode: {
-						value: null,
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					productCategory: {
-						value: null,
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					storageBin: {
-						value: "",
-						valueState: ValueState.None,
-						valueStateText: ""
+		_addStock: function (oObject) {
+			if (oObject) {
+				var oComponent = this.getOwnerComponent();
+				oComponent.postDocument("stock", oObject).then(function (oResponse) {
+					if (oResponse.response.ok) {
+						MessageToast.show("Schnaps wurde eingelagert.", {
+							width: "30rem",
+							duration: 2000
+						});
+
+						oComponent.reloadModel("stock");
+					} else {
+						MessageToast.show(oResponse.errorText, {
+							width: "30rem",
+							duration: 2000
+						});
 					}
 				});
-				oDialog.setModel(oModel);
-			}
-			oDialog.open();
-		},
-
-		onSaveNewContainerPress: function () {
-			var oDialog = this._getAddDialog();
-			var oModel = oDialog.getModel();
-			oModel.setProperty("/containerBarCode/valueState", ValueState.None);
-			oModel.setProperty("/containerBarCode/valueStateText", "");
-			oModel.setProperty("/productCategory/valueState", ValueState.None);
-			oModel.setProperty("/productCategory/valueStateText", "");
-
-			var oObject = oModel.getObject("/");
-			oObject.containerBarCode.value = jQuery.trim(oObject.containerBarCode.value);
-			if (oObject.containerBarCode.value && oObject.productCategory.value) {
-				var oInputField = this.byId("containerBarCodeInput");
-				// check barcode allready used
-				var bBarCodeUsed = false;
-				var aContainers = this.getView().getModel("container").getProperty("/rows");
-				for (var i = 0; i < aContainers.length; i++) {
-					if (aContainers[i].value.barCode === oObject.containerBarCode.value) {
-						bBarCodeUsed = true;
-						break;
-					}
-				}
-				if (bBarCodeUsed) {
-					oModel.setProperty("/containerBarCode/valueState", ValueState.Error);
-					oModel.setProperty("/containerBarCode/valueStateText", "Der Barcode wird bereits verwendet");
-				} else {
-					var oComponent = this.getOwnerComponent();
-					oComponent.postDocument("container", {
-						barCode: "" + oObject.containerBarCode.value,
-						productCategory: oObject.productCategory.value,
-						storageBin: oObject.storageBin.value
-					}).then(function (oResponse) {
-						if (oResponse.response.ok) {
-							MessageToast.show("Behälter '" + oObject.containerBarCode.value + "' wurde angelegt", {
-								width: "30rem",
-								duration: 2000
-							});
-							oModel.setProperty("/containerBarCode/value", null);
-							oComponent.reloadModel("container");
-							oInputField && oInputField.focus();
-						} else {
-							MessageToast.show(oResponse.errorText, {
-								width: "30rem",
-								duration: 2000
-							});
-						}
-					});
-				}
-
-			} else {
-				if (!oObject.containerBarCode.value) {
-					oModel.setProperty("/containerBarCode/valueState", ValueState.Error);
-					oModel.setProperty("/containerBarCode/valueStateText", "Bitte einen Barcode eingeben");
-				}
-
-				if (!oObject.productCategory.value) {
-					oModel.setProperty("/productCategory/valueState", ValueState.Error);
-					oModel.setProperty("/productCategory/valueStateText", "Bitte einen Typ auswählen");
-				}
 			}
 		},
 
 		onCancelAddContainerDialogPress: function () {
 			var oDialog = this._getAddDialog();
 			oDialog.close();
-		},
+		}
+		,
 
 		onAssignStorageBinPress: function (oEvent) {
 			var oView = this.getView();
@@ -227,7 +162,8 @@ sap.ui.define([
 
 			oDialog.setBindingContext(oEvent.getSource().getBindingContext("container"), "container");
 			oDialog.open();
-		},
+		}
+		,
 
 		onSaveContainerStorageBinAssignmentPress: function () {
 			var oDialog = this._getStorageBinAssignmentDialog();
@@ -239,7 +175,8 @@ sap.ui.define([
 				MessageToast.show("Lagerplatz zugeordnet");
 				oComponent.reloadModel("container");
 			});
-		},
+		}
+		,
 
 		onSearchContainer: function (oEvent) {
 			var sValue = oEvent.getParameter("newValue") || oEvent.getParameter("query");
@@ -254,19 +191,23 @@ sap.ui.define([
 			}
 
 			oBinding.filter(oFilter);
-		},
+		}
+		,
 
 		_getTable: function () {
 			return this.byId("containerTable");
-		},
+		}
+		,
 
 		onCancelContainerStorageBinAssignmentDialogPress: function () {
 			this._getStorageBinAssignmentDialog().close();
-		},
+		}
+		,
 
 		_getStorageBinAssignmentDialog: function () {
 			return this.byId("ContainerAssignStorageBinDialog");
-		},
+		}
+		,
 
 		onContainerDeletePress: function (oEvent) {
 			var oComponent = this.getOwnerComponent();
@@ -286,11 +227,13 @@ sap.ui.define([
 				}
 			};
 			oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
-		},
+		}
+		,
 
 		_getAddDialog: function () {
 			return this.byId("ContainerAddDialog");
-		},
+		}
+		,
 
 		compareStringAsInt: function () {
 			return this.getOwnerComponent().compareStringAsInt.apply(this, arguments);

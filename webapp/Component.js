@@ -1,7 +1,8 @@
 sap.ui.define([
 	"sap/ui/core/UIComponent",
-	"sap/ui/core/routing/History"],
-	function(UIComponent, History){
+	"sap/ui/core/routing/History",
+	"./model/formatter"],
+	function(UIComponent, History, Formatter){
 	"use strict";
 	return UIComponent.extend('glw.Component', {
 		metadata: {
@@ -13,6 +14,21 @@ sap.ui.define([
 			UIComponent.prototype.init.apply(this, arguments);
 			this._validValuesHandler = this._checkAndInstallValidValues.bind(this);
 			this.getModel("validValues").attachRequestCompleted(this._validValuesHandler);
+			this.getModel("stock").attachRequestCompleted(this._stockChangedHandler.bind(this));
+			var fnResolveProductCategories;
+			var fnResolveContainer;
+			this.productCategoriesLoaded = new Promise(function(resolve) {
+				fnResolveProductCategories = resolve;
+			});
+			this.containerLoaded = new Promise(function(resolve) {
+				fnResolveContainer = resolve;
+			});
+			this.getModel("productCategories").attachRequestCompleted(function() {
+				fnResolveProductCategories();
+			});
+			this.getModel("container").attachRequestCompleted(function() {
+				fnResolveContainer();
+			});
 			this.getRouter().initialize();
 		},
 
@@ -106,7 +122,7 @@ sap.ui.define([
 			});
 		},
 
-		_allowedTypes: ["container", "schnaps", "productCategory", "validValues", "storageBin"],
+		_allowedTypes: ["container", "schnaps", "productCategory", "validValues", "storageBin", "stock"],
 
 		deleteDocument: function(oDocument, sRevision) {
 			var sId;
@@ -144,6 +160,52 @@ sap.ui.define([
 		reloadModel: function (sModelName) {
 			var sProductModelUri = this.getManifestEntry("sap.ui5").models[sModelName].uri;
 			this.getModel(sModelName).loadData(sProductModelUri);
+		},
+
+		_stockChangedHandler: function () {
+			var oModel = this.getModel("stock");
+			var aStock = oModel.getObject("/rows");
+			var oAggregatedStock = {};
+			var iTotal = 0;
+
+			Promise.all([this.productCategoriesLoaded, this.containerLoaded]).then(function() {
+				var aProductCategories = this.getModel("productCategories").getObject("/rows");
+				var aContainer = this.getModel("container").getObject("/rows");
+				var oYears = {};
+				for (var i = 0; i < aStock.length; i++) {
+					var oStock = aStock[i].value;
+					var sKey = oStock.productCategory + "_" + new Date(oStock.batch).getFullYear() + "_" + oStock.numberUnit;
+					if (!oAggregatedStock[sKey]) {
+						oAggregatedStock[sKey] = {
+							productCategory: oStock.productCategory,
+							productCategoryName: Formatter.formatProductCategory(oStock.productCategory, aProductCategories),
+							batch: new Date(oStock.batch),
+							year: new Date(oStock.batch).getFullYear(),
+							quantity: 0,
+							numberUnit: oStock.numberUnit,
+							rows: []
+						};
+					}
+
+					if (!oYears[oAggregatedStock[sKey].year]) {
+						oYears[oAggregatedStock[sKey].year] = {year: oAggregatedStock[sKey].year};
+					}
+					oAggregatedStock[sKey].quantity += oStock.quantity;
+					iTotal += oStock.quantity;
+					aStock[i].value.containerName = Formatter.formatProductCategoryByContainerBarCode(oStock.container, aContainer, aProductCategories);
+					aStock[i].value.productCategoryName = oAggregatedStock[sKey].productCategoryName;
+					aStock[i].value.batch = aStock[i].value.batch && new Date(aStock[i].value.batch);
+					aStock[i].value.year = oAggregatedStock[sKey].year;
+					oAggregatedStock[sKey].rows.push(oStock);
+				}
+
+				oModel.setProperty("/aggregatedStock", oAggregatedStock);
+				oModel.setProperty("/totalLiters", iTotal);
+				oModel.setProperty("/years", oYears);
+				oModel.setProperty("/totalCount", Object.getOwnPropertyNames(oAggregatedStock).length);
+
+				oModel.setProperty("/rows", aStock);
+			}.bind(this));
 		},
 
 		_checkAndInstallValidValues: function () {

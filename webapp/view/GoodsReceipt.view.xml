@@ -89,7 +89,7 @@
                         </Select>
 
                         <Label text="Charge"/>
-                        <DatePicker value="{/candidate/batch/value}" valueState="{/candidate/batch/valueState}"
+                        <DatePicker value="{path: '/candidate/batch/value', type: 'sap.ui.model.type.Date'}" valueState="{/candidate/batch/valueState}"
                                     valueStateText="{/candidate/batch/valueStateText}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
@@ -119,30 +119,43 @@
                 </f:SimpleForm>
             </l:mainContent>
             <l:sideContent>
-                <Toolbar>
-                    <Title level="H2" titleStyle="H2" text="Journal"/>
-                    <ToolbarSpacer/>
-                    <Button text="Schließen" type="Transparent" press="onJournalHide"/>
-                </Toolbar>
-                <l:VerticalLayout
-                        width="100%">
-                    <l:content>
-                        <List
-                                items="{/journal}">
-                            <ObjectListItem
-                                    number="{quantity}"
-                                    numberUnit="{parts: ['numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"
-                                    title="{parts: ['productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
-                                    text="{batch}">
-                                <attributes>
-                                    <ObjectAttribute title="Behälter" text="{parts: ['container', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container})"/>
-                                    <ObjectAttribute title="Lagerplatz" text="{storageBin}"/>
-                                    <ObjectAttribute title="Charge" text="{batch}"/>
-                                </attributes>
-                            </ObjectListItem>
-                        </List>
-                    </l:content>
-                </l:VerticalLayout>
+                <VBox fitContainer="true" renderType="Bare">
+                    <Toolbar>
+                        <Title level="H2" titleStyle="H2" text="Journal ({= ${/journal}.length})"/>
+                        <ToolbarSpacer/>
+                        <Button text="Schließen" type="Transparent" press="onJournalHide"/>
+                        <layoutData>
+                            <FlexItemData shrinkFactor="0" growFactor="0"/>
+                        </layoutData>
+                    </Toolbar>
+                    <ScrollContainer
+                            height="100%"
+                            width="100%"
+                            horizontal="false"
+                            vertical="true"
+                            focusable="false">
+                        <content>
+                            <List
+                                    items="{/journal}">
+                                <ObjectListItem
+                                        number="{quantity}"
+                                        numberUnit="{parts: ['numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"
+                                        title="{parts: ['productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
+                                        text="{batch}">
+                                    <attributes>
+                                        <ObjectAttribute title="Behälter" text="{parts: ['container', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container})"/>
+                                        <ObjectAttribute title="Lagerplatz" text="{storageBin}"/>
+                                        <ObjectAttribute title="Charge" text="{batch}"/>
+                                    </attributes>
+                                </ObjectListItem>
+                            </List>
+                        </content>
+                        <layoutData>
+                            <FlexItemData growFactor="1" baseSize="0%" shrinkFactor="1" />
+                        </layoutData>
+                    </ScrollContainer>
+                </VBox>
+
             </l:sideContent>
         </l:DynamicSideContent>
 

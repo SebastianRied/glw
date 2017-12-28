@@ -37,6 +37,10 @@
 			"validValues": {
 				"type": "sap.ui.model.json.JSONModel",
 				"uri": "couchDB/glw/validValues"
+			},
+			"stock": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "couchDB/glw/_design/docs/_view/stock"
 			}
 		},
 		"resources": {
@@ -53,6 +57,7 @@
 				"viewPath": "glw.view",
 				"controlId": "app",
 				"clearTarget": false,
+				"transition": "show",
 				"controlAggregation": "pages",
 				"bypassed": {
 					"target": [
@@ -82,6 +87,14 @@
 					"pattern": "GoodsReceipt",
 					"name": "goodsReceipt",
 					"target": "goodsReceipt"
+				}, {
+					"pattern": "StockList",
+					"name": "stockList",
+					"target": "stockList"
+				}, {
+					"pattern": "StockListBatch/:key*:",
+					"name": "stockListDetails",
+					"target": "stockListDetails"
 				}
 			],
 			"targets": {
@@ -109,6 +122,16 @@
 					"viewName": "GoodsReceipt",
 					"viewLevel": 2,
 					"viewId": "goodsReceipt"
+				},
+				"stockList": {
+					"viewName": "StockList",
+					"viewLevel": 2,
+					"viewId": "stockList"
+				},
+				"stockListDetails": {
+					"viewName": "StockList",
+					"viewLevel": 2,
+					"viewId": "stockList"
 				}
 			}
 		}

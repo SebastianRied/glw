@@ -18,7 +18,7 @@
                             unit="Liter"
                             footer="">
                         <NumericContent
-                                value="1762"
+                                value="{stock>/totalLiters}"
                                 icon="sap-icon://sys-find"/>
                     </TileContent>
                 </GenericTile>

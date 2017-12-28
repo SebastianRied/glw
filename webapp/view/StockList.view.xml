@@ -1,0 +1,190 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core"
+          controllerName="glw.controller.StockList"
+          displayBlock="true">
+    <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
+          class="sapUiResponsiveContentPadding">
+        <IconTabBar
+                id="idIconTabBar"
+                expandable="false"
+                stretchContentHeight="true"
+                select="onIconTabBarSelect"
+                class="sapUiResponsiveContentPadding">
+            <items>
+                <IconTabFilter
+                        key="overview"
+                        icon="sap-icon://sys-find"
+                        count="{stock>/totalCount}"
+                        text="Übersicht">
+                    <Table
+                            id="stockListTable"
+                            itemPress="onItemPress"
+                            noDataText="Kein Bestand"
+                            items="{path: 'stock>/aggregatedStock', sorter: {path: 'batch'}}">
+                        <headerToolbar>
+                            <Toolbar>
+                                <Title text="Bestand ({stock>/totalLiters}l)" level="H2" width="9rem"/>
+                                <ToolbarSpacer/>
+                                <SearchField liveChange=".onSearchStockList" search=".onSearchStockList"/>
+                            </Toolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column
+                                    width="12em">
+                                <Text text="Produkt"/>
+                            </Column>
+                            <Column
+                                    width="12em">
+                                <Text text="Charge"/>
+                            </Column>
+                            <Column
+                                    hAlign="End">
+                                <Text text="Menge"/>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Navigation">
+                                <cells>
+                                    <Text text="{parts: ['stock>productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"/>
+                                    <Text text="{path: 'stock>batch', type: 'sap.ui.model.type.Date'}"/>
+                                    <ObjectNumber
+                                            number="{stock>quantity}"
+                                            unit="{parts: ['stock>numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"/>
+                                </cells>
+                            </ColumnListItem>
+
+                        </items>
+                    </Table>
+                </IconTabFilter>
+
+                <IconTabFilter
+                        key="details"
+                        icon="sap-icon://begin"
+                        iconColor="Positive"
+                        count="{stock>/total_rows}"
+                        text="Details">
+                    <Page showHeader="false">
+                        <subHeader>
+                            <OverflowToolbar>
+                                <FacetFilter
+                                        id="idFacetFilter"
+                                        type="Simple"
+                                        showPersonalization="true"
+                                        showReset="true"
+                                        reset="onResetFacetFilter"
+                                        confirm="onConfirmFacetFilter">
+                                    <lists>
+                                        <FacetFilterList
+                                                title="Produkt"
+                                                key="productCategory"
+                                                mode="MultiSelect"
+                                                items="{path:'productCategories>/rows', filters: {path: 'value/productGroup', operator: 'StartsWith', value1: 'FERT'}, templateShareable: 'false'}">
+                                            <items>
+                                                <FacetFilterItem
+                                                        text="{productCategories>value/name}"
+                                                        key="{productCategories>value/_id}"/>
+                                            </items>
+                                        </FacetFilterList>
+
+                                        <FacetFilterList
+                                                title="Jahrgang"
+                                                key="year"
+                                                mode="MultiSelect"
+                                                items="{path:'stock>/years', templateShareable: 'false'}">
+                                            <items>
+                                                <FacetFilterItem
+                                                        text="{stock>year}"
+                                                        key="{stock>year}"/>
+                                            </items>
+                                        </FacetFilterList>
+
+                                        <FacetFilterList
+                                                title="Lagerplatz"
+                                                key="storageBin"
+                                                mode="MultiSelect"
+                                                items="{path:'storageBins>/rows', templateShareable: 'false'}">
+                                            <items>
+                                                <FacetFilterItem
+                                                        text="{storageBins>value/id}"
+                                                        key="{storageBins>value/id}"/>
+                                            </items>
+                                        </FacetFilterList>
+
+                                        <FacetFilterList
+                                                title="Behälter"
+                                                key="container"
+                                                mode="MultiSelect"
+                                                items="{path:'container>/rows', templateShareable: 'false'}">
+                                            <items>
+                                                <FacetFilterItem
+                                                        text="{parts: ['container>value/barCode', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container>value/barCode})"
+                                                        key="{container>value/barCode}"/>
+                                            </items>
+                                        </FacetFilterList>
+                                    </lists>
+                                </FacetFilter>
+                            </OverflowToolbar>
+                        </subHeader>
+                        <content>
+                            <Table
+                                    id="stockListDetailsTable"
+                                    noDataText="Kein Bestand"
+                                    items="{path: 'stock>/rows', sorter: {path: 'quantity'}}">
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <Title text="Bestand" level="H2" width="15rem"/>
+                                        <ToolbarSpacer/>
+                                        <SearchField liveChange=".onSearchStockListDetails" search=".onSearchStockListDetails"/>
+                                    </OverflowToolbar>
+                                </headerToolbar>
+                                <columns>
+                                    <Column
+                                            width="12em">
+                                        <Text text="Produkt"/>
+                                    </Column>
+                                    <Column
+                                            width="12em">
+                                        <Text text="Charge"/>
+                                    </Column>
+                                    <Column
+                                            width="12em">
+                                        <Text text="Behälter"/>
+                                    </Column>
+                                    <Column
+                                            width="12em">
+                                        <Text text="Lagerplatz"/>
+                                    </Column>
+                                    <Column
+                                            hAlign="End">
+                                        <Text text="Menge"/>
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <ObjectIdentifier
+                                                    title="{parts: ['stock>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
+                                                    text="{stock>value/year}"/>
+                                            <Text text="{path: 'stock>value/batch', type: 'sap.ui.model.type.Date'}"/>
+                                            <ObjectIdentifier
+                                                    title="{stock>value/containerName}"
+                                                    text="{stock>value/container}"/>
+                                            <Text text="{parts: ['stock>value/container', 'container>/rows'], formatter: '.formatter.formatStorageBinByContainerBarCode'}"/>
+                                            <ObjectNumber
+                                                    number="{stock>value/quantity}"
+                                                    unit="{parts: ['stock>value/numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"/>
+                                        </cells>
+                                    </ColumnListItem>
+
+                                </items>
+                            </Table>
+                        </content>
+                    </Page>
+
+                </IconTabFilter>
+
+            </items>
+        </IconTabBar>
+
+
+    </Page>
+</mvc:View>
