@@ -108,6 +108,17 @@
                         <Text text="{parts: ['/candidate/productCategory/value', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
                               class="sapUiTinyMarginBegin"/>
 
+                        <Label text="Alkoholgehalt"/>
+
+                        <Input type="Number"
+                               textAlign="End"
+                               value="{path: '/candidate/vol/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </Input>
+                        <Text text="%" />
+
 
                         <Label text=""/>
                         <Button text="Einlagern" type="Emphasized" press=".onAddStock">

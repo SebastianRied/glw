@@ -49,6 +49,11 @@ sap.ui.define([
 					value: 0,
 					valueState: ValueState.None,
 					valueStateText: ""
+				},
+				vol: {
+					value: 0,
+					valueState: ValueState.None,
+					valueStateText: ""
 				}
 			};
 		},
@@ -105,6 +110,7 @@ sap.ui.define([
 				productCategory: oCandidate.productCategory.value,
 				batch: oCandidate.batch.value,
 				quantity: oCandidate.quantity.value,
+				vol: oCandidate.vol.value,
 				numberUnit: sNumberUnit
 			};
 		},
