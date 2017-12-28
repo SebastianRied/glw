@@ -3,6 +3,7 @@
   "views" : {
     "container" : {"map" : "function (doc) {if ( doc.type === 'container'){emit(doc.id, doc);}}"},
     "productCategories" : {"map" : "function (doc) {if ( doc.type === 'productCategory'){emit(doc.id, doc);}}"},
-    "storageBins" : {"map" : "function (doc) {if ( doc.type === 'storageBin'){emit(doc.id, doc);}}"}
+    "storageBins" : {"map" : "function (doc) {if ( doc.type === 'storageBin'){emit(doc.id, doc);}}"},
+	"stock" : {"map" : "function (doc) {if ( doc.type === 'stock'){emit(doc.id, doc);}}"}
   }
 }

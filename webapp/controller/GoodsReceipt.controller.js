@@ -46,7 +46,7 @@ sap.ui.define([
 					valueStateText: ""
 				},
 				quantity: {
-					value: 0,
+					value: 0.0,
 					valueState: ValueState.None,
 					valueStateText: ""
 				},

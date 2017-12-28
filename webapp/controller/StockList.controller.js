@@ -243,6 +243,26 @@ sap.ui.define([
 			var oItem = oEvent.getParameter("listItem");
 			var oContext = oItem.getBindingContext("stock");
 			this.getOwnerComponent().getRouter().navTo("stockListDetails", {"key*": oContext.getPath().split("/").pop()});
+		},
+		onStockListBindingChange: function () {
+			var oTable = this._getTable();
+			var oBinding = oTable.getBinding("items");
+			var aContext = oBinding.getContexts(0,oBinding.getLength());
+			var iSum = 0;
+			for (var i=0;i<aContext.length;i++){
+				iSum += aContext[i].getProperty("quantity");
+			}
+			this.getView().getModel("stock").setProperty("/filteredQuantity", Math.round10(iSum, -2));
+		},
+		onStockListDetailsBindingChange: function () {
+			var oTable = this._getDetailsTable();
+			var oBinding = oTable.getBinding("items");
+			var aContext = oBinding.getContexts(0,oBinding.getLength());
+			var iSum = 0;
+			for (var i=0;i<aContext.length;i++){
+				iSum += aContext[i].getProperty("value/quantity");
+			}
+			this.getView().getModel("stock").setProperty("/filteredQuantity", Math.round10(iSum, -2));
 		}
 	});
 

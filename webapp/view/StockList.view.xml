@@ -19,7 +19,7 @@
                             id="stockListTable"
                             itemPress="onItemPress"
                             noDataText="Kein Bestand"
-                            items="{path: 'stock>/aggregatedStock', sorter: {path: 'batch'}}">
+                            items="{path: 'stock>/aggregatedStock', sorter: {path: 'batch'}, events:{change:'.onStockListBindingChange'}}">
                         <headerToolbar>
                             <Toolbar>
                                 <Title text="Bestand ({stock>/totalLiters}l)" level="H2" width="9rem"/>
@@ -128,7 +128,7 @@
                             <Table
                                     id="stockListDetailsTable"
                                     noDataText="Kein Bestand"
-                                    items="{path: 'stock>/rows', sorter: {path: 'quantity'}}">
+                                    items="{path: 'stock>/rows', sorter: {path: 'value/quantity'}, events:{change:'.onStockListDetailsBindingChange'}}">
                                 <headerToolbar>
                                     <OverflowToolbar>
                                         <Title text="Bestand" level="H2" width="15rem"/>
@@ -184,6 +184,8 @@
 
             </items>
         </IconTabBar>
+		<footer><Toolbar><ToolbarSpacer/><Text text="Summe: {stock>/filteredQuantity}"/></Toolbar>
+		</footer>
 
 
     </Page>

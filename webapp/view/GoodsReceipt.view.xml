@@ -98,9 +98,8 @@
 
                         <Label text="Menge"/>
 
-                        <Input type="Number"
-                               textAlign="End"
-                               value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">
+                        <Input textAlign="End"
+                               value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {emptyString: 0}}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
