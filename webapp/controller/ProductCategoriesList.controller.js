@@ -5,8 +5,9 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageToast",
+	"sap/m/MessageBox",
 	"sap/ui/core/ValueState"
-], function (Controller, Formatter, JSONModel, Filter, FilterOperator, MessageToast, ValueState) {
+], function (Controller, Formatter, JSONModel, Filter, FilterOperator, MessageToast, MessageBox, ValueState) {
 	'use strict';
 
 	return Controller.extend('glw.controller.ProductCategoriesList', {
@@ -35,7 +36,26 @@ sap.ui.define([
 						duration: 2000
 					});
 				}};
-			oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+
+			if (this._checkDeleteConditions(oContext.getProperty())) {
+				oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+			} else {
+				var bCompact = !!this.getView().$().closest(".sapUiSizeCompact").length;
+				MessageBox.error(
+					"Dieses Produkt wurde bereits eingelagert und kann daher nicht gelöscht werden.",
+					{
+						styleClass: bCompact ? "sapUiSizeCompact" : ""
+					}
+				);
+			}
+		},
+
+		_checkDeleteConditions: function (oObject) {
+			return !this.getOwnerComponent().findEntity("container", "/rows", function (oContainer) {
+				return oObject.value._id === oContainer.value.productCategory;
+			}) && !this.getOwnerComponent().findEntity("stock", "/rows", function (oStock) {
+					return oObject.value._id === oStock.value.productCategory;
+				});
 		},
 
 		onOpenAddProductDialogPress: function () {
@@ -72,13 +92,10 @@ sap.ui.define([
 		onSaveNewProductPress: function () {
 			var oDialog = this._getAddDialog();
 			var oModel = oDialog.getModel();
-			oModel.setProperty("/productCategoryName/valueState", ValueState.None);
-			oModel.setProperty("/productCategoryName/valueStateText", "");
-			oModel.setProperty("/productGroup/valueState", ValueState.None);
-			oModel.setProperty("/productGroup/valueStateText", "");
+
 			var oObject = oModel.getObject("/");
 			var oInputField = this.byId("productCategoryInput");
-			if (oObject.productCategoryName.value && oObject.productGroup.value) {
+			if (this._checkSaveConditions(oObject, oModel)) {
 				var oValidValues = this.getView().getModel("validValues").getObject("/");
 				var sProductGroupText = oValidValues.productGroups[oObject.productGroup.value].value;
 				var oComponent = this.getOwnerComponent();
@@ -101,18 +118,39 @@ sap.ui.define([
 						});
 					}
 				});
-
-			} else {
-				if (!oObject.productCategoryName.value) {
-					oModel.setProperty("/productCategoryName/valueState", ValueState.Error);
-					oModel.setProperty("/productCategoryName/valueStateText", "Bitte einen Produktnamen eingeben");
-				}
-
-				if (!oObject.productGroup.value) {
-					oModel.setProperty("/productGroup/valueState", ValueState.Error);
-					oModel.setProperty("/productGroup/valueStateText", "Bitte einen Produktnamen eingeben");
-				}
 			}
+		},
+
+		_checkSaveConditions: function (oObject, oModel) {
+			oModel.setProperty("/productCategoryName/valueState", ValueState.None);
+			oModel.setProperty("/productCategoryName/valueStateText", "");
+			oModel.setProperty("/productGroup/valueState", ValueState.None);
+			oModel.setProperty("/productGroup/valueStateText", "");
+			var bReturn = true;
+
+			if (!oObject.productCategoryName.value) {
+				oModel.setProperty("/productCategoryName/valueState", ValueState.Error);
+				oModel.setProperty("/productCategoryName/valueStateText", "Bitte einen Produktnamen eingeben");
+				bReturn = false;
+			}
+
+			if (!oObject.productGroup.value) {
+				oModel.setProperty("/productGroup/valueState", ValueState.Error);
+				oModel.setProperty("/productGroup/valueStateText", "Bitte einen Produktnamen eingeben");
+				bReturn = false;
+			}
+
+			// storageBinId must be unique
+			if (this.getOwnerComponent().findEntity("productCategories", "/rows", function (oProductCategory) {
+					return oObject.productCategoryName.value.toLowerCase() === oProductCategory.value.name.toLowerCase()
+						&& oObject.productGroup.value === oProductCategory.value.productGroup;
+				})) {
+				oModel.setProperty("/productCategoryName/valueState", ValueState.Error);
+				oModel.setProperty("/productCategoryName/valueStateText", "Ein Produkt mit dieser Bezeichnung existiert bereits.");
+				bReturn = false;
+			}
+
+			return bReturn;
 		},
 
 		_getAddDialog: function () {
@@ -136,7 +174,7 @@ sap.ui.define([
 
 		_getTable: function () {
 			return this.byId("productCategoryTable");
-		},
+		}
 	});
 
 });

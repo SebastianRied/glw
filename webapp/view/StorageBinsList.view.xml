@@ -8,7 +8,7 @@
 				noDataText="Keine Lagerplätze vorhanden"
                 mode="Delete"
                 delete=".onDeleteStorageBinPress"
-                items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}">
+                items="{path: 'storageBins>/list', sorter: {path: 'value/id'}}">
             <headerToolbar>
                 <Toolbar>
                     <Title text="Lagerplätze ({storageBins>/total_rows})" level="H2" width="9rem"/>
@@ -22,12 +22,20 @@
                         width="12em">
                     <Text text="Lagerplatznummer"/>
                 </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true">
+                    <Text text="Belegt"/>
+                </Column>
 
             </columns>
             <items>
                 <ColumnListItem>
                     <cells>
                         <Text text="{storageBins>value/id}"/>
+                        <core:Icon
+                                src="{= ${storageBins>value/used} ? 'sap-icon://complete' : 'sap-icon://border'}"
+                                color="#999999" decorative="false"/>
                     </cells>
                 </ColumnListItem>
 

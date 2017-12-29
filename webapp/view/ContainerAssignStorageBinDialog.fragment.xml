@@ -26,10 +26,11 @@
                 <f:content>
                     <Label text="Lagerplatz"/>
                     <ComboBox forceSelection="false"
-                            items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}"
-                            selectedKey="{/storageBin/value}"
-                            valueState="{/storageBin/valueState}"
-                            valueStateText="{/productCategory/valueStateText}">
+                              change=".onStorageBinChange"
+                              items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}"
+                              selectedKey="{/storageBin/value}"
+                              valueState="{/storageBin/valueState}"
+                              valueStateText="{/productCategory/valueStateText}">
                         <items>
                             <core:Item text="{storageBins>value/id}" key="{storageBins>value/id}"/>
                         </items>

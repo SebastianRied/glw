@@ -33,6 +33,7 @@
                             valueStateText="{/containerBarCode/valueStateText}"/>
                     <Label text="Lagerplatz"/>
                     <ComboBox forceSelection="false"
+                              change=".onStorageBinChange"
                               items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}"
                               selectedKey="{/storageBin/value}"
                               valueState="{/storageBin/valueState}"

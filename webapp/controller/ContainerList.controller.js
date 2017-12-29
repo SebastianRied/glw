@@ -5,8 +5,9 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageToast",
+	"sap/m/MessageBox",
 	"sap/ui/core/ValueState"
-], function (Controller, Formatter, JSONModel, Filter, FilterOperator, MessageToast, ValueState) {
+], function (Controller, Formatter, JSONModel, Filter, FilterOperator, MessageToast, MessageBox, ValueState) {
 	'use strict';
 
 	return Controller.extend('glw.controller.ContainerList', {
@@ -19,12 +20,12 @@ sap.ui.define([
 			this.getOwnerComponent().onNavBack();
 		},
 
-		onDeleteContainerPress: function (oEvent) {
+		onContainerDeletePress: function (oEvent) {
 			var oComponent = this.getOwnerComponent();
 			var oContext = oEvent.getParameter("listItem").getBindingContext("container");
 			var fnHandler = function (oResponse) {
 				if (oResponse.response.ok) {
-					MessageToast.show("Der Container '" + oContext.getProperty("value/barCode") + "' wurde gelöscht", {
+					MessageToast.show("Der Behälter '" + oContext.getProperty("value/barCode") + "' wurde gelöscht", {
 						width: "30rem",
 						duration: 2000
 					});
@@ -34,8 +35,25 @@ sap.ui.define([
 						width: "30rem",
 						duration: 2000
 					});
-				}};
-			oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+				}
+			};
+			if (this._checkDeleteConditions(oContext.getProperty())) {
+				oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+			} else {
+				var bCompact = !!this.getView().$().closest(".sapUiSizeCompact").length;
+				MessageBox.error(
+					"Der Behälter ist noch befüllt und kann daher nicht gelöscht werden.",
+					{
+						styleClass: bCompact ? "sapUiSizeCompact" : ""
+					}
+				);
+			}
+		},
+
+		_checkDeleteConditions: function (oObject) {
+			return !this.getOwnerComponent().findEntity("stock", "/rows", function (oStock) {
+				return oObject.value.barCode === oStock.value.container && oStock.value.quantity > 0;
+			});
 		},
 
 		onOpenAddContainerDialogPress: function () {
@@ -161,13 +179,23 @@ sap.ui.define([
 		onSaveContainerStorageBinAssignmentPress: function () {
 			var oDialog = this._getStorageBinAssignmentDialog();
 			var oContainer = oDialog.getBindingContext("container").getProperty("value");
-			oContainer.storageBin = oDialog.getModel().getProperty("/storageBin/value");
+			var oModel = oDialog.getModel();
+			oContainer.storageBin = oModel.getProperty("/storageBin/value");
 			var oComponent = this.getOwnerComponent();
-			oComponent.putDocument(oContainer).then(function() {
-				oDialog.close();
-				MessageToast.show("Lagerplatz zugeordnet");
-				oComponent.reloadModel("container");
-			});
+			if (this._storageBinFound) {
+				oModel.setProperty("/storageBin/valueState", ValueState.None);
+				oModel.setProperty("/storageBin/valueStateText", "");
+				oComponent.putDocument(oContainer).then(function () {
+					oDialog.close();
+					MessageToast.show("Lagerplatz zugeordnet");
+					oComponent.reloadModel("container");
+				});
+			} else {
+				MessageToast.show("Der angegebene Lagerplatz existiert nicht.");
+				oModel.setProperty("/storageBin/valueState", ValueState.Error);
+				oModel.setProperty("/storageBin/valueStateText", "Bitte einen gültigen Lagerplatz wählen");
+			}
+
 		},
 
 		onSearchContainer: function (oEvent) {
@@ -197,31 +225,19 @@ sap.ui.define([
 			return this.byId("ContainerAssignStorageBinDialog");
 		},
 
-		onContainerDeletePress: function (oEvent) {
-			var oComponent = this.getOwnerComponent();
-			var oContext = oEvent.getParameter("listItem").getBindingContext("container");
-			var fnHandler = function (oResponse) {
-				if (oResponse.response.ok) {
-					MessageToast.show("Der Behälter '" + oContext.getProperty("value/barCode") + "' wurde gelöscht", {
-						width: "30rem",
-						duration: 2000
-					});
-					oComponent.reloadModel("container");
-				} else {
-					MessageToast.show(oResponse.errorText, {
-						width: "30rem",
-						duration: 2000
-					});
-				}};
-			oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
-		},
-
 		_getAddDialog: function () {
 			return this.byId("ContainerAddDialog");
 		},
 
 		compareStringAsInt: function () {
 			return this.getOwnerComponent().compareStringAsInt.apply(this, arguments);
+		},
+
+		onStorageBinChange: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			this._storageBinFound  = !(sValue && !this.getOwnerComponent().findEntity("storageBins", "/rows", function (oStorageBin) {
+					return sValue === oStorageBin.value.id;
+				}));
 		}
 	});
 

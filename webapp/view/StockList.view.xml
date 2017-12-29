@@ -42,12 +42,12 @@
                             </Column>
                         </columns>
                         <items>
-                            <ColumnListItem type="Navigation">
+                            <ColumnListItem type="Navigation" highlight="{path: 'stock>quantity', formatter: '.formatter.formatStockListCriticalQuantity'}">
                                 <cells>
                                     <Text text="{parts: ['stock>productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"/>
                                     <Text text="{path: 'stock>batch', type: 'sap.ui.model.type.Date'}"/>
                                     <ObjectNumber
-                                            number="{stock>quantity}"
+                                            number="{path: 'stock>quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                             unit="{parts: ['stock>numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"/>
                                 </cells>
                             </ColumnListItem>
@@ -171,7 +171,7 @@
                                                     text="{stock>value/container}"/>
                                             <Text text="{parts: ['stock>value/container', 'container>/rows'], formatter: '.formatter.formatStorageBinByContainerBarCode'}"/>
                                             <ObjectNumber
-                                                    number="{stock>value/quantity}"
+                                                    number="{path: 'stock>value/quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                                     unit="{parts: ['stock>value/numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"/>
                                         </cells>
                                     </ColumnListItem>
