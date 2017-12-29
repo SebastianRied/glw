@@ -15,7 +15,8 @@ sap.ui.define([
 				UIComponent.prototype.init.apply(this, arguments);
 				this._initModelPromises();
 				this.models.validValues.loaded.then(this._checkAndInstallValidValues.bind(this));
-				this.models.stock.loaded.then(this._stockChangedHandler.bind(this));
+
+				this.models.stock.model.attachRequestCompleted(this._stockChangedHandler.bind(this));
 
 				this.getRouter().initialize();
 			},
@@ -179,12 +180,12 @@ sap.ui.define([
 			,
 
 			_stockChangedHandler: function () {
-				var oModel = this.getModel("stock");
-				var aStock = oModel.getObject("/rows");
-				var oAggregatedStock = {};
-				var iTotal = 0;
-
-				Promise.all([this.models.productCategories.loaded, this.models.container.loaded]).then(function () {
+				Promise.all([this.models.productCategories.loaded, this.models.container.loaded, this.models.stock.loaded]).then(function () {
+					var oModel = this.getModel("stock");
+					var aStock = oModel.getObject("/rows");
+					var oAggregatedStock = {};
+					var iTotal = 0;
+					
 					var aProductCategories = this.getModel("productCategories").getObject("/rows");
 					var aContainer = this.getModel("container").getObject("/rows");
 					var oYears = {};

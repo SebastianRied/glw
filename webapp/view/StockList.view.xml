@@ -130,12 +130,12 @@
                                     noDataText="Kein Bestand"
                                     items="{path: 'stock>/rows', sorter: {path: 'value/quantity'}, events:{change:'.onStockListDetailsBindingChange'}}">
                                 <headerToolbar>
-                                    <OverflowToolbar>
+                                    <Toolbar>
                                         <Title text="Bestand" level="H2" width="15rem"/>
                                         <ToolbarSpacer/>
                                         <SearchField liveChange=".onSearchStockListDetails"
                                                      search=".onSearchStockListDetails"/>
-                                    </OverflowToolbar>
+                                    </Toolbar>
                                 </headerToolbar>
                                 <columns>
                                     <Column

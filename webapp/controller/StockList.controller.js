@@ -145,6 +145,12 @@ sap.ui.define([
 					if (!isNaN(iValue)) {
 						if (iValue > 1000 && iValue < 10000) {
 							return new Filter({path: "value/year", operator: FilterOperator.EQ, value1: iValue});
+						} else {
+							return new Filter({
+							path: "value/container",
+							operator: FilterOperator.Contains,
+							value1: vValue
+						});
 						}
 					} else {
 						return new Filter({
@@ -163,7 +169,9 @@ sap.ui.define([
 							aFilters.push(oTempFilter);
 						}
 					}
-					oFilter = new Filter(aFilters, true);
+					if (aFilters.length > 0) {
+						oFilter = new Filter(aFilters, true);					
+					}
 				} else {
 					oFilter = fnGetFilter(sValue);
 				}
@@ -177,6 +185,7 @@ sap.ui.define([
 					oFilter = this._stockListDetailsFacetFilters;
 				}
 			}
+			console.log(oFilter);
 			oBinding.filter(oFilter);
 		},
 
@@ -224,7 +233,7 @@ sap.ui.define([
 			for (var i = 0; i < aFacetFilterLists.length; i++) {
 				aFacetFilterLists[i].setSelectedKeys();
 			}
-			this._applyFilter([]);
+			this._applyFilter();
 		},
 
 		handleListClose: function (oEvent) {
