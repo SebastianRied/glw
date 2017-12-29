@@ -99,7 +99,7 @@
                         <Label text="Menge"/>
 
                         <Input textAlign="End"
-                               value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {emptyString: 0}}">
+                               value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
@@ -109,7 +109,7 @@
 
                         <Label text="Alkoholgehalt"/>
 
-                        <Input type="Number"
+                        <Input
                                textAlign="End"
                                value="{path: '/candidate/vol/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">
                             <layoutData>
@@ -148,14 +148,15 @@
                             <List
                                     items="{/journal}">
                                 <ObjectListItem
-                                        number="{quantity}"
+                                        number="{path: 'quantity', type: 'sap.ui.model.type.Float', formatOptions: {precision: 2}}"
                                         numberUnit="{parts: ['numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"
                                         title="{parts: ['productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
                                         text="{batch}">
                                     <attributes>
                                         <ObjectAttribute title="Behälter" text="{parts: ['container', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container})"/>
                                         <ObjectAttribute title="Lagerplatz" text="{storageBin}"/>
-                                        <ObjectAttribute title="Charge" text="{batch}"/>
+                                        <ObjectAttribute title="Charge" text="{path: 'batch', type: 'sap.ui.model.type.Date'}"/>
+                                        <ObjectAttribute title="Alkoholgehalt" text="{vol}"/>
                                     </attributes>
                                 </ObjectListItem>
                             </List>

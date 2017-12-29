@@ -4,10 +4,10 @@
   "description": "Glasstetter Liquids Warehouse",
   "private": true,
   "scripts": {
-    "start": "grunt serve",
-    "build": "grunt build"
+    "start": "grunt serve"
   },
-  "devDependencies": {
+  "dependencies": {
+    "grunt-cli": "^1.2.0",
     "grunt": "^1.0.1",
     "grunt-contrib-connect": "^1.0.2",
     "grunt-openui5": "^0.12.0",

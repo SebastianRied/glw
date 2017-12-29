@@ -32,8 +32,10 @@ sap.ui.define([
 			var sKey = oEvent.getParameter("key");
 			var oRouter = this.getOwnerComponent().getRouter();
 			if (sKey === "details") {
+				this._updateFilteredQuantity(this._getDetailsTable(), "value/quantity");
 				oRouter.navTo("stockListDetails", {}, true);
 			} else {
+				this._updateFilteredQuantity(this._getTable(), "quantity");
 				oRouter.navTo("stockList", {}, true);
 			}
 		},
@@ -245,24 +247,20 @@ sap.ui.define([
 			this.getOwnerComponent().getRouter().navTo("stockListDetails", {"key*": oContext.getPath().split("/").pop()});
 		},
 		onStockListBindingChange: function () {
-			var oTable = this._getTable();
-			var oBinding = oTable.getBinding("items");
-			var aContext = oBinding.getContexts(0,oBinding.getLength());
-			var iSum = 0;
-			for (var i=0;i<aContext.length;i++){
-				iSum += aContext[i].getProperty("quantity");
-			}
-			this.getView().getModel("stock").setProperty("/filteredQuantity", Math.round10(iSum, -2));
+			this._updateFilteredQuantity(this._getTable(), "quantity");
 		},
 		onStockListDetailsBindingChange: function () {
-			var oTable = this._getDetailsTable();
+			this._updateFilteredQuantity(this._getDetailsTable(), "value/quantity");
+		},
+
+		_updateFilteredQuantity: function (oTable, sQuantityPath) {
 			var oBinding = oTable.getBinding("items");
 			var aContext = oBinding.getContexts(0,oBinding.getLength());
 			var iSum = 0;
 			for (var i=0;i<aContext.length;i++){
-				iSum += aContext[i].getProperty("value/quantity");
+				iSum += aContext[i].getProperty(sQuantityPath);
 			}
-			this.getView().getModel("stock").setProperty("/filteredQuantity", Math.round10(iSum, -2));
+			this.getView().getModel("stock").setProperty("/filteredQuantity", iSum);
 		}
 	});
 

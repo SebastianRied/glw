@@ -22,7 +22,7 @@
                             items="{path: 'stock>/aggregatedStock', sorter: {path: 'batch'}, events:{change:'.onStockListBindingChange'}}">
                         <headerToolbar>
                             <Toolbar>
-                                <Title text="Bestand ({stock>/totalLiters}l)" level="H2" width="9rem"/>
+                                <Title text="Bestand" level="H2" width="9rem"/>
                                 <ToolbarSpacer/>
                                 <SearchField liveChange=".onSearchStockList" search=".onSearchStockList"/>
                             </Toolbar>
@@ -133,7 +133,8 @@
                                     <OverflowToolbar>
                                         <Title text="Bestand" level="H2" width="15rem"/>
                                         <ToolbarSpacer/>
-                                        <SearchField liveChange=".onSearchStockListDetails" search=".onSearchStockListDetails"/>
+                                        <SearchField liveChange=".onSearchStockListDetails"
+                                                     search=".onSearchStockListDetails"/>
                                     </OverflowToolbar>
                                 </headerToolbar>
                                 <columns>
@@ -184,9 +185,11 @@
 
             </items>
         </IconTabBar>
-		<footer><Toolbar><ToolbarSpacer/><Text text="Summe: {stock>/filteredQuantity}"/></Toolbar>
-		</footer>
-
-
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Text text="Summe: {path: 'stock>/filteredQuantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}l" class="sapUiSmallMarginEnd"/>
+            </Toolbar>
+        </footer>
     </Page>
 </mvc:View>
