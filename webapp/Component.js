@@ -238,7 +238,7 @@ sap.ui.define([
 						var mModels = that.getManifestEntry("sap.ui5").models;
 						var aModelNames = Object.getOwnPropertyNames(mModels);
 						for (var i = 0; i < aModelNames.length; i++) {
-							if (mModels[aModelNames[i]].uri.indexOf("couchDB") === 0) {
+							if (mModels[aModelNames[i]].uri && mModels[aModelNames[i]].uri.indexOf("couchDB") === 0) {
 								that.reloadModel(aModelNames[i]);
 							}
 						}
