@@ -111,6 +111,21 @@
                     </TileContent>
                 </GenericTile>
 
+                <GenericTile
+                        id="tileBatches"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Chargen"
+                        subheader="anlegen, anzeigen, löschen"
+                        press=".onTilePress">
+                    <TileContent
+                            unit=""
+                            footer="">
+                        <NumericContent
+                                value="{= ${storageBins>/rows}.length}"
+                                icon="sap-icon://numbered-text"/>
+                    </TileContent>
+                </GenericTile>
+
             </HBox>
         </FlexBox>
 

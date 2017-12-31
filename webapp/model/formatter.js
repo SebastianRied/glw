@@ -238,5 +238,17 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 		}
 	};
 
+	Formatter.sum = function () {
+		var iSum = 0;
+		for (var i = 0; i < arguments.length; i++) {
+			var iSum2 = parseFloat(arguments[i]);
+			if (isNaN(iSum2)) {
+				iSum2 = 0;
+			}
+			iSum += iSum2;
+		}
+		return iSum;
+	};
+
 	return Formatter;
 });

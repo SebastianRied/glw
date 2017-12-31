@@ -1,0 +1,142 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:f="sap.ui.layout.form"
+        xmlns:l="sap.ui.layout"
+        xmlns:core="sap.ui.core">
+    <Dialog
+            id="BatchAddDialog"
+            title="Charge anlegen"
+            class="sapUiResponsiveContentPadding">
+        <content>
+            <f:SimpleForm editable="true"
+                          layout="ResponsiveGridLayout"
+                          labelSpanXL="12"
+                          labelSpanL="12"
+                          labelSpanM="12"
+                          labelSpanS="12"
+                          adjustLabelSpan="false"
+                          emptySpanXL="1"
+                          emptySpanL="1"
+                          emptySpanM="1"
+                          emptySpanS="1"
+                          columnsXL="2"
+                          columnsL="2"
+                          columnsM="2"
+                          singleContainerFullSize="false">
+                <f:content>
+                    <core:Title text="Chargenmerkmale"/>
+                    <Label text="Produkt"/>
+                    <Select forceSelection="false"
+                            items="{path: 'productCategories>/rows', filters: {path: 'value/productGroup', operator: 'Contains', value1: 'FERT'}}"
+                            selectedKey="{/productCategory/value}"
+                            valueState="{/productCategory/valueState}"
+                            valueStateText="{/productCategory/valueStateText}">
+                        <items>
+                            <core:Item text="{productCategories>value/name}" key="{productCategories>value/_id}"/>
+                        </items>
+                        <layoutData>
+                            <l:GridData span="XL8 L8 M8 S8"/>
+                        </layoutData>
+                    </Select>
+
+                    <Label text="Chargendatum"/>
+                    <Label text="Charge"/>
+                    <DatePicker value="{path: '/batchDate/value', type: 'sap.ui.model.type.Date'}"
+                                valueState="{/batchDate/valueState}"
+                                valueStateText="{/batchDate/valueStateText}">
+                        <layoutData>
+                            <l:GridData span="XL8 L8 M8 S8"/>
+                        </layoutData>
+                    </DatePicker>
+
+                    <Label text="Menge"/>
+                    <Input textAlign="End"
+                           value="{path: '/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
+                           valueState="{/quantity/valueState}"
+                           valueStateText="{/quantity/valueStateText}">
+                        <layoutData>
+                            <l:GridData span="XL8 L8 M8 S8"/>
+                        </layoutData>
+                    </Input>
+                    <Text text="{parts: ['/productCategory/value', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                          class="sapUiTinyMarginBegin">
+                        <layoutData>
+                            <l:GridData span="XL3 L3 M3 S3"/>
+                        </layoutData>
+                    </Text>
+
+                    <Label text="Alkoholgehalt"/>
+                    <Input
+                            textAlign="End"
+                            value="{path: '/vol/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
+                            valueState="{/vol/valueState}"
+                            valueStateText="{/vol/valueStateText}">
+                        <layoutData>
+                            <l:GridData span="XL8 L8 M8 S8"/>
+                        </layoutData>
+                    </Input>
+                    <Text text="%">
+                        <layoutData>
+                            <l:GridData span="XL3 L3 M3 S3"/>
+                        </layoutData>
+                    </Text>
+
+                    <core:Title text="Finanzmerkmale"/>
+                    <Label text="Brennerlohn"/>
+                    <Input
+                            textAlign="End"
+                            value="{path: '/distillerFee/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
+                            valueState="{/distillerFee/valueState}"
+                            valueStateText="{/distillerFee/valueStateText}">
+                        <layoutData>
+                            <l:GridData span="XL8 L8 M8 S8"/>
+                        </layoutData>
+                    </Input>
+                    <Text text="€">
+                        <layoutData>
+                            <l:GridData span="XL3 L3 M3 S3"/>
+                        </layoutData>
+                    </Text>
+                    <Label text="Steuer"/>
+                    <Input
+                            textAlign="End"
+                            value="{path: '/taxes/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
+                            valueState="{/taxes/valueState}"
+                            valueStateText="{/taxes/valueStateText}">
+                        <layoutData>
+                            <l:GridData span="XL8 L8 M8 S8"/>
+                        </layoutData>
+                    </Input>
+                    <Text text="€">
+                        <layoutData>
+                            <l:GridData span="XL3 L3 M3 S3"/>
+                        </layoutData>
+                    </Text>
+
+                    <Label text="Summe"/>
+                    <Text
+                            textAlign="End"
+                            text="{parts: ['/distillerFee/value', '/taxes/value'], formatter: '.formatter.sum'}">
+                        <layoutData>
+                            <l:GridData span="XL8 L8 M8 S8"/>
+                        </layoutData>
+                    </Text>
+                    <Text text="€">
+                        <layoutData>
+                            <l:GridData span="XL3 L3 M3 S3"/>
+                        </layoutData>
+                    </Text>
+                </f:content>
+
+            </f:SimpleForm>
+        </content>
+        <beginButton>
+            <Button text="Anlegen" press=".onSaveNewBatchPress"/>
+
+        </beginButton>
+        <endButton>
+            <Button text="Fertig" press=".onCancelAddBatchDialogPress"/>
+
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

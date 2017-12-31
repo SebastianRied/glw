@@ -22,6 +22,7 @@ sap.ui.define([
 				case "tileStorageBin": oRouter.navTo("storageBinsList"); break;
 				case "tileGR": oRouter.navTo("goodsReceipt"); break;
 				case "tileStock": oRouter.navTo("stockList"); break;
+				case "tileBatches": oRouter.navTo("batches"); break;
 			}
 		}
 	});

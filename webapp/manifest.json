@@ -41,6 +41,10 @@
 			"stock": {
 				"type": "sap.ui.model.json.JSONModel",
 				"uri": "couchDB/glw/_design/docs/_view/stock"
+			},
+			"batches": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "couchDB/glw/_design/docs/_view/batches"
 			}
 		},
 		"resources": {
@@ -95,6 +99,10 @@
 					"pattern": "StockListBatch/:key*:",
 					"name": "stockListDetails",
 					"target": "stockListDetails"
+				}, {
+					"pattern": "Batches",
+					"name": "batches",
+					"target": "batches"
 				}
 			],
 			"targets": {
@@ -132,6 +140,11 @@
 					"viewName": "StockList",
 					"viewLevel": 2,
 					"viewId": "stockList"
+				},
+				"batches": {
+					"viewName": "BatchList",
+					"viewLevel": 2,
+					"viewId": "batchList"
 				}
 			}
 		}

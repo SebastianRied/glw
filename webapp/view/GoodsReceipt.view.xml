@@ -97,7 +97,6 @@
                         </DatePicker>
 
                         <Label text="Menge"/>
-
                         <Input textAlign="End"
                                value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">
                             <layoutData>
@@ -108,7 +107,6 @@
                               class="sapUiTinyMarginBegin"/>
 
                         <Label text="Alkoholgehalt"/>
-
                         <Input
                                textAlign="End"
                                value="{path: '/candidate/vol/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">

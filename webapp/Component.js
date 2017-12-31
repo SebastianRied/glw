@@ -8,14 +8,13 @@ sap.ui.define([
 			metadata: {
 				manifest: "json"
 			},
-			_allowedTypes: ["container", "schnaps", "productCategory", "validValues", "storageBin", "stock"],
+			_allowedTypes: ["container", "batch", "productCategory", "validValues", "storageBin", "stock"],
 
 			init: function () {
 				// call the init function of the parent
 				UIComponent.prototype.init.apply(this, arguments);
 				this._initModelPromises();
 				this.models.validValues.loaded.then(this._checkAndInstallValidValues.bind(this));
-
 				this.models.stock.model.attachRequestCompleted(this._stockChangedHandler.bind(this));
 
 				this.getRouter().initialize();
@@ -185,7 +184,7 @@ sap.ui.define([
 					var aStock = oModel.getObject("/rows");
 					var oAggregatedStock = {};
 					var iTotal = 0;
-					
+
 					var aProductCategories = this.getModel("productCategories").getObject("/rows");
 					var aContainer = this.getModel("container").getObject("/rows");
 					var oYears = {};
@@ -240,7 +239,11 @@ sap.ui.define([
 
 						// create valid values
 						oModel.loadData("./model/validValues.json", "", false);
-						that.putDocument("validValues", "validValues", oModel.getObject("/"));
+						var fnPutValidValues = function () {
+							oModel.detachRequestCompleted(fnPutValidValues);
+							that.putDocument("validValues", "validValues", oModel.getObject("/"));
+						};
+						oModel.attachRequestCompleted(fnPutValidValues);
 
 						// create views
 						var oDBViewModel = new sap.ui.model.json.JSONModel();
