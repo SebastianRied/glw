@@ -73,28 +73,24 @@
                             </layoutData>
                         </ComboBox>
 
-                        <Label text="Produkt"/>
+                        <Label text="Charge"/>
                         <Select
-                                items="{path: 'productCategories>/rows', filters: {path: 'value/productGroup', operator: 'StartsWith', value1: 'FERT'}}"
+                                items="{path: 'batches>/list', sorter: [{path: 'batchDate'}, {path: 'productCategoryName'}]}"
+                                showSecondaryValues="true"
                                 selectedKey="{/candidate/productCategory/value}"
                                 forceSelection="false"
                                 valueState="{/candidate/productCategory/valueState}"
                                 valueStateText="{/candidate/productCategory/valueStateText}">
                             <items>
-                                <core:Item text="{productCategories>value/name}" key="{productCategories>value/_id}"/>
+                                <core:ListItem
+                                        text="{batches>productCategoryName} ({path: 'batches>batchDate', type:'sap.ui.model.type.Date', formatOptions: {pattern: 'yyyy'}})"
+                                        additionalText="{path: 'batches>batchDate', type:'sap.ui.model.type.Date'}" key="{batches>value/_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </Select>
 
-                        <Label text="Charge"/>
-                        <DatePicker value="{path: '/candidate/batch/value', type: 'sap.ui.model.type.Date'}" valueState="{/candidate/batch/valueState}"
-                                    valueStateText="{/candidate/batch/valueStateText}">
-                            <layoutData>
-                                <l:GridData span="XL6 L6 M6 S12"/>
-                            </layoutData>
-                        </DatePicker>
 
                         <Label text="Menge"/>
                         <Input textAlign="End"
@@ -106,15 +102,25 @@
                         <Text text="{parts: ['/candidate/productCategory/value', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
                               class="sapUiTinyMarginBegin"/>
 
-                        <Label text="Alkoholgehalt"/>
-                        <Input
-                               textAlign="End"
-                               value="{path: '/candidate/vol/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">
+
+
+
+                        <Label text="Chargendatum"/>
+                        <Text text="{path: '/candidate/batch/value', type: 'sap.ui.model.type.Date'}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
-                        </Input>
-                        <Text text="%" />
+                        </Text>
+
+                        <Label text="Alkoholgehalt"/>
+                        <ObjectNumber
+                                textAlign="End"
+                                number="{path: '/candidate/vol/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
+                                numberUnit="%">
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </ObjectNumber>
 
 
                         <Label text=""/>
@@ -151,16 +157,18 @@
                                         title="{parts: ['productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
                                         text="{batch}">
                                     <attributes>
-                                        <ObjectAttribute title="Behälter" text="{parts: ['container', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container})"/>
+                                        <ObjectAttribute title="Behälter"
+                                                         text="{parts: ['container', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container})"/>
                                         <ObjectAttribute title="Lagerplatz" text="{storageBin}"/>
-                                        <ObjectAttribute title="Charge" text="{path: 'batch', type: 'sap.ui.model.type.Date'}"/>
+                                        <ObjectAttribute title="Charge"
+                                                         text="{path: 'batch', type: 'sap.ui.model.type.Date'}"/>
                                         <ObjectAttribute title="Alkoholgehalt" text="{vol}"/>
                                     </attributes>
                                 </ObjectListItem>
                             </List>
                         </content>
                         <layoutData>
-                            <FlexItemData growFactor="1" baseSize="0%" shrinkFactor="1" />
+                            <FlexItemData growFactor="1" baseSize="0%" shrinkFactor="1"/>
                         </layoutData>
                     </ScrollContainer>
                 </VBox>

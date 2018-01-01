@@ -1,19 +1,20 @@
 <mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core"
+          xmlns:u="sap.ui.unified"
           controllerName="glw.controller.BatchList"
           displayBlock="true">
     <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
           class="sapUiResponsiveContentPadding">
         <Table
                 id="batchTable"
-				noDataText="Keine Charge vorhanden"
+                noDataText="Keine Charge vorhanden"
                 mode="Delete"
                 delete=".onDeleteBatchPress"
-                items="{path: 'batches>/rows', sorter: {path: 'value/id'}}">
+                items="{path: 'batches>/list', sorter: {path: 'value/id'}}">
             <headerToolbar>
                 <Toolbar>
                     <Title text="Chargen ({batches>/total_rows})" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
-					<SearchField liveChange=".onSearchBatch" search=".onSearchBatch"/>
+                    <SearchField liveChange=".onSearchBatch" search=".onSearchBatch"/>
                     <Button icon="sap-icon://add" press=".onOpenAddBatchDialogPress"/>
                 </Toolbar>
             </headerToolbar>
@@ -27,13 +28,53 @@
                         demandPopin="true">
                     <Text text="Chargendatum"/>
                 </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        hAlign="Right">
+                    <Text text="Menge"/>
+                </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        hAlign="Right">
+                    <Text text="Alkoholgehalt"/>
+                </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        hAlign="Right">
+                    <Text text="Brennerlohn"/>
+                </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        hAlign="Right">
+                    <Text text="Steuer"/>
+                </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true"
+                        hAlign="Right">
+                    <Text text="Summe"/>
+                </Column>
 
             </columns>
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{parts: ['batches>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"/>
-                        <Text text="{path: 'batches>value/batchDate'}"/>
+                        <Text text="{parts: ['batches>productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"/>
+                        <Text text="{path: 'batches>batchDate', type:'sap.ui.model.type.Date'}"/>
+                        <ObjectNumber
+                                number="{path: 'batches>quantity', type:'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                numberUnit="{parts: ['batches>productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"/>
+                        <ObjectNumber
+                                number="{path: 'batches>vol', type:'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                numberUnit="%"/>
+                        <u:Currency value="{path: 'batches>distillerFee', type:'sap.ui.model.type.Float'}"
+                                    currency="EUR"/>
+                        <u:Currency value="{path: 'batches>taxes', type:'sap.ui.model.type.Float'}" currency="EUR"/>
+                        <u:Currency value="{path: 'batches>totalFee', type:'sap.ui.model.type.Float'}" currency="EUR"/>
                     </cells>
                 </ColumnListItem>
 

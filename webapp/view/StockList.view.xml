@@ -99,6 +99,18 @@
                                         </FacetFilterList>
 
                                         <FacetFilterList
+                                                title="Behälter"
+                                                key="container"
+                                                mode="MultiSelect"
+                                                items="{path:'container>/rows', templateShareable: 'false'}">
+                                            <items>
+                                                <FacetFilterItem
+                                                        text="{parts: ['container>value/barCode', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container>value/barCode})"
+                                                        key="{container>value/barCode}"/>
+                                            </items>
+                                        </FacetFilterList>
+
+                                        <FacetFilterList
                                                 title="Lagerplatz"
                                                 key="storageBin"
                                                 mode="MultiSelect"
@@ -110,17 +122,6 @@
                                             </items>
                                         </FacetFilterList>
 
-                                        <FacetFilterList
-                                                title="Behälter"
-                                                key="container"
-                                                mode="MultiSelect"
-                                                items="{path:'container>/rows', templateShareable: 'false'}">
-                                            <items>
-                                                <FacetFilterItem
-                                                        text="{parts: ['container>value/barCode', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container>value/barCode})"
-                                                        key="{container>value/barCode}"/>
-                                            </items>
-                                        </FacetFilterList>
                                     </lists>
                                 </FacetFilter>
                             </OverflowToolbar>

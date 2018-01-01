@@ -66,40 +66,41 @@ sap.ui.define([
 				oDialog = sap.ui.xmlfragment(oView.getId(), "glw.view.BatchAddDialog", this);
 				oView.addDependent(oDialog);
 				var oModel = new JSONModel();
-				oModel.setData({
-					productCategory: {
-						value: "",
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					batchDate: {
-						value: new Date(),
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					quantity: {
-						value: null,
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					vol: {
-						value: null,
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					distillerFee: {
-						value: null,
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					taxes: {
-						value: null,
-						valueState: ValueState.None,
-						valueStateText: ""
-					}
-				});
 				oDialog.setModel(oModel);
 			}
+			oModel.setData({
+				productCategory: {
+					value: "",
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				batchDate: {
+					value: new Date(),
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				quantity: {
+					value: null,
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				vol: {
+					value: null,
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				distillerFee: {
+					value: null,
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				taxes: {
+					value: null,
+					valueState: ValueState.None,
+					valueStateText: ""
+				}
+			});
+
 			oDialog.open();
 		},
 
@@ -129,8 +130,9 @@ sap.ui.define([
 							width: "30rem",
 							duration: 2000
 						});
-						oModel.setProperty("/storageBinId/value", "");
-						oComponent.reloadModel("storageBins");
+
+						oComponent.reloadModel("batches");
+						oDialog.close();
 					} else {
 						MessageToast.show(oResponse.errorText, {
 							width: "30rem",

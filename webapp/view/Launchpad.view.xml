@@ -76,7 +76,7 @@
                             unit="Stück"
                             footer="">
                         <NumericContent
-                                value="{= ${container>/rows}.length}"
+                                value="{container>/total_rows}"
                                 icon="sap-icon://sap-box"/>
                     </TileContent>
                 </GenericTile>
@@ -91,7 +91,7 @@
                             unit=""
                             footer="">
                         <NumericContent
-                                value="{= ${productCategories>/rows}.length}"
+                                value="{productCategories>/total_rows}"
                                 icon=""/>
                     </TileContent>
                 </GenericTile>
@@ -106,7 +106,7 @@
                             unit=""
                             footer="">
                         <NumericContent
-                                value="{= ${storageBins>/rows}.length}"
+                                value="{storageBins>/total_rows}"
                                 icon="sap-icon://map"/>
                     </TileContent>
                 </GenericTile>
@@ -121,7 +121,7 @@
                             unit=""
                             footer="">
                         <NumericContent
-                                value="{= ${storageBins>/rows}.length}"
+                                value="{batches>/total_rows}"
                                 icon="sap-icon://numbered-text"/>
                     </TileContent>
                 </GenericTile>

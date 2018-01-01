@@ -1,8 +1,9 @@
 sap.ui.define([
 		"sap/ui/core/UIComponent",
 		"sap/ui/core/routing/History",
-		"./model/formatter"],
-	function (UIComponent, History, Formatter) {
+		"./model/formatter",
+		"./model/modelChangeHandler"],
+	function (UIComponent, History, Formatter, ModelChangeHandler) {
 		"use strict";
 		return UIComponent.extend('glw.Component', {
 			metadata: {
@@ -25,6 +26,9 @@ sap.ui.define([
 				var fnGetPromise = function (sModelName) {
 					return new Promise(function (resolve) {
 						that.models[sModelName].model.attachRequestCompleted(function () {
+							if (typeof ModelChangeHandler.prototype[sModelName + "ModelChanged"] === "function") {
+								ModelChangeHandler.prototype[sModelName + "ModelChanged"].call(that, that.models[sModelName].model);
+							}
 							resolve(that.models[sModelName]);
 						});
 					});
