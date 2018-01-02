@@ -1,20 +1,25 @@
-sap.ui.define(["./formatter"], function(Formatter) {
+sap.ui.define(["./formatter"], function (Formatter) {
 	"use strict";
 	var ChangeHandler = function () {
 		// the constructor must not be used. The ChangeHandler is a collection of event handlers called with the component context.
 		throw new Error();
 	};
 
+	function getBatchListItem(oBatchRow, aProductCategories) {
+		var oObject = JSON.parse(JSON.stringify(oBatchRow.value));
+		oObject.batchDate = new Date(oObject.batchDate);
+		oObject.totalFee = oObject.distillerFee + oObject.taxes;
+		oObject.productCategoryName = Formatter.formatProductCategory(oObject.productCategory, aProductCategories);
+		return oObject;
+	}
+
 	ChangeHandler.prototype.batchesModelChanged = function (oModel) {
 		this.models.productCategories.loaded.then(function () {
 			var aBatches = oModel.getObject("/rows");
 			var aList = [];
+			var aProductCategories = this.getModel("productCategories").getObject("/rows");
 			for (var i = 0; i < aBatches.length; i++) {
-				var oObject = JSON.parse(JSON.stringify(aBatches[i].value));
-				oObject.batchDate = new Date(oObject.batchDate);
-				oObject.totalFee = oObject.distillerFee + oObject.taxes;
-				oObject.productCategoryName = Formatter.formatProductCategory(oObject.productCategory, this.getModel("productCategories").getObject("/rows"));
-				aList.push(oObject);
+				aList.push(getBatchListItem.call(this, aBatches[i], aProductCategories));
 			}
 
 			oModel.setProperty("/list", aList);
@@ -36,25 +41,67 @@ sap.ui.define(["./formatter"], function(Formatter) {
 			}
 
 			mModels.storageBins.model.setProperty("/list", aStorageBins);
-			mModels.storageBins.model.refresh(true);
 		});
 	};
-/*
+
 	ChangeHandler.prototype.stockModelChanged = function (oModel) {
-		this.models.productCategories.loaded.then(function () {
-			var aBatches = oModel.getObject("/rows");
-			var aList = [];
+		Promise.all([this.models.productCategories.loaded, this.models.batches.loaded, this.models.container.loaded, this.models.validValues.loaded]).then(function() {
+			var aBatches = this.models.batches.model.getObject("/rows");
+			var mBatches = {};
+			var aProductCategories = this.models.productCategories.model.getObject("/rows");
+			var aContainer = this.getModel("container").getObject("/rows");
 			for (var i = 0; i < aBatches.length; i++) {
-				var oObject = JSON.parse(JSON.stringify(aBatches[i].value));
-				oObject.batchDate = new Date(oObject.batchDate);
-				oObject.totalFee = oObject.distillerFee + oObject.taxes;
-				oObject.productCategoryName = Formatter.formatProductCategory(oObject.productCategory, this.getModel("productCategories").getObject("/rows"));
+				mBatches[aBatches[i].value._id] = getBatchListItem.call(this, aBatches[i], aProductCategories);
+			}
+
+			var aStock = oModel.getObject("/rows");
+			var aList = [];
+			var oAggregatedStock = {};
+			var oYears = {};
+			var iTotal = 0;
+			var oValidValues = this.models.validValues.model.getObject("/");
+			for (var j = 0; j < aStock.length; j++) {
+				var oStock = aStock[j].value;
+				var oObject = JSON.parse(JSON.stringify(oStock));
+				oObject.batch = mBatches[oStock.batch];
+				if (!oObject.batch) {
+					continue;
+				}
+				oObject.productCategoryName = Formatter.formatProductCategory(oObject.batch.productCategory, aProductCategories);
+				oObject.containerName = Formatter.formatProductCategoryByContainerBarCode(oStock.container, aContainer, aProductCategories);
+				oObject.year = oObject.batch.batchDate.getFullYear();
+
+				// aggregted stock calculation
+				var sKey = oObject.batch.productCategory + "_" + new Date(oStock.batch).getFullYear() + "_" + oStock.numberUnit;
+				if (!oAggregatedStock[sKey]) {
+					oAggregatedStock[sKey] = {
+						productCategory: oStock.productCategory,
+						productCategoryName: oObject.productCategoryName,
+						batch: oObject.batch.batchDate,
+						year: oObject.year,
+						quantity: 0,
+						numberUnit: Formatter.formatNumberUnitByProductCategoryId(oObject.productCategory, aProductCategories, oValidValues)
+					};
+				}
+
+				if (!oYears[oAggregatedStock[sKey].year]) {
+					oYears[oAggregatedStock[sKey].year] = {year: oAggregatedStock[sKey].year};
+				}
+
+				oAggregatedStock[sKey].quantity += oStock.quantity;
+				iTotal += oStock.quantity;
+				oModel.setProperty("/aggregatedStock", oAggregatedStock);
+				oModel.setProperty("/totalLiters", iTotal);
+				oModel.setProperty("/years", oYears);
+				oModel.setProperty("/totalCount", Object.getOwnPropertyNames(oAggregatedStock).length);
+
+
 				aList.push(oObject);
 			}
 
 			oModel.setProperty("/list", aList);
 		}.bind(this));
-	};*/
+	};
 
 	return ChangeHandler;
 });

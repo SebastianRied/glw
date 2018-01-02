@@ -158,7 +158,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 			for (var i = 0; i < aProductCategories.length; i++) {
 				if (aProductCategories[i].id === sProductCategoryId) {
 					var sProductGroup = aProductCategories[i].value.productGroup;
-					return this.formatter.formatFinishingByProductGroupId(sProductGroup, oValidValues);
+					return Formatter.formatFinishingByProductGroupId(sProductGroup, oValidValues);
 				}
 			}
 		}
@@ -184,7 +184,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 			for (var i = 0; i < aProductCategories.length; i++) {
 				if (aProductCategories[i].id === sProductCategoryId) {
 					var sProductGroup = aProductCategories[i].value.productGroup;
-					return this.formatter.formatNumberUnitByProductGroupId(oValidValues.productGroups[sProductGroup].id, oValidValues);
+					return Formatter.formatNumberUnitByProductGroupId(oValidValues.productGroups[sProductGroup].id, oValidValues);
 				}
 			}
 		}

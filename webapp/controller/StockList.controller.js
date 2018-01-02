@@ -170,7 +170,7 @@ sap.ui.define([
 						}
 					}
 					if (aFilters.length > 0) {
-						oFilter = new Filter(aFilters, true);					
+						oFilter = new Filter(aFilters, true);
 					}
 				} else {
 					oFilter = fnGetFilter(sValue);
@@ -204,7 +204,7 @@ sap.ui.define([
 				// ANDs between each group
 				var oFilter = new Filter(mFacetFilterLists.map(function (oList) {
 					return new Filter(oList.getSelectedItems().map(function (oItem) {
-						return new Filter("value/" + oList.getKey(), "EQ", oItem.getKey());
+						return new Filter(oList.getKey(), "EQ", oItem.getKey());
 					}), false);
 				}), true);
 				this._applyFilter(oFilter);
@@ -259,7 +259,7 @@ sap.ui.define([
 			this._updateFilteredQuantity(this._getTable(), "quantity");
 		},
 		onStockListDetailsBindingChange: function () {
-			this._updateFilteredQuantity(this._getDetailsTable(), "value/quantity");
+			this._updateFilteredQuantity(this._getDetailsTable(), "quantity");
 		},
 
 		_updateFilteredQuantity: function (oTable, sQuantityPath) {

@@ -48,7 +48,7 @@
                                     <Text text="{path: 'stock>batch', type: 'sap.ui.model.type.Date'}"/>
                                     <ObjectNumber
                                             number="{path: 'stock>quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                            unit="{parts: ['stock>numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"/>
+                                            unit="{stock>numberUnit}"/>
                                 </cells>
                             </ColumnListItem>
 
@@ -130,7 +130,7 @@
                             <Table
                                     id="stockListDetailsTable"
                                     noDataText="Kein Bestand"
-                                    items="{path: 'stock>/rows', sorter: {path: 'value/quantity'}, events:{change:'.onStockListDetailsBindingChange'}}">
+                                    items="{path: 'stock>/list', sorter: {path: 'quantity'}, events:{change:'.onStockListDetailsBindingChange'}}">
                                 <headerToolbar>
                                     <Toolbar>
                                         <Title text="Bestand" level="H2" width="15rem"/>
@@ -165,19 +165,18 @@
                                     <ColumnListItem>
                                         <cells>
                                             <ObjectIdentifier
-                                                    title="{parts: ['stock>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
-                                                    text="{stock>value/year}"/>
-                                            <Text text="{path: 'stock>value/batch', type: 'sap.ui.model.type.Date'}"/>
+                                                    title="{stock>productCategoryName}"
+                                                    text="{stock>year}"/>
+                                            <Text text="{path: 'stock>batch/batchDate', type: 'sap.ui.model.type.Date'}"/>
                                             <ObjectIdentifier
-                                                    title="{stock>value/containerName}"
-                                                    text="{stock>value/container}"/>
-                                            <Text text="{parts: ['stock>value/container', 'container>/rows'], formatter: '.formatter.formatStorageBinByContainerBarCode'}"/>
+                                                    title="{stock>containerName}"
+                                                    text="{stock>container}"/>
+                                            <Text text="{parts: ['stock>container', 'container>/rows'], formatter: '.formatter.formatStorageBinByContainerBarCode'}"/>
                                             <ObjectNumber
-                                                    number="{path: 'stock>value/quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                                    unit="{parts: ['stock>value/numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"/>
+                                                    number="{path: 'stock>quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                                    unit="{stock>numberUnit}"/>
                                         </cells>
                                     </ColumnListItem>
-
                                 </items>
                             </Table>
                         </content>

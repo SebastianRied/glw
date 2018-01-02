@@ -183,6 +183,7 @@ sap.ui.define([
 			,
 
 			_stockChangedHandler: function () {
+				return;
 				Promise.all([this.models.productCategories.loaded, this.models.container.loaded, this.models.stock.loaded]).then(function () {
 					var oModel = this.getModel("stock");
 					var aStock = oModel.getObject("/rows");
