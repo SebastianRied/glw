@@ -20,16 +20,16 @@ sap.ui.define([
 			this.getOwnerComponent().onNavBack();
 		},
 
-		onDeleteStorageBinPress: function (oEvent) {
+		onDeleteBatchPress: function (oEvent) {
 			var oComponent = this.getOwnerComponent();
-			var oContext = oEvent.getParameter("listItem").getBindingContext("storageBins");
+			var oContext = oEvent.getParameter("listItem").getBindingContext("batches");
 			var fnHandler = function (oResponse) {
 				if (oResponse.response.ok) {
-					MessageToast.show("Der Lagerplatz '" + oContext.getProperty("value/id") + "' wurde gelöscht", {
+					MessageToast.show("Die Charge '" + oContext.getProperty("productCategoryName") + " " + oContext.getProperty("batchDate").getFullYear() + "' wurde gelöscht", {
 						width: "30rem",
 						duration: 2000
 					});
-					oComponent.reloadModel("storageBins");
+					oComponent.reloadModel("batches");
 				} else {
 					MessageToast.show(oResponse.errorText, {
 						width: "30rem",
@@ -39,11 +39,11 @@ sap.ui.define([
 			};
 
 			if (this._checkDeleteConditions(oContext.getProperty())) {
-				oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+				oComponent.deleteDocument(oContext.getProperty()).then(fnHandler, fnHandler);
 			} else {
 				var bCompact = !!this.getView().$().closest(".sapUiSizeCompact").length;
 				MessageBox.error(
-					"Der Lagerplatz wird noch von mindestens einem Behälter belegt",
+					"Die Charge ist noch im Bestand und kann nicht gelöscht werden.",
 					{
 						styleClass: bCompact ? "sapUiSizeCompact" : ""
 					}
@@ -52,22 +52,24 @@ sap.ui.define([
 		},
 
 		_checkDeleteConditions: function (oObject) {
-			return !this.getOwnerComponent().findEntity("container", "/rows", function (oContainer) {
-				return oObject.value.id === oContainer.value.storageBin;
+			return !this.getOwnerComponent().findEntity("stock", "/rows", function (oStock) {
+				return oStock.value.batch === oObject._id;
 			});
 		},
 
 		onOpenAddBatchDialogPress: function () {
 			var oView = this.getView();
 			var oDialog = this._getAddDialog();
+			var oModel;
 			// create dialog lazily
 			if (!oDialog) {
 				// create dialog via fragment factory
 				oDialog = sap.ui.xmlfragment(oView.getId(), "glw.view.BatchAddDialog", this);
 				oView.addDependent(oDialog);
-				var oModel = new JSONModel();
+				oModel = new JSONModel();
 				oDialog.setModel(oModel);
 			}
+			oModel = oDialog.getModel();
 			oModel.setData({
 				productCategory: {
 					value: "",
@@ -205,7 +207,7 @@ sap.ui.define([
 			}
 			var oFilter;
 			if (sValue) {
-				oFilter = new Filter({path: "value/id", operator: FilterOperator.Contains, value1: sValue});
+				oFilter = new Filter({path: "productCategoryName", operator: FilterOperator.Contains, value1: sValue});
 			}
 
 			oBinding.filter(oFilter);
