@@ -77,14 +77,15 @@
                         <Select
                                 items="{path: 'batches>/list', sorter: [{path: 'batchDate'}, {path: 'productCategoryName'}]}"
                                 showSecondaryValues="true"
-                                selectedKey="{/candidate/productCategory/value}"
+                                selectedKey="{/candidate/batch/value}"
                                 forceSelection="false"
-                                valueState="{/candidate/productCategory/valueState}"
-                                valueStateText="{/candidate/productCategory/valueStateText}">
+                                change=".onBatchSelectionChange"
+                                valueState="{/candidate/batch/valueState}"
+                                valueStateText="{/candidate/batch/valueStateText}">
                             <items>
                                 <core:ListItem
                                         text="{batches>productCategoryName} ({path: 'batches>batchDate', type:'sap.ui.model.type.Date', formatOptions: {pattern: 'yyyy'}})"
-                                        additionalText="{path: 'batches>batchDate', type:'sap.ui.model.type.Date'}" key="{batches>value/_id}"/>
+                                        additionalText="{path: 'batches>batchDate', type:'sap.ui.model.type.Date'}" key="{batches>_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
@@ -106,7 +107,7 @@
 
 
                         <Label text="Chargendatum"/>
-                        <Text text="{path: '/candidate/batch/value', type: 'sap.ui.model.type.Date'}">
+                        <Text textAlign="Right" text="{path: '/candidate/batchObject/batchDate', type: 'sap.ui.model.type.Date'}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
@@ -114,8 +115,8 @@
 
                         <Label text="Alkoholgehalt"/>
                         <ObjectNumber
-                                textAlign="End"
-                                number="{path: '/candidate/vol/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
+                                textAlign="Right"
+                                number="{path: '/candidate/batchObject/vol', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
                                 numberUnit="%">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
@@ -153,16 +154,16 @@
                                     items="{/journal}">
                                 <ObjectListItem
                                         number="{path: 'quantity', type: 'sap.ui.model.type.Float', formatOptions: {precision: 2}}"
-                                        numberUnit="{parts: ['numberUnit', 'validValues>/numberUnits'], formatter: '.formatter.formatValidValue'}"
-                                        title="{parts: ['productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
+                                        numberUnit="{parts: ['batch/productCategoryId', 'productCategories>/rows', 'validValues>/numberUnits'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                                        title="{parts: ['batch/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
                                         text="{batch}">
                                     <attributes>
                                         <ObjectAttribute title="Behälter"
                                                          text="{parts: ['container', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container})"/>
                                         <ObjectAttribute title="Lagerplatz" text="{storageBin}"/>
                                         <ObjectAttribute title="Charge"
-                                                         text="{path: 'batch', type: 'sap.ui.model.type.Date'}"/>
-                                        <ObjectAttribute title="Alkoholgehalt" text="{vol}"/>
+                                                         text="{path: 'batch/batchDate', type: 'sap.ui.model.type.Date'}"/>
+                                        <ObjectAttribute title="Alkoholgehalt" text="{batch/vol}"/>
                                     </attributes>
                                 </ObjectListItem>
                             </List>

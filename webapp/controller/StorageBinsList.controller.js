@@ -13,30 +13,11 @@ sap.ui.define([
 	return Controller.extend('glw.controller.StorageBinsList', {
 		formatter: Formatter,
 		onInit: function () {
-			this.getOwnerComponent().getRouter().getRoute("storageBinsList").attachPatternMatched(this._updateStorageBinUsage.bind(this));
+
 		},
 
 		onNavBack: function () {
 			this.getOwnerComponent().onNavBack();
-		},
-
-		_updateStorageBinUsage: function () {
-			var mModels = this.getOwnerComponent().models;
-			Promise.all([mModels.container.loaded, mModels.storageBins.loaded]).then(function () {
-				var mStorageBins = {};
-				var aContainer = mModels.container.model.getObject("/rows");
-				for (var i = 0; i < aContainer.length; i++) {
-					mStorageBins[aContainer[i].value.storageBin] = true;
-				}
-
-				var aStorageBins = JSON.parse(JSON.stringify(mModels.storageBins.model.getObject("/rows")));
-				for (var j = 0; j < aStorageBins.length; j++) {
-					aStorageBins[j].value.used = mStorageBins[aStorageBins[j].value.id] || false;
-				}
-
-				mModels.storageBins.model.setProperty("/list", aStorageBins);
-				mModels.storageBins.model.refresh(true);
-			});
 		},
 
 		onDeleteStorageBinPress: function (oEvent) {
@@ -174,7 +155,7 @@ sap.ui.define([
 
 		_getTable: function () {
 			return this.byId("storageBinTable");
-		},
+		}
 	});
 
 });

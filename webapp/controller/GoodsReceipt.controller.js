@@ -35,11 +35,6 @@ sap.ui.define([
 					valueState: ValueState.None,
 					valueStateText: ""
 				},
-				productCategory: {
-					value: "",
-					valueState: ValueState.None,
-					valueStateText: ""
-				},
 				batch: {
 					value: oBatch,
 					valueState: ValueState.None,
@@ -47,11 +42,6 @@ sap.ui.define([
 				},
 				quantity: {
 					value: 0.0,
-					valueState: ValueState.None,
-					valueStateText: ""
-				},
-				vol: {
-					value: 0,
 					valueState: ValueState.None,
 					valueStateText: ""
 				}
@@ -77,7 +67,7 @@ sap.ui.define([
 			var aJournal = oModel.getProperty("/journal");
 			var oCandidate = oModel.getProperty("/candidate");
 			var oJournalEntry = this._createJournalEntry(oCandidate);
-			this._addStock(oJournalEntry);
+			this._addStock(JSON.parse(JSON.stringify(oJournalEntry)));
 			aJournal.push(oJournalEntry);
 			oModel.setProperty("/journal", aJournal);
 			oModel.setProperty("/candidate", this._createCandidateObject(oCandidate.batch.value));
@@ -94,25 +84,26 @@ sap.ui.define([
 		},
 
 		_createJournalEntry: function (oCandidate) {
-			var oProductCategoryModel = this.getView().getModel("productCategories");
-			var aProductCategories = oProductCategoryModel.getProperty("/rows");
-			var sNumberUnit;
-			for (var i = 0; i < aProductCategories.length; i++) {
-				if (aProductCategories[i].id === oCandidate.productCategory.value) {
-					sNumberUnit = this._getNumberUnit(aProductCategories[i].value.productGroup);
-					sNumberUnit = sNumberUnit && sNumberUnit.id;
-					break;
-				}
-			}
+			var oBatch = this._getBatch(oCandidate.batch.value);
+
 			return {
 				container: oCandidate.container.value,
 				storageBin: oCandidate.storageBin.value,
-				productCategory: oCandidate.productCategory.value,
-				batch: oCandidate.batch.value,
-				quantity: oCandidate.quantity.value,
-				vol: oCandidate.vol.value,
-				numberUnit: sNumberUnit
+				batch: oBatch,
+				quantity: oCandidate.quantity.value
 			};
+		},
+
+		_getBatch: function (sId) {
+			var oComponent = this.getOwnerComponent();
+			return oComponent.findEntity("batches", "/list", function(oObject) {
+				return oObject._id === sId;
+			});
+		},
+
+		onBatchSelectionChange: function (oEvent) {
+			var oModel = this.getView().getModel();
+			oModel.setProperty("/candidate/batchObject", this._getBatch(oEvent.getParameter("selectedItem").getKey()));
 		},
 
 		onContainerSelect: function (oEvent) {
@@ -122,6 +113,7 @@ sap.ui.define([
 
 		_addStock: function (oObject) {
 			if (oObject) {
+				oObject.batch = oObject.batch._id;
 				var oComponent = this.getOwnerComponent();
 				oComponent.postDocument("stock", oObject).then(function (oResponse) {
 					if (oResponse.response.ok) {
