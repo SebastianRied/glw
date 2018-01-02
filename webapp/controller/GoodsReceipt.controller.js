@@ -36,7 +36,7 @@ sap.ui.define([
 					valueStateText: ""
 				},
 				batch: {
-					value: oBatch,
+					value: oBatch && oBatch._id,
 					valueState: ValueState.None,
 					valueStateText: ""
 				},
@@ -44,7 +44,8 @@ sap.ui.define([
 					value: 0.0,
 					valueState: ValueState.None,
 					valueStateText: ""
-				}
+				},
+				batchObject: oBatch
 			};
 		},
 
@@ -70,7 +71,7 @@ sap.ui.define([
 			this._addStock(JSON.parse(JSON.stringify(oJournalEntry)));
 			aJournal.push(oJournalEntry);
 			oModel.setProperty("/journal", aJournal);
-			oModel.setProperty("/candidate", this._createCandidateObject(oCandidate.batch.value));
+			oModel.setProperty("/candidate", this._createCandidateObject(oCandidate.batchObject));
 			oModel.refresh(true);
 		},
 
