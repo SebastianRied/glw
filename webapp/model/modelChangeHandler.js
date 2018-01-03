@@ -46,6 +46,7 @@ sap.ui.define(["./formatter"], function (Formatter) {
 
 	ChangeHandler.prototype.containerModelChanged = function () {
 		ChangeHandler.prototype.stockModelChanged.call(this, this.getModel("stock"));
+		ChangeHandler.prototype.storageBinsModelChanged.call(this, this.getModel("storageBins"));
 	};
 
 	ChangeHandler.prototype.stockModelChanged = function (oModel) {

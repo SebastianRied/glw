@@ -202,6 +202,7 @@ sap.ui.define([
 							width: "30rem",
 							duration: 2000
 						});
+						oComponent.reloadModel("container");
 					});
 				}
 
