@@ -44,8 +44,12 @@ sap.ui.define(["./formatter"], function (Formatter) {
 		});
 	};
 
+	ChangeHandler.prototype.containerModelChanged = function () {
+		ChangeHandler.prototype.stockModelChanged.call(this, this.getModel("stock"));
+	};
+
 	ChangeHandler.prototype.stockModelChanged = function (oModel) {
-		Promise.all([this.models.productCategories.loaded, this.models.batches.loaded, this.models.container.loaded, this.models.validValues.loaded]).then(function() {
+		Promise.all([this.models.stock.loaded, this.models.productCategories.loaded, this.models.batches.loaded, this.models.container.loaded, this.models.validValues.loaded]).then(function() {
 			var aBatches = this.models.batches.model.getObject("/rows");
 			var mBatches = {};
 			var aProductCategories = this.models.productCategories.model.getObject("/rows");
@@ -69,6 +73,7 @@ sap.ui.define(["./formatter"], function (Formatter) {
 				}
 				oObject.productCategoryName = Formatter.formatProductCategory(oObject.batch.productCategory, aProductCategories);
 				oObject.containerName = Formatter.formatProductCategoryByContainerBarCode(oStock.container, aContainer, aProductCategories);
+				oObject.storageBin = Formatter.formatStorageBinByContainerBarCode(oStock.container, aContainer);
 				oObject.year = oObject.batch.batchDate.getFullYear();
 
 				// aggregted stock calculation

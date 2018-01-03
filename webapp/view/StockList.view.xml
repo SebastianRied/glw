@@ -171,7 +171,7 @@
                                             <ObjectIdentifier
                                                     title="{stock>containerName}"
                                                     text="{stock>container}"/>
-                                            <Text text="{parts: ['stock>container', 'container>/rows'], formatter: '.formatter.formatStorageBinByContainerBarCode'}"/>
+                                            <Text text="{stock>storageBin}"/>
                                             <ObjectNumber
                                                     number="{path: 'stock>quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                                     unit="{stock>numberUnit}"/>

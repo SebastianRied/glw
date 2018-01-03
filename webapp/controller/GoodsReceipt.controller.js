@@ -170,6 +170,7 @@ sap.ui.define([
 					});
 				} else {
 					// new stock
+					delete oObject.storageBin;
 					oComponent.postDocument("stock", oObject).then(function (oResponse) {
 						if (oResponse.response.ok) {
 							MessageToast.show("Schnaps wurde eingelagert.", {

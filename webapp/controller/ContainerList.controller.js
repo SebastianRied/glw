@@ -58,32 +58,35 @@ sap.ui.define([
 
 		onOpenAddContainerDialogPress: function () {
 			var oView = this.getView();
+			var oModel;
 			var oDialog = this._getAddDialog();
 			// create dialog lazily
 			if (!oDialog) {
 				// create dialog via fragment factory
 				oDialog = sap.ui.xmlfragment(oView.getId(), "glw.view.ContainerAddDialog", this);
 				oView.addDependent(oDialog);
-				var oModel = new JSONModel();
-				oModel.setData({
-					containerBarCode: {
-						value: null,
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					productCategory: {
-						value: null,
-						valueState: ValueState.None,
-						valueStateText: ""
-					},
-					storageBin: {
-						value: "",
-						valueState: ValueState.None,
-						valueStateText: ""
-					}
-				});
+				oModel = new JSONModel();
 				oDialog.setModel(oModel);
 			}
+			oModel = oDialog.getModel();
+			oModel.setData({
+				containerBarCode: {
+					value: null,
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				productCategory: {
+					value: null,
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				storageBin: {
+					value: "",
+					valueState: ValueState.None,
+					valueStateText: ""
+				}
+			});
+
 			oDialog.open();
 		},
 
@@ -156,12 +159,13 @@ sap.ui.define([
 		onAssignStorageBinPress: function (oEvent) {
 			var oView = this.getView();
 			var oDialog = this._getStorageBinAssignmentDialog();
+			var oModel;
 			// create dialog lazily
 			if (!oDialog) {
 				// create dialog via fragment factory
 				oDialog = sap.ui.xmlfragment(oView.getId(), "glw.view.ContainerAssignStorageBinDialog", this);
 				oView.addDependent(oDialog);
-				var oModel = new JSONModel();
+				oModel = new JSONModel();
 				oModel.setData({
 					storageBin: {
 						value: "",
@@ -172,6 +176,8 @@ sap.ui.define([
 				oDialog.setModel(oModel);
 			}
 
+			oModel = oDialog.getModel();
+			oModel.setProperty("/storageBin/value", oEvent.getSource().getBindingContext("container").getProperty("value/storageBin"));
 			oDialog.setBindingContext(oEvent.getSource().getBindingContext("container"), "container");
 			oDialog.open();
 		},
