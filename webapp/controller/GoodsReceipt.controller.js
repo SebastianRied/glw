@@ -97,7 +97,7 @@ sap.ui.define([
 
 		_getBatch: function (sId) {
 			var oComponent = this.getOwnerComponent();
-			return oComponent.findEntity("batches", "/list", function(oObject) {
+			return oComponent.findEntity("batches", "/list", function (oObject) {
 				return oObject._id === sId;
 			});
 		},
@@ -134,105 +134,6 @@ sap.ui.define([
 			}
 		},
 
-		onCancelAddContainerDialogPress: function () {
-			var oDialog = this._getAddDialog();
-			oDialog.close();
-		}
-		,
-
-		onAssignStorageBinPress: function (oEvent) {
-			var oView = this.getView();
-			var oDialog = this._getStorageBinAssignmentDialog();
-			// create dialog lazily
-			if (!oDialog) {
-				// create dialog via fragment factory
-				oDialog = sap.ui.xmlfragment(oView.getId(), "glw.view.ContainerAssignStorageBinDialog", this);
-				oView.addDependent(oDialog);
-				var oModel = new JSONModel();
-				oModel.setData({
-					storageBin: {
-						value: "",
-						valueState: ValueState.None,
-						valueStateText: ""
-					}
-				});
-				oDialog.setModel(oModel);
-			}
-
-			oDialog.setBindingContext(oEvent.getSource().getBindingContext("container"), "container");
-			oDialog.open();
-		}
-		,
-
-		onSaveContainerStorageBinAssignmentPress: function () {
-			var oDialog = this._getStorageBinAssignmentDialog();
-			var oContainer = oDialog.getBindingContext("container").getProperty("value");
-			oContainer.storageBin = oDialog.getModel().getProperty("/storageBin/value");
-			var oComponent = this.getOwnerComponent();
-			oComponent.putDocument(oContainer).then(function () {
-				oDialog.close();
-				MessageToast.show("Lagerplatz zugeordnet");
-				oComponent.reloadModel("container");
-			});
-		}
-		,
-
-		onSearchContainer: function (oEvent) {
-			var sValue = oEvent.getParameter("newValue") || oEvent.getParameter("query");
-			var oTable = this._getTable();
-			var oBinding = oTable.getBinding("items");
-			if (!oBinding) {
-				return;
-			}
-			var oFilter;
-			if (sValue) {
-				oFilter = new Filter({path: "value/barCode", operator: FilterOperator.Contains, value1: sValue});
-			}
-
-			oBinding.filter(oFilter);
-		}
-		,
-
-		_getTable: function () {
-			return this.byId("containerTable");
-		}
-		,
-
-		onCancelContainerStorageBinAssignmentDialogPress: function () {
-			this._getStorageBinAssignmentDialog().close();
-		}
-		,
-
-		_getStorageBinAssignmentDialog: function () {
-			return this.byId("ContainerAssignStorageBinDialog");
-		}
-		,
-
-		onContainerDeletePress: function (oEvent) {
-			var oComponent = this.getOwnerComponent();
-			var oContext = oEvent.getParameter("listItem").getBindingContext("container");
-			var fnHandler = function (oResponse) {
-				if (oResponse.response.ok) {
-					MessageToast.show("Der Behälter '" + oContext.getProperty("value/barCode") + "' wurde gelöscht", {
-						width: "30rem",
-						duration: 2000
-					});
-					oComponent.reloadModel("container");
-				} else {
-					MessageToast.show(oResponse.errorText, {
-						width: "30rem",
-						duration: 2000
-					});
-				}
-			};
-			oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
-		}
-		,
-
-		_getAddDialog: function () {
-			return this.byId("ContainerAddDialog");
-		}
-		,
 
 		compareStringAsInt: function () {
 			return this.getOwnerComponent().compareStringAsInt.apply(this, arguments);

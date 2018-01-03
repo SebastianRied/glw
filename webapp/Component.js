@@ -2,8 +2,10 @@ sap.ui.define([
 		"sap/ui/core/UIComponent",
 		"sap/ui/core/routing/History",
 		"./model/formatter",
-		"./model/modelChangeHandler"],
-	function (UIComponent, History, Formatter, ModelChangeHandler) {
+		"./model/modelChangeHandler",
+		"sap/ui/model/json/JSONModel",
+		"sap/m/MessageToast"],
+	function (UIComponent, History, Formatter, ModelChangeHandler, JSONModel, MessageToast) {
 		"use strict";
 		return UIComponent.extend('glw.Component', {
 			metadata: {
@@ -16,9 +18,13 @@ sap.ui.define([
 				UIComponent.prototype.init.apply(this, arguments);
 				this._initModelPromises();
 				this.models.validValues.loaded.then(this._checkAndInstallValidValues.bind(this));
-				this.models.stock.model.attachRequestCompleted(this._stockChangedHandler.bind(this));
 
+				this.dbName = "glw";
 				this.getRouter().initialize();
+			},
+
+			_getDBPath: function () {
+				return "/couchDB/" + this.dbName + "/";
 			},
 
 			_initModelPromises: function () {
@@ -59,8 +65,7 @@ sap.ui.define([
 					var oRouter = this.getRouter();
 					oRouter.navTo("launchpad", {}, true);
 				}
-			}
-			,
+			},
 
 			postDocument: function (sType, oDocument) {
 				if (this._allowedTypes.indexOf(sType) < 0) {
@@ -89,17 +94,16 @@ sap.ui.define([
 						throw "Connection to database broken";
 					};
 					var oRequest = new XMLHttpRequest();
-					oRequest.open("POST", "couchDB/glw");
+					oRequest.open("POST", this._getDBPath());
 					oRequest.setRequestHeader("Content-Type", "application/json;charset=utf-8");
 					oRequest.addEventListener("load", fnSuccess);
 					oRequest.addEventListener("error", fnError);
 					oRequest.send(sBody);
-				});
-			}
-			,
+				}.bind(this));
+			},
 
 			putDocument: function (sId, sType, oDocument) {
-				var sRevision;
+				var sRevision = "";
 				if (typeof sId === "object") {
 					oDocument = sId;
 					sId = oDocument._id;
@@ -133,14 +137,13 @@ sap.ui.define([
 						throw "Connection to database broken";
 					};
 					var oRequest = new XMLHttpRequest();
-					oRequest.open("PUT", "couchDB/glw/" + sId + sRevision);
+					oRequest.open("PUT", this._getDBPath() + sId + sRevision);
 					oRequest.setRequestHeader("Content-Type", "application/json;charset=utf-8");
 					oRequest.addEventListener("load", fnSuccess);
 					oRequest.addEventListener("error", fnError);
 					oRequest.send(sBody);
-				});
-			}
-			,
+				}.bind(this));
+			},
 
 			deleteDocument: function (oDocument, sRevision) {
 				var sId;
@@ -167,113 +170,104 @@ sap.ui.define([
 						throw "Connection to database broken";
 					};
 					var oRequest = new XMLHttpRequest();
-					oRequest.open("DELETE", "couchDB/glw/" + sId + "?rev=" + sRevision);
+					oRequest.open("DELETE", this._getDBPath() + sId + "?rev=" + sRevision);
 					oRequest.setRequestHeader("Content-Type", "application/json;charset=utf-8");
 					oRequest.addEventListener("load", fnSuccess);
 					oRequest.addEventListener("error", fnError);
 					oRequest.send();
-				});
-			}
-			,
+				}.bind(this));
+			},
 
 			reloadModel: function (sModelName) {
 				var sProductModelUri = this.getManifestEntry("sap.ui5").models[sModelName].uri;
 				this.getModel(sModelName).loadData(sProductModelUri);
-			}
-			,
-
-			_stockChangedHandler: function () {
-				return;
-				Promise.all([this.models.productCategories.loaded, this.models.container.loaded, this.models.stock.loaded]).then(function () {
-					var oModel = this.getModel("stock");
-					var aStock = oModel.getObject("/rows");
-					var oAggregatedStock = {};
-					var iTotal = 0;
-
-					var aProductCategories = this.getModel("productCategories").getObject("/rows");
-					var aContainer = this.getModel("container").getObject("/rows");
-					var oYears = {};
-					for (var i = 0; i < aStock.length; i++) {
-						var oStock = aStock[i].value;
-						var sKey = oStock.productCategory + "_" + new Date(oStock.batch).getFullYear() + "_" + oStock.numberUnit;
-						if (!oAggregatedStock[sKey]) {
-							oAggregatedStock[sKey] = {
-								productCategory: oStock.productCategory,
-								productCategoryName: Formatter.formatProductCategory(oStock.productCategory, aProductCategories),
-								batch: new Date(oStock.batch),
-								year: new Date(oStock.batch).getFullYear(),
-								quantity: 0,
-								numberUnit: oStock.numberUnit,
-								rows: []
-							};
-						}
-
-						if (!oYears[oAggregatedStock[sKey].year]) {
-							oYears[oAggregatedStock[sKey].year] = {year: oAggregatedStock[sKey].year};
-						}
-						oAggregatedStock[sKey].quantity += oStock.quantity;
-						iTotal += oStock.quantity;
-						aStock[i].value.containerName = Formatter.formatProductCategoryByContainerBarCode(oStock.container, aContainer, aProductCategories);
-						aStock[i].value.productCategoryName = oAggregatedStock[sKey].productCategoryName;
-						aStock[i].value.batch = aStock[i].value.batch && new Date(aStock[i].value.batch);
-						aStock[i].value.year = oAggregatedStock[sKey].year;
-						oAggregatedStock[sKey].rows.push(oStock);
-					}
-
-					oModel.setProperty("/aggregatedStock", oAggregatedStock);
-					oModel.setProperty("/totalLiters", iTotal);
-					oModel.setProperty("/years", oYears);
-					oModel.setProperty("/totalCount", Object.getOwnPropertyNames(oAggregatedStock).length);
-
-					oModel.setProperty("/rows", aStock);
-				}.bind(this));
 			},
 
 			_checkAndInstallValidValues: function () {
-				var oModel = this.getModel("validValues");
-				oModel.detachRequestCompleted(this._validValuesHandler);
 				var that = this;
-				if (jQuery.isEmptyObject(oModel.getObject("/"))) {
-					// create DB
-					var oRequest = new XMLHttpRequest();
-					oRequest.open("PUT", "couchDB/glw/");
-					oRequest.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-					oRequest.addEventListener("load", function () {
-						jQuery.sap.log.warning("DB glw created.");
-						sap.m.MessageToast.show("Datenbank erstellt.");
+				// check DB exists, install if not found
+				var oDBCreated = new Promise(function(resolve) {
+					var oDBModel = new JSONModel(that._getDBPath());
+					oDBModel.attachRequestCompleted(function (oEvent) {
+						if (oEvent.getParameter("success")) {
+							resolve();
+						} else {
+							var oRequest = new XMLHttpRequest();
+							oRequest.open("PUT", that._getDBPath());
+							oRequest.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+							oRequest.addEventListener("load", function () {
+								MessageToast.show("Datenbank wurde erstellt.");
+								resolve();
+							});
+							oRequest.send();
+						}
+					});
+				});
 
-						// create valid values
-						oModel.loadData("./model/validValues.json", "", false);
-						var fnPutValidValues = function () {
-							oModel.detachRequestCompleted(fnPutValidValues);
-							that.putDocument("validValues", "validValues", oModel.getObject("/"));
-						};
-						oModel.attachRequestCompleted(fnPutValidValues);
-
-						// create views
-						var oDBViewModel = new sap.ui.model.json.JSONModel();
-						oDBViewModel.loadData("./model/dbViews.json", "", false);
-						oRequest = new XMLHttpRequest();
-						oRequest.open("PUT", "couchDB/glw/_design/docs");
-						oRequest.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-						oRequest.addEventListener("load", function () {
-							jQuery.sap.log.warning("Views created.");
-							sap.m.MessageToast.show("Views wurden erstellt.");
-
-							var mModels = that.getManifestEntry("sap.ui5").models;
-							var aModelNames = Object.getOwnPropertyNames(mModels);
-							for (var i = 0; i < aModelNames.length; i++) {
-								if (mModels[aModelNames[i]].uri && mModels[aModelNames[i]].uri.indexOf("couchDB") === 0) {
-									that.reloadModel(aModelNames[i]);
-								}
+				// check that the valid values are present, copy them from local json file to DB if required
+				var oValidValuesCreated = new Promise(function (resolve) {
+					oDBCreated.then(function() {
+						var oValidValuesModel = new JSONModel(that._getDBPath() + "validValues");
+						oValidValuesModel.attachRequestCompleted(function (oEvent) {
+							if (oEvent.getParameter("success")) {
+								resolve();
+							} else {
+								var oLocalValidValuesModel = new JSONModel("./model/validValues.json");
+								oLocalValidValuesModel.attachRequestCompleted(function () {
+									that.putDocument("validValues", "validValues", oLocalValidValuesModel.getObject("/")).then(function() {
+										MessageToast.show("Datenbank wurde initialisiert.");
+										resolve();
+									});
+								});
 							}
 						});
-
-						oRequest.send(JSON.stringify(oDBViewModel.getObject("/")));
 					});
+				});
 
-					oRequest.send();
-				}
+				// check that all views are installed
+				Promise.all([oDBCreated, oValidValuesCreated]).then(function () {
+					var oDBViewsModel = new JSONModel(that._getDBPath() + "_design/docs");
+					oDBViewsModel.attachRequestCompleted(function (oEvent) {
+						var bSuccess = oEvent.getParameter("success");
+						var oLocalViewsModel = new JSONModel("./model/dbViews.json");
+						oLocalViewsModel.attachRequestCompleted(function () {
+							// if the views could not be retrieved, an update is required
+							var bUpdateRequired = !bSuccess;
+							var sRevision = "";
+							var oLocalViews = oLocalViewsModel.getObject("/");
+							if (bSuccess) {
+								// if the views were retrieved, check if all views exist
+								var aLocalViewNames = Object.getOwnPropertyNames(oLocalViews);
+								var aDBViewNames = Object.getOwnPropertyNames(oDBViewsModel.getObject("/views"));
+								for (var i = 0; i < aLocalViewNames.length; i++) {
+									var oView = oLocalViews.views[aLocalViewNames[i]];
+									if (oView.forceUpdate || aDBViewNames.indexOf(aLocalViewNames[i]) < 0) {
+										bUpdateRequired = true;
+										sRevision = "?rev=" + oLocalViews._rev;
+									}
+									delete oView.forceUpdate;
+								}
+							}
+
+							if (bUpdateRequired) {
+								var oRequest = new XMLHttpRequest();
+								oRequest.open("PUT", that._getDBPath() + "_design/docs" + sRevision);
+								oRequest.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+								oRequest.addEventListener("load", function () {
+									sap.m.MessageToast.show("Views wurden erstellt.");
+									var mModels = that.getManifestEntry("sap.ui5").models;
+									var aModelNames = Object.getOwnPropertyNames(mModels);
+									for (var i = 0; i < aModelNames.length; i++) {
+										if (mModels[aModelNames[i]].uri && mModels[aModelNames[i]].uri.indexOf("couchDB") === 0) {
+											that.reloadModel(aModelNames[i]);
+										}
+									}
+								});
+								oRequest.send(JSON.stringify(oLocalViews));
+							}
+						});
+					});
+				});
 			},
 
 			compareStringAsInt: function (sValue1, sValue2) {

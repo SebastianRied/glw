@@ -53,8 +53,8 @@ sap.ui.define([
 		_checkDeleteConditions: function (oObject) {
 			return !this.getOwnerComponent().findEntity("container", "/rows", function (oContainer) {
 				return oObject.value._id === oContainer.value.productCategory;
-			}) && !this.getOwnerComponent().findEntity("stock", "/rows", function (oStock) {
-					return oObject.value._id === oStock.value.productCategory;
+			}) && !this.getOwnerComponent().findEntity("stock", "/list", function (oStock) {
+					return oObject.value._id === oStock.batch.productCategory;
 				});
 		},
 

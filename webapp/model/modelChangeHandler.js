@@ -72,12 +72,12 @@ sap.ui.define(["./formatter"], function (Formatter) {
 				oObject.year = oObject.batch.batchDate.getFullYear();
 
 				// aggregted stock calculation
-				var sKey = oObject.batch.productCategory + "_" + new Date(oStock.batch).getFullYear() + "_" + oStock.numberUnit;
+				var sKey = oObject.batch.productCategory + "_" + oObject.year;
 				if (!oAggregatedStock[sKey]) {
 					oAggregatedStock[sKey] = {
-						productCategory: oStock.productCategory,
+						productCategory: oObject.batch.productCategory,
 						productCategoryName: oObject.productCategoryName,
-						batch: oObject.batch.batchDate,
+						batchDate: oObject.batch.batchDate,
 						year: oObject.year,
 						quantity: 0,
 						numberUnit: Formatter.formatNumberUnitByProductCategoryId(oObject.productCategory, aProductCategories, oValidValues)
@@ -100,6 +100,7 @@ sap.ui.define(["./formatter"], function (Formatter) {
 			}
 
 			oModel.setProperty("/list", aList);
+			oModel.refresh(true);
 		}.bind(this));
 	};
 
