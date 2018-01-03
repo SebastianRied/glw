@@ -70,11 +70,17 @@ sap.ui.define([
 			var oCandidate = oModel.getProperty("/candidate");
 			var oJournalEntry = this._createJournalEntry(oCandidate);
 			if (this._addStock(JSON.parse(JSON.stringify(oJournalEntry)))) {
+				this._writeLog(oJournalEntry);
 				aJournal.push(oJournalEntry);
 				oModel.setProperty("/journal", aJournal);
 				oModel.setProperty("/candidate", this._createCandidateObject(oCandidate.batchObject));
 				oModel.refresh(true);
 			}
+		},
+
+		_writeLog: function (oJournalEntry) {
+			var oComponent = this.getOwnerComponent();
+			oComponent.postDocument("log", oJournalEntry);
 		},
 
 		_getNumberUnit: function (sProductGroup) {
@@ -93,7 +99,9 @@ sap.ui.define([
 				container: oCandidate.container.value,
 				storageBin: oCandidate.storageBin.value,
 				batch: oBatch,
-				quantity: oCandidate.quantity.value
+				quantity: oCandidate.quantity.value,
+				actionDate: new Date(),
+				action: "goodsReceipt"
 			};
 		},
 

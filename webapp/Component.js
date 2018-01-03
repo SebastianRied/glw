@@ -11,7 +11,7 @@ sap.ui.define([
 			metadata: {
 				manifest: "json"
 			},
-			_allowedTypes: ["container", "batch", "productCategory", "validValues", "storageBin", "stock"],
+			_allowedTypes: ["container", "batch", "productCategory", "validValues", "storageBin", "stock", "log"],
 
 			init: function () {
 				// call the init function of the parent
@@ -237,13 +237,13 @@ sap.ui.define([
 							var oLocalViews = oLocalViewsModel.getObject("/");
 							if (bSuccess) {
 								// if the views were retrieved, check if all views exist
-								var aLocalViewNames = Object.getOwnPropertyNames(oLocalViews);
+								var aLocalViewNames = Object.getOwnPropertyNames(oLocalViews.views);
 								var aDBViewNames = Object.getOwnPropertyNames(oDBViewsModel.getObject("/views"));
 								for (var i = 0; i < aLocalViewNames.length; i++) {
 									var oView = oLocalViews.views[aLocalViewNames[i]];
 									if (oView.forceUpdate || aDBViewNames.indexOf(aLocalViewNames[i]) < 0) {
 										bUpdateRequired = true;
-										sRevision = "?rev=" + oLocalViews._rev;
+										sRevision = "?rev=" + oDBViewsModel.getObject("/")._rev;
 									}
 									delete oView.forceUpdate;
 								}
