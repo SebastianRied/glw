@@ -15,6 +15,7 @@ sap.ui.define([
 			var oModel = new JSONModel();
 			var oData = {
 				showSideContent: true,
+				containerStockDetails: null,
 				candidate: this._createCandidateObject(),
 				journal: []
 			};
@@ -68,11 +69,12 @@ sap.ui.define([
 			var aJournal = oModel.getProperty("/journal");
 			var oCandidate = oModel.getProperty("/candidate");
 			var oJournalEntry = this._createJournalEntry(oCandidate);
-			this._addStock(JSON.parse(JSON.stringify(oJournalEntry)));
-			aJournal.push(oJournalEntry);
-			oModel.setProperty("/journal", aJournal);
-			oModel.setProperty("/candidate", this._createCandidateObject(oCandidate.batchObject));
-			oModel.refresh(true);
+			if (this._addStock(JSON.parse(JSON.stringify(oJournalEntry)))) {
+				aJournal.push(oJournalEntry);
+				oModel.setProperty("/journal", aJournal);
+				oModel.setProperty("/candidate", this._createCandidateObject(oCandidate.batchObject));
+				oModel.refresh(true);
+			}
 		},
 
 		_getNumberUnit: function (sProductGroup) {
@@ -102,41 +104,122 @@ sap.ui.define([
 			});
 		},
 
-		onBatchSelectionChange: function (oEvent) {
+		onBatchSelectionChange: function () {
 			var oModel = this.getView().getModel();
-			oModel.setProperty("/candidate/batchObject", this._getBatch(oEvent.getParameter("selectedItem").getKey()));
+			var oSelect = this.byId("batchSelect");
+			oModel.setProperty("/candidate/batchObject", this._getBatch(oSelect.getSelectedKey()));
 		},
 
 		onContainerSelect: function (oEvent) {
 			var oItem = oEvent.getParameter("selectedItem");
-			this.getView().getModel().setProperty("/candidate/storageBin/value", oItem.getBindingContext("container").getProperty("value/storageBin"))
+			var oModel = this.getView().getModel();
+
+			// pre-fill the input field for storage bin with the current location of the selected container
+			var sStorageBin = oItem.getBindingContext("container").getProperty("value/storageBin");
+			oModel.setProperty("/candidate/storageBin/value", sStorageBin);
+
+			// get stock info of the container to check whether it is already in use
+			var sContainer = this.getView().getModel().getProperty("/candidate/container/value");
+			var oStock = this.getOwnerComponent().findEntity("stock", "/rows", function (oObject) {
+				return oObject.value.container === sContainer && oObject.value.quantity > 0;
+			});
+
+
+			oModel.setProperty("/containerStockDetails", oStock);
+
+			// if stock was found, default all other candidate values from the stock
+			if (oStock) {
+				oModel.setProperty("/candidate/batch/value", oStock.value.batch);
+				oModel.setProperty("/candidate/quantity/value", oStock.value.quantity);
+				oModel.setProperty("/candidate/container/valueState", ValueState.Warning);
+				oModel.setProperty("/candidate/container/valueStateText", "Der Behälter ist bereits befüllt.");
+			} else {
+				oModel.setProperty("/candidate/batch/value", null);
+				oModel.setProperty("/candidate/quantity/value", null);
+				oModel.setProperty("/candidate/container/valueState", ValueState.None);
+				oModel.setProperty("/candidate/container/valueStateText", "");
+			}
+
+			this.onBatchSelectionChange();
 		},
 
 		_addStock: function (oObject) {
-			if (oObject) {
+			if (this._checkSaveConditions(oObject)) {
 				oObject.batch = oObject.batch._id;
 				var oComponent = this.getOwnerComponent();
-				oComponent.postDocument("stock", oObject).then(function (oResponse) {
-					if (oResponse.response.ok) {
-						MessageToast.show("Schnaps wurde eingelagert.", {
-							width: "30rem",
-							duration: 2000
-						});
 
-						oComponent.reloadModel("stock");
-					} else {
-						MessageToast.show(oResponse.errorText, {
-							width: "30rem",
-							duration: 2000
-						});
-					}
-				});
+				var oModel = this.getView().getModel();
+				var oStock = oModel.getProperty("/containerStockDetails/value");
+				if (oStock) {
+					// update stock
+					oStock.quantity = oObject.quantity;
+					oComponent.putDocument(oStock).then(function (oResponse) {
+						if (oResponse.response.ok) {
+							MessageToast.show("Schnaps wurde zugelagert.", {
+								width: "30rem",
+								duration: 2000
+							});
+
+							oComponent.reloadModel("stock");
+						} else {
+							MessageToast.show(oResponse.errorText, {
+								width: "30rem",
+								duration: 2000
+							});
+						}
+					});
+				} else {
+					// new stock
+					oComponent.postDocument("stock", oObject).then(function (oResponse) {
+						if (oResponse.response.ok) {
+							MessageToast.show("Schnaps wurde eingelagert.", {
+								width: "30rem",
+								duration: 2000
+							});
+
+							oComponent.reloadModel("stock");
+						} else {
+							MessageToast.show(oResponse.errorText, {
+								width: "30rem",
+								duration: 2000
+							});
+						}
+					});
+				}
+
+				return true;
 			}
+			return false;
 		},
 
+		_checkSaveConditions: function (oObject) {
+			if (!oObject) {
+				return false;
+			}
 
-		compareStringAsInt: function () {
-			return this.getOwnerComponent().compareStringAsInt.apply(this, arguments);
+			var oModel = this.getView().getModel();
+			var oStock = oModel.getProperty("/containerStockDetails/value");
+			if (oStock) {
+				if (oModel.getProperty("/candidate/batch/value") !== oStock.batch) {
+					oModel.setProperty("/candidate/batch/valueState", ValueState.Error);
+					oModel.setProperty("/candidate/batch/valueStateText", "Der Behälter ist bereits mit einer anderen Charge befüllt. Mischen ist nicht zulässig.");
+					return false;
+				}
+
+				if (oModel.getProperty("/candidate/quantity/value") < oStock.quantity) {
+					oModel.setProperty("/candidate/quantity/valueState", ValueState.Error);
+					oModel.setProperty("/candidate/quantity/valueStateText", "Es darf nur Schnaps hinzugefüllt werden. Zum Auslagern muss die entsprechende Eingabemaske verwendet werden.");
+					return false;
+				}
+
+				if (oModel.getProperty("/candidate/quantity/value") <= 0) {
+					oModel.setProperty("/candidate/quantity/valueState", ValueState.Error);
+					oModel.setProperty("/candidate/quantity/valueStateText", "Die einzulagernde Menge muss größer 0 sein.");
+					return false;
+				}
+			}
+
+			return true;
 		}
 	});
 

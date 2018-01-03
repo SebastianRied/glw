@@ -269,7 +269,7 @@ sap.ui.define([
 			for (var i=0;i<aContext.length;i++){
 				iSum += aContext[i].getProperty(sQuantityPath);
 			}
-			this.getView().getModel("stock").setProperty("/filteredQuantity", iSum);
+			this.getView().getModel("viewModel").setProperty("/filteredQuantity", iSum);
 		}
 	});
 

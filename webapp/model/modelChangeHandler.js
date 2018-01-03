@@ -91,7 +91,7 @@ sap.ui.define(["./formatter"], function (Formatter) {
 				oAggregatedStock[sKey].quantity += oStock.quantity;
 				iTotal += oStock.quantity;
 				oModel.setProperty("/aggregatedStock", oAggregatedStock);
-				oModel.setProperty("/totalLiters", iTotal);
+				this.getModel("viewModel").setProperty("/totalQuantity", iTotal);
 				oModel.setProperty("/years", oYears);
 				oModel.setProperty("/totalCount", Object.getOwnPropertyNames(oAggregatedStock).length);
 

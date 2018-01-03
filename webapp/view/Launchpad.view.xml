@@ -18,7 +18,7 @@
                             unit="Liter"
                             footer="">
                         <NumericContent
-                                value="{path: 'stock>/totalLiters', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                value="{path: 'viewModel>/totalQuantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                 icon="sap-icon://sys-find"/>
                     </TileContent>
                 </GenericTile>

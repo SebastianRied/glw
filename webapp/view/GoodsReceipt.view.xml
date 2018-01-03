@@ -46,7 +46,7 @@
                                   selectedKey="{/candidate/container/value}"
                                   valueState="{/candidate/container/valueState}"
                                   valueStateText="{/candidate/container/valueStateText}"
-                                  selectionChange="onContainerSelect">
+                                  selectionChange=".onContainerSelect">
                             <items>
                                 <core:ListItem text="{container>value/barCode}"
                                                additionalText="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
@@ -56,8 +56,9 @@
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </ComboBox>
-                        <Text text="{parts: ['/candidate/container/value', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'}"
-                              class="sapUiTinyMarginBegin"/>
+                        <Text
+                                text="{parts: ['/candidate/container/value', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'}"
+                                class="sapUiTinyMarginBegin" />
 
                         <Label text="Lagerplatz"/>
                         <ComboBox forceSelection="false"
@@ -75,6 +76,7 @@
 
                         <Label text="Charge"/>
                         <Select
+                                id="batchSelect"
                                 items="{path: 'batches>/list', sorter: [{path: 'batchDate'}, {path: 'productCategoryName'}]}"
                                 showSecondaryValues="true"
                                 selectedKey="{/candidate/batch/value}"
@@ -85,7 +87,8 @@
                             <items>
                                 <core:ListItem
                                         text="{batches>productCategoryName} ({path: 'batches>batchDate', type:'sap.ui.model.type.Date', formatOptions: {pattern: 'yyyy'}})"
-                                        additionalText="{path: 'batches>batchDate', type:'sap.ui.model.type.Date'}" key="{batches>_id}"/>
+                                        additionalText="{path: 'batches>batchDate', type:'sap.ui.model.type.Date'}"
+                                        key="{batches>_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
@@ -95,19 +98,20 @@
 
                         <Label text="Menge"/>
                         <Input textAlign="End"
-                               value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}">
+                               value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
+                               valueState="{/candidate/quantity/valueState}"
+                               valueStateText="{/candidate/quantity/valueStateText}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </Input>
-                        <Text text="{parts: ['/candidate/productCategory/value', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                        <Text text="{parts: ['/candidate/batchObject/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
                               class="sapUiTinyMarginBegin"/>
 
 
-
-
                         <Label text="Chargendatum"/>
-                        <Text textAlign="Right" text="{path: '/candidate/batchObject/batchDate', type: 'sap.ui.model.type.Date'}">
+                        <Text textAlign="Right"
+                              text="{path: '/candidate/batchObject/batchDate', type: 'sap.ui.model.type.Date'}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
