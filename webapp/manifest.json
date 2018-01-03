@@ -94,6 +94,10 @@
 					"name": "goodsReceipt",
 					"target": "goodsReceipt"
 				}, {
+					"pattern": "GoodsIssue",
+					"name": "goodsIssue",
+					"target": "goodsIssue"
+				},{
 					"pattern": "StockList",
 					"name": "stockList",
 					"target": "stockList"
@@ -132,6 +136,11 @@
 					"viewName": "GoodsReceipt",
 					"viewLevel": 2,
 					"viewId": "goodsReceipt"
+				},
+				"goodsIssue": {
+					"viewName": "GoodsIssue",
+					"viewLevel": 2,
+					"viewId": "goodsIssue"
 				},
 				"stockList": {
 					"viewName": "StockList",

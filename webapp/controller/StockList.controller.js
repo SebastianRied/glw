@@ -144,17 +144,17 @@ sap.ui.define([
 					var iValue = parseInt(vValue, 10);
 					if (!isNaN(iValue)) {
 						if (iValue > 1000 && iValue < 10000) {
-							return new Filter({path: "value/year", operator: FilterOperator.EQ, value1: iValue});
+							return new Filter({path: "year", operator: FilterOperator.EQ, value1: iValue});
 						} else {
 							return new Filter({
-							path: "value/container",
+							path: "container",
 							operator: FilterOperator.Contains,
 							value1: vValue
 						});
 						}
 					} else {
 						return new Filter({
-							path: "value/productCategoryName",
+							path: "productCategoryName",
 							operator: FilterOperator.Contains,
 							value1: vValue
 						});
