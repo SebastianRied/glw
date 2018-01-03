@@ -47,6 +47,10 @@
 			"batches": {
 				"type": "sap.ui.model.json.JSONModel",
 				"uri": "couchDB/glw/_design/docs/_view/batches"
+			},
+			"log": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "couchDB/glw/_design/docs/_view/log"
 			}
 		},
 		"resources": {
