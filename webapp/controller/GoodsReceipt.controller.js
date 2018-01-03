@@ -150,6 +150,7 @@ sap.ui.define([
 
 				var oModel = this.getView().getModel();
 				var oStock = oModel.getProperty("/containerStockDetails/value");
+				var sStorageBin = oObject.storageBin;
 				if (oStock) {
 					// update stock
 					oStock.quantity = oObject.quantity;
@@ -185,6 +186,22 @@ sap.ui.define([
 								duration: 2000
 							});
 						}
+					});
+				}
+
+				// if the storageBin was changed, update the containers storageBin info
+				var oContainer = oComponent.findEntity("container", "/rows", function (oEntity) {
+					return oEntity.value.barCode === oObject.container;
+				});
+
+				if (oContainer && sStorageBin !== oContainer.value.storageBin) {
+					oContainer = oContainer.value;
+					oContainer.storageBin = sStorageBin;
+					oComponent.putDocument(oContainer).then(function () {
+						MessageToast.show("Behälter wurde auf den Lagerplatz '" + sStorageBin + "' verschoben", {
+							width: "30rem",
+							duration: 2000
+						});
 					});
 				}
 
