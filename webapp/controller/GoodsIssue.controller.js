@@ -82,7 +82,8 @@ sap.ui.define([
 				oStock = oStock.value;
 				oStock.quantity -= iQuantity;
 				var oComponent = this.getOwnerComponent();
-				oComponent.putDocument(oStock).then(function () {
+
+				var fnSaveHandler = function () {
 					oModel.setProperty("/candidate/quantity/value", 0);
 					// reload stock model
 					oComponent.reloadModel("stock");
@@ -96,7 +97,13 @@ sap.ui.define([
 						width: "30rem",
 						duration: 2000
 					});
-				}.bind(this));
+				}.bind(this);
+
+				if (oStock.quantity <= 0) {
+					oComponent.deleteDocument(oStock).then(fnSaveHandler);
+				} else {
+					oComponent.putDocument(oStock).then(fnSaveHandler);
+				}
 			}
 		},
 
