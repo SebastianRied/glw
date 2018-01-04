@@ -44,9 +44,30 @@ sap.ui.define(["./formatter"], function (Formatter) {
 		});
 	};
 
-	ChangeHandler.prototype.containerModelChanged = function () {
+	ChangeHandler.prototype.containerModelChanged = function (oModel) {
 		ChangeHandler.prototype.stockModelChanged.call(this, this.getModel("stock"));
 		ChangeHandler.prototype.storageBinsModelChanged.call(this, this.getModel("storageBins"));
+
+		Promise.all([this.models.stock.loaded, this.models.container.loaded, this.models.productCategories.loaded, this.models.validValues.loaded]).then(function () {
+			var oStockModel = this.getModel("stock");
+			var aStock = oStockModel.getObject("/rows");
+			var mStock = {};
+			for (var i = 0; i < aStock.length; i++) {
+				if (!mStock[aStock[i].value.container]) {
+					mStock[aStock[i].value.container] = aStock[i].value.quantity > 0;
+				}
+			}
+
+			var aProductCategories = this.getModel("productCategories").getObject("/rows");
+			var oValidValues = this.getModel("validValues").getObject("/");
+			var aContainer = oModel.getObject("/rows");
+			for (var j = 0; j < aContainer.length; j++) {
+				aContainer[j].value.empty = !mStock[aContainer[j].value.barCode];
+				aContainer[j].value.productCategoryName = Formatter.formatProductCategory(aContainer[j].value.productCategory, aProductCategories);
+				aContainer[j].value.productGroup = Formatter.formatProductGroupByProductCategoryId(aContainer[j].value.productCategory, aProductCategories, oValidValues);
+			}
+			oModel.setProperty("/rows", aContainer);
+		}.bind(this));
 	};
 
 	ChangeHandler.prototype.stockModelChanged = function (oModel) {
