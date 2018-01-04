@@ -185,7 +185,7 @@ sap.ui.define([
 					oFilter = this._stockListDetailsFacetFilters;
 				}
 			}
-			console.log(oFilter);
+
 			oBinding.filter(oFilter);
 		},
 

@@ -216,6 +216,15 @@ sap.ui.define([
 				oFilter = new Filter({path: "value/barCode", operator: FilterOperator.Contains, value1: sValue});
 			}
 
+			this._searchFilters = oFilter;
+			if (this._facetFilters) {
+				if (oFilter) {
+					oFilter = new Filter([oFilter, this._facetFilters], true);
+				} else {
+					oFilter = this._facetFilters;
+				}
+			}
+
 			oBinding.filter(oFilter);
 		},
 
@@ -244,6 +253,59 @@ sap.ui.define([
 			this._storageBinFound  = !(sValue && !this.getOwnerComponent().findEntity("storageBins", "/rows", function (oStorageBin) {
 					return sValue === oStorageBin.value.id;
 				}));
+		},
+
+		onConfirmFacetFilter: function () {
+			var oFacetFilter = this.byId("idFacetFilter");
+			this._filterModel(oFacetFilter);
+		},
+
+		_filterModel: function (oFacetFilter) {
+			var mFacetFilterLists = oFacetFilter.getLists().filter(function (oList) {
+				return oList.getSelectedItems().length;
+			});
+
+			if (mFacetFilterLists.length) {
+				// Build the nested filter with ORs between the values of each group and
+				// ANDs between each group
+				var oFilter = new Filter(mFacetFilterLists.map(function (oList) {
+					return new Filter(oList.getSelectedItems().map(function (oItem) {
+						return new Filter(oList.getKey(), "EQ", oItem.getKey());
+					}), false);
+				}), true);
+				this._applyFilter(oFilter);
+			} else {
+				this._applyFilter();
+			}
+		},
+
+		_applyFilter: function (oFilter) {
+			var oTable = this._getTable();
+			this._facetFilters = oFilter;
+
+			if (this._searchFilters) {
+				if (oFilter) {
+					oFilter = new Filter([oFilter, this._searchFilters], true);
+				} else {
+					oFilter = this._searchFilters;
+				}
+			}
+			oTable.getBinding("items").filter(oFilter);
+		},
+
+		onResetFacetFilter: function () {
+			var oFacetFilter = this.byId("idFacetFilter");
+			var aFacetFilterLists = oFacetFilter.getLists();
+			for (var i = 0; i < aFacetFilterLists.length; i++) {
+				aFacetFilterLists[i].setSelectedKeys();
+			}
+			this._applyFilter();
+		},
+
+		handleListClose: function (oEvent) {
+			// Get the Facet Filter lists and construct a (nested) filter for the binding
+			var oFacetFilter = oEvent.getSource().getParent();
+			this._filterModel(oFacetFilter);
 		}
 	});
 
