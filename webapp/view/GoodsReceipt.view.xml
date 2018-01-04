@@ -58,7 +58,7 @@
                         </ComboBox>
                         <Text
                                 text="{parts: ['/candidate/container/value', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'}"
-                                class="sapUiTinyMarginBegin" />
+                                class="sapUiTinyMarginBegin"/>
 
                         <Label text="Lagerplatz"/>
                         <ComboBox forceSelection="false"
@@ -97,14 +97,18 @@
 
 
                         <Label text="Menge"/>
-                        <Input textAlign="End"
-                               value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
-                               valueState="{/candidate/quantity/valueState}"
-                               valueStateText="{/candidate/quantity/valueStateText}">
+                        <StepInput textAlign="End"
+                                   min="0"
+                                   step="{viewModel>/quantityFieldProperties/stepInputStep}"
+                                   largerStep="{viewModel>/quantityFieldProperties/stepInputLargerStep}"
+                                   displayValuePrecision="{viewModel>/quantityFieldProperties/stepInputDisplayValuePrecision}"
+                                   value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}, constraints: {minimum: 0}}"
+                                   valueState="{/candidate/quantity/valueState}"
+                                   valueStateText="{/candidate/quantity/valueStateText}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
-                        </Input>
+                        </StepInput>
                         <Text text="{parts: ['/candidate/batchObject/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
                               class="sapUiTinyMarginBegin"/>
 
@@ -157,7 +161,7 @@
                             <List
                                     items="{/journal}">
                                 <ObjectListItem
-                                        number="{path: 'quantity', type: 'sap.ui.model.type.Float', formatOptions: {precision: 2}}"
+                                        number="{path: 'quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                         numberUnit="{parts: ['batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
                                         title="{parts: ['batch/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
                                         text="{batch}">

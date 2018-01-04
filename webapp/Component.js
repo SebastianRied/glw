@@ -18,7 +18,15 @@ sap.ui.define([
 				UIComponent.prototype.init.apply(this, arguments);
 				this._initModelPromises();
 				this.models.validValues.loaded.then(this._checkAndInstallValidValues.bind(this));
-				this.setModel(new JSONModel({totalQuantity: 0, filteredQuantity: 0}), "viewModel");
+				this.setModel(new JSONModel({
+					totalQuantity: 0,
+					filteredQuantity: 0,
+					quantityFieldProperties: {
+						stepInputStep: 0.5,
+						stepInputLargerStep: 1,
+						stepInputDisplayValuePrecision: 1
+					}
+				}), "viewModel");
 				this.dbName = "glw";
 				this.getRouter().initialize();
 			},

@@ -3,20 +3,20 @@
 var proxyMiddleware = require('http-proxy-middleware');
 
 var oDataProxy;
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 	grunt.initConfig({
 		connect: {
 			options: {
 				port: 3000,
 				hostname: '*',
-				middleware: function(connect, options, middlewares) {
-					var oDataMiddleWare = function(req, res, next) {
+				middleware: function (connect, options, middlewares) {
+					var oDataMiddleWare = function (req, res, next) {
 						if (!oDataProxy) {
 							oDataProxy = proxyMiddleware(["/couchDB"], {
 								target: "http://localhost:5984",
 								secure: false,
 								changeOrigin: true,
-								pathRewrite: {'^/couchDB':'/'},
+								pathRewrite: {'^/couchDB': '/'},
 								logLevel: 'debug'
 							});
 						}
@@ -30,7 +30,12 @@ module.exports = function(grunt) {
 				}
 			},
 			src: {},
-			dist: {}
+			dist: {
+				options: {
+					port: 80,
+					useAvailablePort: true
+				}
+			}
 		},
 
 		openui5_connect: {
@@ -78,7 +83,7 @@ module.exports = function(grunt) {
 
 		copy: {
 			dist: {
-				files: [ {
+				files: [{
 					expand: true,
 					cwd: 'webapp',
 					src: [
@@ -86,7 +91,7 @@ module.exports = function(grunt) {
 						'!test/**'
 					],
 					dest: 'dist'
-				} ]
+				}]
 			}
 		}
 	});
@@ -98,7 +103,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-openui5');
 
 	// Server task
-	grunt.registerTask('serve', function(target) {
+	grunt.registerTask('serve', function (target) {
 		grunt.task.run('openui5_connect:' + (target || 'src') + ':keepalive');
 	});
 

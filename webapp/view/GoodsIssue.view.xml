@@ -4,6 +4,151 @@
           displayBlock="true">
     <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
           class="sapUiResponsiveContentPadding">
-		  
-	</Page>
+        <l:DynamicSideContent
+                id="DynamicSideContent"
+                class="sapUiDSCExplored sapUiContentPadding"
+                containerQuery="true"
+                sideContentVisibility="AlwaysShow"
+                sideContentFallDown="BelowS"
+                breakpointChanged="handleBreakpointChangeEvent"
+                showSideContent="{/showSideContent}">
+            <l:mainContent>
+                <f:SimpleForm editable="true"
+                              layout="ResponsiveGridLayout"
+                              labelSpanXL="3"
+                              labelSpanL="3"
+                              labelSpanM="3"
+                              labelSpanS="12"
+                              adjustLabelSpan="false"
+                              emptySpanXL="1"
+                              emptySpanL="1"
+                              emptySpanM="1"
+                              emptySpanS="0"
+                              columnsXL="1"
+                              columnsL="1"
+                              columnsM="1"
+                              singleContainerFullSize="false"
+                              ariaLabelledBy="formTitle">
+                    <f:toolbar>
+                        <Toolbar>
+                            <Title id="formTitle" text="Schnaps Auslagern" level="H2" titleStyle="H2"/>
+                        </Toolbar>
+                    </f:toolbar>
+                    <f:content>
+
+                        <Label text="Behälter"/>
+                        <ComboBox
+                                id="containerSelect"
+                                forceSelection="false"
+                                showSecondaryValues="true"
+                                filterSecondaryValues="true"
+                                items="{path: 'container>/rows', sorter: {path: 'value/barCode'}}"
+                                selectedKey="{/candidate/container/value}"
+                                valueState="{/candidate/container/valueState}"
+                                valueStateText="{/candidate/container/valueStateText}"
+                                selectionChange=".onContainerSelect">
+                            <items>
+                                <core:ListItem text="{container>value/barCode}"
+                                               additionalText="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
+                                               key="{container>value/barCode}"/>
+                            </items>
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </ComboBox>
+                        <Text
+                                text="{parts: ['/candidate/container/value', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'}"
+                                class="sapUiTinyMarginBegin"/>
+
+                        <Label text="Entnahmemenge"/>
+                        <StepInput textAlign="End"
+                                   min="0"
+                                   max="{= ${/stock/quantity} ? ${/stock/quantity} : 0}"
+                                   step="{viewModel>/quantityFieldProperties/stepInputStep}"
+                                   largerStep="{viewModel>/quantityFieldProperties/stepInputLargerStep}"
+                                   displayValuePrecision="{viewModel>/quantityFieldProperties/stepInputDisplayValuePrecision}"
+                                   change=".onQuantityChange"
+                                   enabled="{= !!${/stock}}"
+                                   value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float',formatOptions: {maxFractionDigits: 2, emptyString: 0}, constraints: {minimum: 0, maximum: {path: '/stock/quantity'}}}"
+                                   valueState="{/candidate/quantity/valueState}"
+                                   valueStateText="{/candidate/quantity/valueStateText}">
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </StepInput>
+                        <Text text="{parts: ['/stock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                              class="sapUiTinyMarginBegin"/>
+
+
+                        <Label text=""/>
+                        <Button text="Auslagern" type="Emphasized" press=".onGoodsIssue" enabled="{= !!${/stock} &amp;&amp; ${/candidate/quantity/value} &gt; 0}">
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </Button>
+                    </f:content>
+                </f:SimpleForm>
+            </l:mainContent>
+            <l:sideContent>
+                <VBox fitContainer="true" renderType="Bare">
+                    <Toolbar>
+                        <Title level="H2" titleStyle="H2" text="Bestand"/>
+                        <layoutData>
+                            <FlexItemData shrinkFactor="0" growFactor="0"/>
+                        </layoutData>
+                    </Toolbar>
+                    <ScrollContainer
+                            height="100%"
+                            width="100%"
+                            horizontal="false"
+                            vertical="true"
+                            focusable="false"
+                            visible="{= !!${/candidate/container/value}}">
+                        <content>
+                            <List>
+                                <ObjectListItem
+                                        number="{path: '/stock/quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                        numberUnit="{parts: ['/stock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                                        title="{= ${/stock/batch/productCategoryName} !== undefined ? ${/stock/batch/productCategoryName} : '- Kein Bestand -'}">
+                                    <attributes>
+                                        <ObjectAttribute title="Behälter"
+                                                         text="{parts: ['/container/barCode', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({/container/barCode})"/>
+                                        <ObjectAttribute title="Lagerplatz" text="{/container/storageBin}"/>
+                                        <ObjectAttribute
+                                                visible="{= !!${/stock}}"
+                                                title="Charge"
+                                                text="{path: '/stock/batch/batchDate', type: 'sap.ui.model.type.Date'}"/>
+                                        <ObjectAttribute
+                                                visible="{= !!${/stock}}"
+                                                title="Alkoholgehalt"
+                                                text="{/stock/batch/vol}"/>
+                                    </attributes>
+                                </ObjectListItem>
+                                <ObjectListItem
+                                        visible="{= !!${/stock} &amp;&amp; ${/newQuantity} !== null}"
+                                        highlight="Warning"
+                                        number="{path: '/issuedQuantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                        numberUnit="{parts: ['/stock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                                        title="Ausgelagert">
+                                </ObjectListItem>
+                                <ObjectListItem
+                                        visible="{= !!${/stock} &amp;&amp; ${/newQuantity} !== null}"
+                                        highlight="Success"
+                                        number="{path: '/newQuantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                        numberUnit="{parts: ['/stock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                                        title="Neuer Bestand">
+                                </ObjectListItem>
+                            </List>
+                        </content>
+                        <layoutData>
+                            <FlexItemData growFactor="1" baseSize="0%" shrinkFactor="1"/>
+                        </layoutData>
+                    </ScrollContainer>
+                    <Text text="Bitte einen Behälter scannen oder eingeben."
+                          visible="{= !${/candidate/container/value}}" class="sapUiMediumMargin"/>
+                </VBox>
+
+            </l:sideContent>
+        </l:DynamicSideContent>
+    </Page>
 </mvc:View>
