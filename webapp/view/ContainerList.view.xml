@@ -57,14 +57,14 @@
                                 title="Leer"
                                 key="value/empty"
                                 growing="false"
-                                mode="SingleSelect">
+                                mode="MultiSelect">
                             <items>
                                 <FacetFilterItem
                                         text="Ja"
-                                        key="true"/>
+                                        key="yes"/>
                                 <FacetFilterItem
                                         text="Nein"
-                                        key="false"/>
+                                        key="no"/>
                             </items>
                         </FacetFilterList>
 
@@ -78,7 +78,7 @@
                 mode="Delete"
                 noDataText="Keine Behälter gefunden"
                 delete="onContainerDeletePress"
-                items="{path: 'container>/rows', sorter: {path: 'value/barCode', comparator: '.compareStringAsInt'}}">
+                items="{path: 'container>/list', sorter: {path: 'value/barCode', comparator: '.compareStringAsInt'}}">
             <headerToolbar>
                 <Toolbar>
                     <Title text="Behälter ({container>/total_rows})" level="H2" width="7rem"/>
@@ -129,7 +129,7 @@
                         <Text text="{container>value/productCategoryName}"/>
                         <Text text="{container>value/productGroup}"/>
                         <core:Icon
-                                src="{= ${container>value/empty} ? 'sap-icon://complete' : 'sap-icon://border'}"
+                                src="{= ${container>value/empty} === 'yes' ? 'sap-icon://complete' : 'sap-icon://border'}"
                                 color="#999999" decorative="false" tooltip="Flasche leer"/>
                     </cells>
                 </ColumnListItem>

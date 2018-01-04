@@ -1,6 +1,10 @@
 {
   "_id": "validValues",
   "type": "validValues",
+  "bool": {
+    "true": true,
+    "false": false
+  },
   "productGroups": {
     "FERT": {
       "id": "FERT",

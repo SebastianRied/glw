@@ -62,11 +62,11 @@ sap.ui.define(["./formatter"], function (Formatter) {
 			var oValidValues = this.getModel("validValues").getObject("/");
 			var aContainer = oModel.getObject("/rows");
 			for (var j = 0; j < aContainer.length; j++) {
-				aContainer[j].value.empty = !mStock[aContainer[j].value.barCode];
+				aContainer[j].value.empty = !mStock[aContainer[j].value.barCode] ? "yes" : "no";
 				aContainer[j].value.productCategoryName = Formatter.formatProductCategory(aContainer[j].value.productCategory, aProductCategories);
 				aContainer[j].value.productGroup = Formatter.formatProductGroupByProductCategoryId(aContainer[j].value.productCategory, aProductCategories, oValidValues);
 			}
-			oModel.setProperty("/rows", aContainer);
+			oModel.setProperty("/list", aContainer);
 		}.bind(this));
 	};
 
