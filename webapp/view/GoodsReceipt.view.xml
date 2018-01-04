@@ -65,7 +65,7 @@
                                   items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}"
                                   selectedKey="{/candidate/storageBin/value}"
                                   valueState="{/candidate/storageBin/valueState}"
-                                  valueStateText="{/candidate/productCategory/valueStateText}">
+                                  valueStateText="{/candidate/storageBin/valueStateText}">
                             <items>
                                 <core:Item text="{storageBins>value/id}" key="{storageBins>value/id}"/>
                             </items>

@@ -37,7 +37,7 @@ sap.ui.define([
 					valueStateText: ""
 				},
 				batch: {
-					value: oBatch && oBatch._id,
+					value: (oBatch && oBatch._id) || null,
 					valueState: ValueState.None,
 					valueStateText: ""
 				},
@@ -46,7 +46,7 @@ sap.ui.define([
 					valueState: ValueState.None,
 					valueStateText: ""
 				},
-				batchObject: oBatch
+				batchObject: oBatch || {batchDate: null, vol: null}
 			};
 		},
 

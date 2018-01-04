@@ -17,7 +17,8 @@ sap.ui.define([
 				stock: null,
 				container: null,
 				candidate: this._createCandidateObject(),
-				newQuantity: null
+				newQuantity: null,
+				issuedQuantity: null
 			};
 
 			oModel.setData(oData);

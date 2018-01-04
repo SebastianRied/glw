@@ -1,4 +1,4 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout"
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
           controllerName="glw.controller.ProductCategoriesList"
           displayBlock="true">
     <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
@@ -14,7 +14,7 @@
                     <Title text="Produkte ({productCategories>/total_rows})" level="H2" width="7rem"/>
                     <ToolbarSpacer/>
 					<SearchField liveChange=".onSearchProductCategory" search=".onSearchProductCategory"/>
-                    <Button icon="sap-icon://add" press="onOpenAddProductDialogPress"/>
+                    <Button icon="sap-icon://add" tooltip="Produkt anlegen" press="onOpenAddProductDialogPress"/>
                 </Toolbar>
             </headerToolbar>
             <columns>

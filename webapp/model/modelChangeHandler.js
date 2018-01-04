@@ -76,6 +76,7 @@ sap.ui.define(["./formatter"], function (Formatter) {
 				oObject.containerName = Formatter.formatProductCategoryByContainerBarCode(oStock.container, aContainer, aProductCategories);
 				oObject.storageBin = Formatter.formatStorageBinByContainerBarCode(oStock.container, aContainer);
 				oObject.year = oObject.batch.batchDate.getFullYear();
+				oObject.numberUnit = Formatter.formatNumberUnitByProductCategoryId(oObject.batch.productCategory, aProductCategories, oValidValues);
 
 				// aggregted stock calculation
 				var sKey = oObject.batch.productCategory + "_" + oObject.year;
@@ -86,7 +87,7 @@ sap.ui.define(["./formatter"], function (Formatter) {
 						batchDate: oObject.batch.batchDate,
 						year: oObject.year,
 						quantity: 0,
-						numberUnit: Formatter.formatNumberUnitByProductCategoryId(oObject.productCategory, aProductCategories, oValidValues)
+						numberUnit: oObject.numberUnit
 					};
 				}
 

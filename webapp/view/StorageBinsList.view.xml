@@ -1,4 +1,4 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core"
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"  xmlns:core="sap.ui.core"
           controllerName="glw.controller.StorageBinsList"
           displayBlock="true">
     <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
@@ -14,7 +14,7 @@
                     <Title text="Lagerplätze ({storageBins>/total_rows})" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
 					<SearchField liveChange=".onSearchStorageBin" search=".onSearchStorageBin"/>
-                    <Button icon="sap-icon://add" press=".onOpenAddStorageBinDialogPress"/>
+                    <Button icon="sap-icon://add" tooltip="Lagerplatz anlegen" press=".onOpenAddStorageBinDialogPress"/>
                 </Toolbar>
             </headerToolbar>
             <columns>
@@ -35,7 +35,7 @@
                         <Text text="{storageBins>value/id}"/>
                         <core:Icon
                                 src="{= ${storageBins>value/used} ? 'sap-icon://complete' : 'sap-icon://border'}"
-                                color="#999999" decorative="false"/>
+                                color="#999999" decorative="false" tooltip="Lagerplatz belegt"/>
                     </cells>
                 </ColumnListItem>
 

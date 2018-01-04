@@ -11,7 +11,7 @@
                 sideContentVisibility="AlwaysShow"
                 sideContentFallDown="BelowS"
                 breakpointChanged="handleBreakpointChangeEvent"
-                showSideContent="{/showSideContent}">
+                showSideContent="true">
             <l:mainContent>
                 <f:SimpleForm editable="true"
                               layout="ResponsiveGridLayout"

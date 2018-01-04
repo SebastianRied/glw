@@ -1,5 +1,4 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core"
-          xmlns:u="sap.ui.unified"
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:u="sap.ui.unified"
           controllerName="glw.controller.BatchList"
           displayBlock="true">
     <Page title="{i18n>appTitle}" showNavButton="true" navButtonPress=".onNavBack"
@@ -15,7 +14,7 @@
                     <Title text="Chargen ({batches>/total_rows})" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
                     <SearchField liveChange=".onSearchBatch" search=".onSearchBatch"/>
-                    <Button icon="sap-icon://add" press=".onOpenAddBatchDialogPress"/>
+                    <Button icon="sap-icon://add" tooltip="Charge anlegen" press=".onOpenAddBatchDialogPress"/>
                 </Toolbar>
             </headerToolbar>
             <columns>
