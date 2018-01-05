@@ -118,7 +118,7 @@ sap.ui.define(["./formatter"], function (Formatter) {
 				}
 
 				if (!oYears[oAggregatedStock[sKey].year]) {
-					oYears[oAggregatedStock[sKey].year] = {year: oAggregatedStock[sKey].year};
+					oYears[oAggregatedStock[sKey].year] = {year: oAggregatedStock[sKey].year.toString()};
 				}
 
 				oAggregatedStock[sKey].quantity += oStock.quantity;

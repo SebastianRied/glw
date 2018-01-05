@@ -5,16 +5,16 @@
         <IconTabBar
                 id="idIconTabBar"
                 expandable="false"
+                applyContentPadding="false"
                 stretchContentHeight="true"
-                select="onIconTabBarSelect"
-                class="sapUiResponsiveContentPadding">
+                select="onIconTabBarSelect">
             <items>
                 <IconTabFilter
                         key="overview"
                         icon="sap-icon://sys-find"
                         count="{stock>/totalCount}"
                         text="Übersicht">
-                    <Page showHeader="false">
+                    <Page showHeader="false" class="sapUiResponsiveContentPadding">
                         <Table
                                 id="stockListTable"
                                 itemPress="onItemPress"
@@ -64,12 +64,13 @@
                         iconColor="Positive"
                         count="{stock>/total_rows}"
                         text="Details">
-                    <Page showHeader="false">
+                    <Page showHeader="false" class="sapUiResponsiveContentPadding">
                         <subHeader>
                             <OverflowToolbar>
                                 <FacetFilter
                                         id="idFacetFilter"
                                         type="Simple"
+                                        showPopoverOKButton="true"
                                         showPersonalization="true"
                                         showReset="true"
                                         reset="onResetFacetFilter"
@@ -95,7 +96,7 @@
                                             <items>
                                                 <FacetFilterItem
                                                         text="{stock>year}"
-                                                        key="{stock>year}"/>
+                                                        key="{path: 'stock>year', type: 'sap.ui.model.type.String'}"/>
                                             </items>
                                         </FacetFilterList>
 

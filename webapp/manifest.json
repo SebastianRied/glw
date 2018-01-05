@@ -9,7 +9,8 @@
 				"sap.ui.core": {},
 				"sap.m": {},
 				"sap.ui.layout": {},
-				"sap.ui.unified": {}
+				"sap.ui.unified": {},
+				"sap.f": {}
 			}
 		},
 		"rootView": {

@@ -8,6 +8,7 @@
                 <FacetFilter
                         id="idFacetFilter"
                         type="Simple"
+                        showPopoverOKButton="true"
                         showPersonalization="true"
                         showReset="true"
                         reset="onResetFacetFilter"
@@ -130,7 +131,7 @@
                         <Text text="{container>value/productGroup}"/>
                         <core:Icon
                                 src="{= ${container>value/empty} === 'yes' ? 'sap-icon://complete' : 'sap-icon://border'}"
-                                color="#999999" decorative="false" tooltip="Flasche leer"/>
+                                color="#333333" decorative="false" tooltip="Flasche leer"/>
                     </cells>
                 </ColumnListItem>
             </items>

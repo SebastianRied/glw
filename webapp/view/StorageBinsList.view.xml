@@ -35,7 +35,7 @@
                         <Text text="{storageBins>value/id}"/>
                         <core:Icon
                                 src="{= ${storageBins>value/used} ? 'sap-icon://complete' : 'sap-icon://border'}"
-                                color="#999999" decorative="false" tooltip="Lagerplatz belegt"/>
+                                color="#333333" decorative="false" tooltip="Lagerplatz belegt"/>
                     </cells>
                 </ColumnListItem>
 

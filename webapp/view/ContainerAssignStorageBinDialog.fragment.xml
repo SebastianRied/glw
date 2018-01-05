@@ -5,7 +5,7 @@
         xmlns:core="sap.ui.core">
     <Dialog
             id="ContainerAssignStorageBinDialog"
-            title="Behälter anlegen"
+            title="Lagerplatz zuordnen"
             class="sapUiResponsiveContentPadding">
         <content>
             <f:SimpleForm editable="true"

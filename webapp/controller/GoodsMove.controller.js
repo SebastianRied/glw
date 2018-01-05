@@ -5,8 +5,9 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageToast",
-	"sap/ui/core/ValueState"
-], function (Controller, Formatter, JSONModel, Filter, FilterOperator, MessageToast, ValueState) {
+	"sap/ui/core/ValueState",
+	"sap/f/LayoutType"
+], function (Controller, Formatter, JSONModel, Filter, FilterOperator, MessageToast, ValueState, LayoutType) {
 	'use strict';
 
 	return Controller.extend('glw.controller.GoodsMove', {
@@ -45,8 +46,8 @@ sap.ui.define([
 			};
 		},
 
-		onContainerSelect: function () {
-			var oItem = this.byId("containerSelect").getSelectedItem();
+		onContainerSelectSource: function () {
+			var oItem = this.byId("containerSelectSource").getSelectedItem();
 			var oModel = this.getView().getModel();
 			oModel.setProperty("/newQuantity", null);
 
@@ -70,6 +71,7 @@ sap.ui.define([
 		},
 
 		onGoodsIssue: function () {
+			return;
 			var oModel = this.getView().getModel();
 			var iQuantity = oModel.getProperty("/candidate/quantity/value");
 
@@ -135,7 +137,25 @@ sap.ui.define([
 		onQuantityChange: function () {
 			var oModel = this.getView().getModel();
 			oModel.setProperty("/newQuantity", null);
-			this.onContainerSelect();
+			this.onContainerSelectSource();
+		},
+
+		onConfirmSource: function () {
+			this.byId("columnLayout").setLayout(LayoutType.TwoColumnsMidExpanded);
+		},
+
+		onBackToSource: function () {
+			this.byId("columnLayout").setLayout(LayoutType.TwoColumnsBeginExpanded);
+		},
+
+		onGoodsMove: function () {
+			this.byId("columnLayout").setLayout(LayoutType.EndColumnFullScreen);
+		},
+
+		onFinishMove: function () {
+			this.getView().getModel().setProperty("/candidate", this._createCandidateObject());
+			this.getView().getModel().setProperty("/stock", null);
+			this.byId("columnLayout").setLayout(LayoutType.TwoColumnsBeginExpanded);
 		}
 
 	});
