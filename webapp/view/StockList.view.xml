@@ -43,7 +43,7 @@
                             </columns>
                             <items>
                                 <ColumnListItem type="Navigation"
-                                                highlight="{path: 'stock>quantity', formatter: '.formatter.formatStockListCriticalQuantity'}">
+                                                highlight="{parts: ['stock>quantity', 'stock>batchQuantity'], formatter: '.formatter.formatStockListCriticalQuantity'}">
                                     <cells>
                                         <Text text="{parts: ['stock>productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"/>
                                         <Text text="{path: 'stock>batchDate', type: 'sap.ui.model.type.Date'}"/>

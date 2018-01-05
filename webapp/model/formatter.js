@@ -228,10 +228,10 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 		return "";
 	};
 
-	Formatter.formatStockListCriticalQuantity = function (sValue) {
-		if (parseFloat(sValue) <= 2) {
+	Formatter.formatStockListCriticalQuantity = function (sValue, iBatchQuantity) {
+		if (parseFloat(sValue) <= (iBatchQuantity / 5)) {
 			return sap.ui.core.MessageType.Error;
-		} else if (parseFloat(sValue) <= 5) {
+		} else if (parseFloat(sValue) <= (iBatchQuantity / 2.5)) {
 			return sap.ui.core.MessageType.Warning;
 		} else {
 			return sap.ui.core.MessageType.None;

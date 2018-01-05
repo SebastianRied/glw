@@ -102,10 +102,15 @@ sap.ui.define(["./formatter"], function (Formatter) {
 				// aggregted stock calculation
 				var sKey = oObject.batch.productCategory + "_" + oObject.year;
 				if (!oAggregatedStock[sKey]) {
+					var iBatchQuantity = parseFloat(oObject.batch.quantity);
+					if (isNaN(iBatchQuantity)) {
+						iBatchQuantity = 10000000;
+					}
 					oAggregatedStock[sKey] = {
 						productCategory: oObject.batch.productCategory,
 						productCategoryName: oObject.productCategoryName,
 						batchDate: oObject.batch.batchDate,
+						batchQuantity: iBatchQuantity,
 						year: oObject.year,
 						quantity: 0,
 						numberUnit: oObject.numberUnit
