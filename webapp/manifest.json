@@ -98,6 +98,10 @@
 					"name": "goodsReceipt",
 					"target": "goodsReceipt"
 				}, {
+					"pattern": "GoodsMove",
+					"name": "goodsMove",
+					"target": "goodsMove"
+				}, {
 					"pattern": "GoodsIssue",
 					"name": "goodsIssue",
 					"target": "goodsIssue"
@@ -140,6 +144,11 @@
 					"viewName": "GoodsReceipt",
 					"viewLevel": 2,
 					"viewId": "goodsReceipt"
+				},
+				"goodsMove": {
+					"viewName": "GoodsMove",
+					"viewLevel": 2,
+					"viewId": "goodsMove"
 				},
 				"goodsIssue": {
 					"viewName": "GoodsIssue",

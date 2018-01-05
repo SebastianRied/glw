@@ -9,7 +9,7 @@ sap.ui.define([
 ], function (Controller, Formatter, JSONModel, Filter, FilterOperator, MessageToast, ValueState) {
 	'use strict';
 
-	return Controller.extend('glw.controller.GoodsIssue', {
+	return Controller.extend('glw.controller.GoodsMove', {
 		formatter: Formatter,
 		onInit: function () {
 			var oModel = new JSONModel();
