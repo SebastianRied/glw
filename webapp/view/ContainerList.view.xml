@@ -110,12 +110,6 @@
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
-                    <Text text="Volumen"/>
-                </Column>
-
-                <Column
-                        minScreenWidth="Tablet"
-                        demandPopin="true">
                     <Text text="Produktgruppe"/>
                 </Column>
 
@@ -135,9 +129,6 @@
                         </HBox>
                         <Text text="{container>value/barCode}"/>
                         <Text text="{container>value/productCategoryName}"/>
-                        <ObjectNumber
-                                number="{container>value/volume}"
-                                numberUnit="{= ${container>value/volume} ? 'Liter' : ''}" />
                         <Text text="{container>value/productGroup}"/>
                         <core:Icon
                                 src="{= ${container>value/empty} === 'yes' ? 'sap-icon://complete' : 'sap-icon://border'}"

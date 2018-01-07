@@ -73,6 +73,11 @@ sap.ui.define([
 						valueState: ValueState.None,
 						valueStateText: ""
 					},
+					volume: {
+						value: null,
+						valueState: ValueState.None,
+						valueStateText: ""
+					},
 					productGroup: {
 						value: "",
 						valueState: ValueState.None,
@@ -101,6 +106,7 @@ sap.ui.define([
 				var oComponent = this.getOwnerComponent();
 				oComponent.postDocument("productCategory", {
 					name: oObject.productCategoryName.value,
+					volume: oObject.volume.value,
 					productGroup: oObject.productGroup.value
 				}).then(function (oResponse) {
 					if (oResponse.response.ok) {

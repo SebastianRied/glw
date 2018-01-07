@@ -179,6 +179,7 @@
                                                     title="{stock>containerName}"
                                                     text="{stock>container}"/>
                                             <ObjectNumber
+                                                    visible="{= !!${stock>containerVolume}}"
                                                     number="{path: 'stock>containerVolume', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                                     unit="Liter"/>
                                             <ObjectNumber

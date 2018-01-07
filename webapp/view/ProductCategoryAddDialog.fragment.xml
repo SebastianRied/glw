@@ -41,6 +41,22 @@
                             <core:Item text="{validValues>value}" key="{validValues>id}"/>
                         </items>
                     </Select>
+                    <Label text="Volumen" visible="{= !${/productGroup/value}}"/>
+                    <Input
+                            visible="{= ${/productGroup/value}.indexOf('VERP') === 0}"
+                            value="{path: '/volume/value', type: 'sap.ui.model.type.Float', formatOptions: {emptyString: 0, maxFractionDigits: 2}}"
+                            valueState="{/volume/valueState}"
+                            valueStateText="{/volume/valueStateText}">
+                        <layoutData>
+                            <l:GridData span="XL6 L6 M6 S6"/>
+                        </layoutData>
+                    </Input>
+                    <Text text="Liter"
+                          visible="{= ${/productGroup/value}.indexOf('VERP') === 0}">
+                        <layoutData>
+                            <l:GridData span="XL6 L6 M6 S6"/>
+                        </layoutData>
+                    </Text>
                     <Label
                             text="Einheit"
                             visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>

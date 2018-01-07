@@ -31,11 +31,6 @@
                             type="Number"
                             valueState="{/containerBarCode/valueState}"
                             valueStateText="{/containerBarCode/valueStateText}"/>
-                    <Label text="Volumen"/>
-                    <Input
-                            value="{path: '/volume/value', type: 'sap.ui.model.type.Float', formatOptions: {emptyString: 0, maxFractionDigits: 2}}"
-                            valueState="{/volume/valueState}"
-                            valueStateText="{/volume/valueStateText}"/>
                     <Label text="Lagerplatz"/>
                     <ComboBox forceSelection="false"
                               change=".onStorageBinChange"

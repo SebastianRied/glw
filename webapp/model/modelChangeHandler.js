@@ -95,7 +95,7 @@ sap.ui.define(["./formatter"], function (Formatter) {
 				}
 				oObject.productCategoryName = Formatter.formatProductCategory(oObject.batch.productCategory, aProductCategories);
 				oObject.containerName = Formatter.formatProductCategoryByContainerBarCode(oStock.container, aContainer, aProductCategories);
-				oObject.containerVolume = Formatter.formatContainerVolume(oStock.container, aContainer);
+				oObject.containerVolume = Formatter.formatContainerVolume(oObject.container, aContainer, aProductCategories);
 				oObject.storageBin = Formatter.formatStorageBinByContainerBarCode(oStock.container, aContainer);
 				oObject.year = oObject.batch.batchDate.getFullYear();
 				oObject.numberUnit = Formatter.formatNumberUnitByProductCategoryId(oObject.batch.productCategory, aProductCategories, oValidValues);

@@ -33,7 +33,8 @@ module.exports = function (grunt) {
 			dist: {
 				options: {
 					port: 80,
-					useAvailablePort: true
+					useAvailablePort: true,
+					open: true
 				}
 			}
 		},

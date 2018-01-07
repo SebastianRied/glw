@@ -27,6 +27,11 @@
                         demandPopin="true">
                     <Text text="Produktgruppe"/>
                 </Column>
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true">
+                    <Text text="Volumen"/>
+                </Column>
 
             </columns>
             <items>
@@ -34,6 +39,9 @@
                     <cells>
                         <Text text="{productCategories>value/name}"/>
                         <Text text="{parts: ['productCategories>value/productGroup', 'validValues>/productGroups'], formatter: '.formatter.formatValidValue'}"/>
+                        <ObjectNumber
+                                number="{productCategories>value/volume}"
+                                numberUnit="{= ${productCategories>value/volume} ? 'Liter' : ''}" />
                     </cells>
                 </ColumnListItem>
 

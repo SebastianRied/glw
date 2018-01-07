@@ -216,16 +216,23 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 		return "";
 	};
 
-	Formatter.formatContainerVolume = function (sContainerBarCode, aContainers) {
+	Formatter.formatContainerVolume = function (sContainerBarCode, aContainers, aProductCategories) {
 		if (jQuery.isArray(aContainers)) {
 			for (var i = 0; i < aContainers.length; i++) {
 				if (aContainers[i].value.barCode === sContainerBarCode) {
-					return aContainers[i].value.volume || "";
+					var sProductCategoryId = aContainers[i].value.productCategory;
+					if (jQuery.isArray(aProductCategories)) {
+						for (var j = 0; j < aProductCategories.length; j++) {
+							if (aProductCategories[j].id === sProductCategoryId) {
+								return aProductCategories[j].value.volume;
+							}
+						}
+					}
 				}
 			}
 		}
 
-		return "";
+		return sProductCategoryId;
 	};
 
 	Formatter.formatStorageBinByContainerBarCode = function (sContainerBarCode, aContainers) {
