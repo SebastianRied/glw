@@ -91,6 +91,7 @@ sap.ui.define([
 
 			if (this._checkSaveConditions(oObject, oModel)) {
 				var oComponent = this.getOwnerComponent();
+				var that = this;
 				oComponent.postDocument("storageBin", {
 					id: oObject.storageBinId.value
 				}).then(function (oResponse) {
@@ -100,6 +101,7 @@ sap.ui.define([
 							duration: 2000
 						});
 						oModel.setProperty("/storageBinId/value", "");
+						that.byId("storageBinIdInput").focus();
 						oComponent.reloadModel("storageBins");
 					} else {
 						MessageToast.show(oResponse.errorText, {

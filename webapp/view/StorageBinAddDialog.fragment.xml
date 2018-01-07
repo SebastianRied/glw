@@ -25,9 +25,11 @@
                           singleContainerFullSize="false">
                 <f:content>
                     <Label text="Lagerplatznummer"/>
-                    <Input value="{path: '/storageBinId/value'}"
-                           valueState="{/storageBinId/valueState}"
-                           valueStateText="{/storageBinId/valueStateText}"/>
+                    <Input
+                            id="storageBinIdInput"
+                            value="{path: '/storageBinId/value'}"
+                            valueState="{/storageBinId/valueState}"
+                            valueStateText="{/storageBinId/valueStateText}"/>
                 </f:content>
 
             </f:SimpleForm>

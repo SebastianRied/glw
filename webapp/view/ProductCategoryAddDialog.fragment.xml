@@ -43,6 +43,7 @@
                     </Select>
                     <Label text="Volumen" visible="{= !${/productGroup/value}}"/>
                     <Input
+                            textAlign="Right"
                             visible="{= ${/productGroup/value}.indexOf('VERP') === 0}"
                             value="{path: '/volume/value', type: 'sap.ui.model.type.Float', formatOptions: {emptyString: 0, maxFractionDigits: 2}}"
                             valueState="{/volume/valueState}"

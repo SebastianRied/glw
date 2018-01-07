@@ -159,11 +159,12 @@
                                         <Text text="Behälter"/>
                                     </Column>
                                     <Column
+                                            hAlign="Right"
                                             width="12em">
                                         <Text text="Behältervolumen"/>
                                     </Column>
                                     <Column
-                                            hAlign="End">
+                                            hAlign="Right">
                                         <Text text="Füllmenge"/>
                                     </Column>
                                 </columns>
