@@ -75,6 +75,11 @@ sap.ui.define([
 					valueState: ValueState.None,
 					valueStateText: ""
 				},
+				volume: {
+					value: null,
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
 				productCategory: {
 					value: null,
 					valueState: ValueState.None,
@@ -119,7 +124,8 @@ sap.ui.define([
 					oComponent.postDocument("container", {
 						barCode: "" + oObject.containerBarCode.value,
 						productCategory: oObject.productCategory.value,
-						storageBin: oObject.storageBin.value
+						storageBin: oObject.storageBin.value,
+						volume: oObject.volume.value
 					}).then(function (oResponse) {
 						if (oResponse.response.ok) {
 							MessageToast.show("Behälter '" + oObject.containerBarCode.value + "' wurde angelegt", {

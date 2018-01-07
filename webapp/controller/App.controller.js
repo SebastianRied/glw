@@ -21,7 +21,7 @@ sap.ui.define([
 				case "tileProductCategories": oRouter.navTo("productCategoriesList"); break;
 				case "tileStorageBin": oRouter.navTo("storageBinsList"); break;
 				case "tileGR": oRouter.navTo("goodsReceipt"); break;
-				case "tileGM": oRouter.navTo("goodsMove"); break;
+				case "tileGM": /*oRouter.navTo("goodsMove");*/ sap.m.MessageToast.show("Funktion nicht verfügbar"); break;
 				case "tileGI": oRouter.navTo("goodsIssue"); break;
 				case "tileStock": oRouter.navTo("stockList"); break;
 				case "tileBatches": oRouter.navTo("batches"); break;

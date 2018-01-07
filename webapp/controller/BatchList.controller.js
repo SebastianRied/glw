@@ -100,6 +100,11 @@ sap.ui.define([
 					value: null,
 					valueState: ValueState.None,
 					valueStateText: ""
+				},
+				otherCosts: {
+					value: null,
+					valueState: ValueState.None,
+					valueStateText: ""
 				}
 			});
 
@@ -125,7 +130,8 @@ sap.ui.define([
 					quantity: oObject.quantity.value,
 					vol: oObject.vol.value,
 					distillerFee: oObject.distillerFee.value,
-					taxes: oObject.taxes.value
+					taxes: oObject.taxes.value,
+					otherCosts: oObject.otherCosts.value
 				}).then(function (oResponse) {
 					if (oResponse.response.ok) {
 						MessageToast.show("Charge wurde angelegt", {

@@ -40,6 +40,7 @@
                             </items>
                         </FacetFilterList>
 
+
                         <FacetFilterList
                                 title="Produktgruppe"
                                 key="value/productGroup"
@@ -79,7 +80,7 @@
                 mode="Delete"
                 noDataText="Keine Behälter gefunden"
                 delete="onContainerDeletePress"
-                items="{path: 'container>/list', sorter: {path: 'value/barCode', comparator: '.compareStringAsInt'}}">
+                items="{path: 'container>/list', sorter: {path: 'value/volume'}}">
             <headerToolbar>
                 <Toolbar>
                     <Title text="Behälter ({container>/total_rows})" level="H2" width="7rem"/>
@@ -109,6 +110,12 @@
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
+                    <Text text="Volumen"/>
+                </Column>
+
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true">
                     <Text text="Produktgruppe"/>
                 </Column>
 
@@ -128,6 +135,9 @@
                         </HBox>
                         <Text text="{container>value/barCode}"/>
                         <Text text="{container>value/productCategoryName}"/>
+                        <ObjectNumber
+                                number="{container>value/volume}"
+                                numberUnit="{= ${container>value/volume} ? 'Liter' : ''}" />
                         <Text text="{container>value/productGroup}"/>
                         <core:Icon
                                 src="{= ${container>value/empty} === 'yes' ? 'sap-icon://complete' : 'sap-icon://border'}"

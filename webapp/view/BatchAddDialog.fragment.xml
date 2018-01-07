@@ -113,10 +113,26 @@
                         </layoutData>
                     </Text>
 
+                    <Label text="Sonstige Kosten"/>
+                    <Input
+                            textAlign="End"
+                            value="{path: '/otherCosts/value', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
+                            valueState="{/otherCosts/valueState}"
+                            valueStateText="{/otherCosts/valueStateText}">
+                        <layoutData>
+                            <l:GridData span="XL8 L8 M8 S8"/>
+                        </layoutData>
+                    </Input>
+                    <Text text="€">
+                        <layoutData>
+                            <l:GridData span="XL3 L3 M3 S3"/>
+                        </layoutData>
+                    </Text>
+
                     <Label text="Summe"/>
                     <Text
                             textAlign="End"
-                            text="{parts: ['/distillerFee/value', '/taxes/value'], formatter: '.formatter.sum'}">
+                            text="{parts: ['/distillerFee/value', '/taxes/value', '/otherCosts/value'], formatter: '.formatter.sum'}">
                         <layoutData>
                             <l:GridData span="XL8 L8 M8 S8"/>
                         </layoutData>

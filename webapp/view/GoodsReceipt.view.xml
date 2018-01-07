@@ -96,7 +96,7 @@
                         </Select>
 
 
-                        <Label text="Menge"/>
+                        <Label text="Füllenge"/>
                         <StepInput textAlign="End"
                                    min="0"
                                    step="{viewModel>/quantityFieldProperties/stepInputStep}"

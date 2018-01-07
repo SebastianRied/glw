@@ -216,6 +216,18 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 		return "";
 	};
 
+	Formatter.formatContainerVolume = function (sContainerBarCode, aContainers) {
+		if (jQuery.isArray(aContainers)) {
+			for (var i = 0; i < aContainers.length; i++) {
+				if (aContainers[i].value.barCode === sContainerBarCode) {
+					return aContainers[i].value.volume || "";
+				}
+			}
+		}
+
+		return "";
+	};
+
 	Formatter.formatStorageBinByContainerBarCode = function (sContainerBarCode, aContainers) {
 		if (jQuery.isArray(aContainers)) {
 			for (var i = 0; i < aContainers.length; i++) {
@@ -234,7 +246,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 		} else if (parseFloat(sValue) <= (iBatchQuantity / 2.5)) {
 			return sap.ui.core.MessageType.Warning;
 		} else {
-			return sap.ui.core.MessageType.None;
+			return sap.ui.core.MessageType.Success;
 		}
 	};
 
