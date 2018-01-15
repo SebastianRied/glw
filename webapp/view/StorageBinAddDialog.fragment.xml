@@ -39,7 +39,7 @@
 
         </beginButton>
         <endButton>
-            <Button text="Fertig" press=".onCancelAddStorageBinDialogPress"/>
+            <Button text="{i18n>dialogDoneButtonText}" press=".onCancelAddStorageBinDialogPress"/>
 
         </endButton>
     </Dialog>

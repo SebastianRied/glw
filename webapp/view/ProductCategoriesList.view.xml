@@ -13,7 +13,7 @@
                 <Toolbar>
                     <Title text="Produkte ({productCategories>/total_rows})" level="H2" width="7rem"/>
                     <ToolbarSpacer/>
-					<SearchField liveChange=".onSearchProductCategory" search=".onSearchProductCategory"/>
+					<SearchField id="searchField" liveChange=".onSearchProductCategory" search=".onSearchProductCategory"/>
                     <Button icon="sap-icon://add" tooltip="Produkt anlegen" press="onOpenAddProductDialogPress"/>
                 </Toolbar>
             </headerToolbar>

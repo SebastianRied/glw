@@ -43,7 +43,7 @@
 
         </beginButton>
         <endButton>
-            <Button text="Fertig" press=".onCancelContainerStorageBinAssignmentDialogPress"/>
+            <Button text="{i18n>dialogDoneButtonText}" press=".onCancelContainerStorageBinAssignmentDialogPress"/>
 
         </endButton>
     </Dialog>

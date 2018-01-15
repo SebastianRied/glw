@@ -85,7 +85,7 @@
                 <Toolbar>
                     <Title text="Behälter ({container>/total_rows})" level="H2" width="7rem"/>
                     <ToolbarSpacer/>
-                    <SearchField liveChange=".onSearchContainer" search=".onSearchContainer"/>
+                    <SearchField id="searchField" liveChange=".onSearchContainer" search=".onSearchContainer"/>
                     <Button icon="sap-icon://add" tooltip="Behälter anlegen" press=".onOpenAddContainerDialogPress"/>
                 </Toolbar>
             </headerToolbar>

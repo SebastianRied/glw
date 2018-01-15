@@ -13,8 +13,20 @@ sap.ui.define([
 	return Controller.extend('glw.controller.StockList', {
 		formatter: Formatter,
 		onInit: function () {
-			this.getOwnerComponent().getRouter().getRoute("stockListDetails").attachPatternMatched(this._onDisplayDetailsMatched.bind(this));
-			this.getOwnerComponent().getRouter().getRoute("stockList").attachPatternMatched(this._onDisplayOverviewMatched.bind(this));
+			var oRouter = this.getOwnerComponent().getRouter();
+			oRouter.getRoute("stockListDetails").attachPatternMatched(this._onDisplayDetailsMatched.bind(this));
+			oRouter.getRoute("stockList").attachPatternMatched(this._onDisplayOverviewMatched.bind(this));
+			var oView = this.getView();
+			oRouter.attachRouteMatched(function () {
+				window.setTimeout(function () {
+					var oIconTabBar = oView.byId("idIconTabBar");
+					if (oIconTabBar.getSelectedKey() === "details") {
+						oView.byId("searchFieldDetails").focus();
+					} else {
+						oView.byId("searchFieldOverview").focus();
+					}
+				}, 0);
+			});
 		},
 
 		onNavBack: function () {
@@ -147,10 +159,10 @@ sap.ui.define([
 							return new Filter({path: "year", operator: FilterOperator.EQ, value1: iValue});
 						} else {
 							return new Filter({
-							path: "container",
-							operator: FilterOperator.Contains,
-							value1: vValue
-						});
+								path: "container",
+								operator: FilterOperator.Contains,
+								value1: vValue
+							});
 						}
 					} else {
 						return new Filter({
@@ -264,9 +276,9 @@ sap.ui.define([
 
 		_updateFilteredQuantity: function (oTable, sQuantityPath) {
 			var oBinding = oTable.getBinding("items");
-			var aContext = oBinding.getContexts(0,oBinding.getLength());
+			var aContext = oBinding.getContexts(0, oBinding.getLength());
 			var iSum = 0;
-			for (var i=0;i<aContext.length;i++){
+			for (var i = 0; i < aContext.length; i++) {
 				iSum += aContext[i].getProperty(sQuantityPath);
 			}
 			this.getView().getModel("viewModel").setProperty("/filteredQuantity", iSum);

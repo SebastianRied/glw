@@ -21,8 +21,13 @@ sap.ui.define([
 				issuedQuantity: null
 			};
 
-			oModel.setData(oData);
-			this.getView().setModel(oModel);
+			var oView = this.getView();
+			oView.setModel(oModel);
+			oView.attachAfterRendering(function () {
+				window.setTimeout(function () {
+					oView.byId("containerSelect").focus();
+				}, 0);
+			});
 		},
 
 		onNavBack: function () {

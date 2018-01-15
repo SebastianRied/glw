@@ -13,7 +13,7 @@
                 <Toolbar>
                     <Title text="Lagerplätze ({storageBins>/total_rows})" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
-					<SearchField liveChange=".onSearchStorageBin" search=".onSearchStorageBin"/>
+					<SearchField id="searchField" liveChange=".onSearchStorageBin" search=".onSearchStorageBin"/>
                     <Button icon="sap-icon://add" tooltip="Lagerplatz anlegen" press=".onOpenAddStorageBinDialogPress"/>
                 </Toolbar>
             </headerToolbar>

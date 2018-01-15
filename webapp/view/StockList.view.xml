@@ -24,7 +24,10 @@
                                 <Toolbar>
                                     <Title text="Bestand" level="H2" width="9rem"/>
                                     <ToolbarSpacer/>
-                                    <SearchField liveChange=".onSearchStockList" search=".onSearchStockList"/>
+                                    <SearchField
+                                            id="searchFieldOverview"
+                                            liveChange=".onSearchStockList"
+                                            search=".onSearchStockList"/>
                                 </Toolbar>
                             </headerToolbar>
                             <columns>
@@ -137,8 +140,10 @@
                                     <Toolbar>
                                         <Title text="Bestand" level="H2" width="15rem"/>
                                         <ToolbarSpacer/>
-                                        <SearchField liveChange=".onSearchStockListDetails"
-                                                     search=".onSearchStockListDetails"/>
+                                        <SearchField
+                                                id="searchFieldDetails"
+                                                liveChange=".onSearchStockListDetails"
+                                                search=".onSearchStockListDetails"/>
                                     </Toolbar>
                                 </headerToolbar>
                                 <columns>

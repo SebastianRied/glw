@@ -73,7 +73,7 @@
 
         </beginButton>
         <endButton>
-            <Button text="Fertig" press=".onCancelAddContainerDialogPress"/>
+            <Button text="{i18n>dialogDoneButtonText}" press=".onCancelAddContainerDialogPress"/>
 
         </endButton>
     </Dialog>

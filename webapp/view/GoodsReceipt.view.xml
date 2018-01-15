@@ -39,14 +39,16 @@
                     <f:content>
 
                         <Label text="Behälter"/>
-                        <ComboBox forceSelection="false"
-                                  showSecondaryValues="true"
-                                  filterSecondaryValues="true"
-                                  items="{path: 'container>/rows', sorter: {path: 'value/barCode'}}"
-                                  selectedKey="{/candidate/container/value}"
-                                  valueState="{/candidate/container/valueState}"
-                                  valueStateText="{/candidate/container/valueStateText}"
-                                  selectionChange=".onContainerSelect">
+                        <ComboBox
+                                id="containerSelect"
+                                forceSelection="false"
+                                showSecondaryValues="true"
+                                filterSecondaryValues="true"
+                                items="{path: 'container>/rows', sorter: {path: 'value/barCode'}}"
+                                selectedKey="{/candidate/container/value}"
+                                valueState="{/candidate/container/valueState}"
+                                valueStateText="{/candidate/container/valueStateText}"
+                                selectionChange=".onContainerSelect">
                             <items>
                                 <core:ListItem text="{container>value/barCode}"
                                                additionalText="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"

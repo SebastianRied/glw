@@ -13,7 +13,12 @@ sap.ui.define([
 	return Controller.extend('glw.controller.ProductCategoriesList', {
 		formatter: Formatter,
 		onInit: function () {
-
+			var oView = this.getView();
+			oView.attachAfterRendering(function () {
+				window.setTimeout(function () {
+					oView.byId("searchField").focus();
+				}, 0);
+			});
 		},
 
 		onNavBack: function () {

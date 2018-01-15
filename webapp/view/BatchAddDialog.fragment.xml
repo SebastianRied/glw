@@ -151,7 +151,7 @@
 
         </beginButton>
         <endButton>
-            <Button text="Fertig" press=".onCancelAddBatchDialogPress"/>
+            <Button text="{i18n>dialogDoneButtonText}" press=".onCancelAddBatchDialogPress"/>
 
         </endButton>
     </Dialog>

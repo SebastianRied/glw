@@ -78,7 +78,7 @@
             <Button text="Anlegen" press=".onSaveNewProductPress"/>
         </beginButton>
         <endButton>
-            <Button text="Fertig" press=".onCancelAddProductDialogPress"/>
+            <Button text="{i18n>dialogDoneButtonText}" press=".onCancelAddProductDialogPress"/>
         </endButton>
     </Dialog>
 </core:FragmentDefinition>
