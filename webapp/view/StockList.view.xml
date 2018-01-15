@@ -83,6 +83,7 @@
                                                 title="Produkt"
                                                 key="batch/productCategory"
                                                 mode="MultiSelect"
+                                                growing="false"
                                                 items="{path:'productCategories>/rows', filters: {path: 'value/productGroup', operator: 'StartsWith', value1: 'FERT'}, templateShareable: 'false'}">
                                             <items>
                                                 <FacetFilterItem
@@ -95,6 +96,7 @@
                                                 title="Jahrgang"
                                                 key="year"
                                                 mode="MultiSelect"
+                                                growing="false"
                                                 items="{path:'stock>/years', templateShareable: 'false'}">
                                             <items>
                                                 <FacetFilterItem
@@ -107,6 +109,7 @@
                                                 title="Behälter"
                                                 key="container"
                                                 mode="MultiSelect"
+                                                growing="false"
                                                 items="{path:'container>/rows', templateShareable: 'false'}">
                                             <items>
                                                 <FacetFilterItem
@@ -119,6 +122,7 @@
                                                 title="Lagerplatz"
                                                 key="storageBin"
                                                 mode="MultiSelect"
+                                                growing="false"
                                                 items="{path:'storageBins>/rows', templateShareable: 'false'}">
                                             <items>
                                                 <FacetFilterItem
