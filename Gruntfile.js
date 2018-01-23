@@ -17,7 +17,14 @@ module.exports = function (grunt) {
 								secure: false,
 								changeOrigin: true,
 								pathRewrite: {'^/couchDB': '/'},
-								logLevel: 'debug'
+								logLevel: 'debug',
+								onProxyRes: function (proxyRes, req, res) {
+									res.setHeader("CacheControl", "must-revalidate");
+									res.setHeader("cache-control", "must-revalidate");
+									res.setHeader("Pragma", "no-cache");
+									res.setHeader("Expires", "-1");
+									res.setHeader("max-age", "0");
+								}
 							});
 						}
 
