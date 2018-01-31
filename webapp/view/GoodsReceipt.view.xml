@@ -79,7 +79,7 @@
                         <Label text="Charge"/>
                         <Select
                                 id="batchSelect"
-                                items="{path: 'batches>/list', sorter: [{path: 'batchDate'}, {path: 'productCategoryName'}]}"
+                                items="{path: 'batches>/list', sorter: [{path: 'batchDate', descending: true}, {path: 'productCategoryName'}]}"
                                 showSecondaryValues="true"
                                 selectedKey="{/candidate/batch/value}"
                                 forceSelection="false"

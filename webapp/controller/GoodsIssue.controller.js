@@ -22,6 +22,7 @@ sap.ui.define([
 			};
 
 			var oView = this.getView();
+			oModel.setData(oData);
 			oView.setModel(oModel);
 			oView.attachAfterRendering(function () {
 				window.setTimeout(function () {
@@ -35,7 +36,7 @@ sap.ui.define([
 			this.getOwnerComponent().onNavBack();
 		},
 
-		_createCandidateObject: function (oBatch) {
+		_createCandidateObject: function () {
 			return {
 				container: {
 					value: "",

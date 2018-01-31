@@ -1,0 +1,11 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="glw.controller.App" displayBlock="true">
+	<MessagePage
+		text="Sie wurden vom System abgemeldet. Sie können den Browser nun schließen oder sich erneut anmelden."
+		icon="sap-icon://log"
+		description="">
+		<customDescription>
+			<Link text="Hier klicken zum wieder anmelden..." press=".onLogin"/>
+		</customDescription>
+
+	</MessagePage>
+</mvc:View>

@@ -26,6 +26,14 @@ sap.ui.define([
 				case "tileStock": oRouter.navTo("stockList"); break;
 				case "tileBatches": oRouter.navTo("batches"); break;
 			}
+		},
+
+		onLogin: function () {
+			this.getOwnerComponent().getRouter().navTo("launchpad");
+		},
+
+		onLogout: function () {
+			this.getOwnerComponent().getRouter().navTo("logout");
 		}
 	});
 

@@ -82,6 +82,7 @@ sap.ui.define([
 				oModel.setProperty("/journal", aJournal);
 				oModel.setProperty("/candidate", this._createCandidateObject(oCandidate.batchObject));
 				oModel.refresh(true);
+				this.byId("containerSelect").focus();
 			}
 		},
 

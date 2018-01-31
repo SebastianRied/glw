@@ -17,13 +17,16 @@ sap.ui.define([
 			oRouter.getRoute("stockListDetails").attachPatternMatched(this._onDisplayDetailsMatched.bind(this));
 			oRouter.getRoute("stockList").attachPatternMatched(this._onDisplayOverviewMatched.bind(this));
 			var oView = this.getView();
+			var that = this;
 			oRouter.attachRouteMatched(function () {
 				window.setTimeout(function () {
 					var oIconTabBar = oView.byId("idIconTabBar");
 					if (oIconTabBar.getSelectedKey() === "details") {
 						oView.byId("searchFieldDetails").focus();
+						that.onStockListDetailsBindingChange();
 					} else {
 						oView.byId("searchFieldOverview").focus();
+						that.onStockListBindingChange();
 					}
 				}, 0);
 			});
