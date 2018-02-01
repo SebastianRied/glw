@@ -34,7 +34,7 @@ runtime and unzip the resources folder into the glw/webapp directory
 
 The data base will be initialized automatically and views get created.
 
-* Credits - Images:
+## Credits - Images:
 Glas image downloaded from Flickr:
 https://flic.kr/p/bowxDY
 License:
