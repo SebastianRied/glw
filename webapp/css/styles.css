@@ -10,3 +10,11 @@
 .glwImageTile .sapMTileCnt {
 	background-color:rgba(255, 255, 255, 0.8);
 }
+
+.glwImageTile.glwTextBright .sapMTextMaxLine {
+	color: #FFF;
+}
+
+.glwImageTile.glwTextBright .sapMGTSubHdrTxt {
+	color: #EEE;
+}

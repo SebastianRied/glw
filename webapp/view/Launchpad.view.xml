@@ -30,6 +30,36 @@
                 </GenericTile>
 
                 <GenericTile
+                        id="tileProductCategories"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Produkte"
+                        subheader="anlegen, anzeigen, löschen"
+                        press=".onTilePress">
+                    <TileContent
+                            unit=""
+                            footer="">
+                        <NumericContent
+                                value="{productCategories>/total_rows}"
+                                icon=""/>
+                    </TileContent>
+                </GenericTile>
+
+                <GenericTile
+                        id="tileBatches"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        header="Chargen"
+                        subheader="anlegen, anzeigen, löschen"
+                        press=".onTilePress">
+                    <TileContent
+                            unit=""
+                            footer="">
+                        <NumericContent
+                                value="{batches>/total_rows}"
+                                icon="sap-icon://numbered-text"/>
+                    </TileContent>
+                </GenericTile>
+
+                <GenericTile
                         id="tileGR"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
                         header="Schnaps"
@@ -74,8 +104,9 @@
 
                 <GenericTile
                         id="tileContainer"
-                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout glwImageTile glwTextBright"
                         header="Behälter"
+                        backgroundImage="images/barrel.jpg"
                         subheader="anlegen, anzeigen, löschen"
                         press=".onTilePress">
                     <TileContent
@@ -88,25 +119,12 @@
                 </GenericTile>
 
                 <GenericTile
-                        id="tileProductCategories"
-                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                        header="Produkte"
-                        subheader="anlegen, anzeigen, löschen"
-                        press=".onTilePress">
-                    <TileContent
-                            unit=""
-                            footer="">
-                        <NumericContent
-                                value="{productCategories>/total_rows}"
-                                icon=""/>
-                    </TileContent>
-                </GenericTile>
-
-                <GenericTile
                         id="tileStorageBin"
-                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout glwImageTile glwTextBright"
                         header="Lagerplätze"
+                        backgroundImage="images/storageBinsWide.jpg"
                         subheader="anlegen, anzeigen, löschen"
+                        frameType="TwoByOne"
                         press=".onTilePress">
                     <TileContent
                             unit=""
@@ -117,20 +135,6 @@
                     </TileContent>
                 </GenericTile>
 
-                <GenericTile
-                        id="tileBatches"
-                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                        header="Chargen"
-                        subheader="anlegen, anzeigen, löschen"
-                        press=".onTilePress">
-                    <TileContent
-                            unit=""
-                            footer="">
-                        <NumericContent
-                                value="{batches>/total_rows}"
-                                icon="sap-icon://numbered-text"/>
-                    </TileContent>
-                </GenericTile>
             </HBox>
         </FlexBox>
 

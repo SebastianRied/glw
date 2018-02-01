@@ -36,7 +36,9 @@ The data base will be initialized automatically and views get created.
 
 ## Credits - Images:
 Glas image downloaded from Flickr:
-https://flic.kr/p/bowxDY
+Stock: https://flic.kr/p/bowxDY Colors inverted
+Storage Bins: https://flic.kr/p/E4JySQ gradient added
+Container: https://flic.kr/p/dpi3gH
+
 License:
 https://creativecommons.org/licenses/by/2.0/
-Colors inverted
