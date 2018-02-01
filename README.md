@@ -33,3 +33,5 @@ runtime and unzip the resources folder into the glw/webapp directory
 * Open [http://localhost:3000](http://localhost:3000)
 
 The data base will be initialized automatically and views get created.
+
+Images: flickr.com CC

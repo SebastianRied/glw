@@ -13,9 +13,11 @@
             <HBox width="800px" class="glwLaunchpadTileContainer">
                 <GenericTile
                         id="tileStock"
-                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout glwImageTile"
                         header="Bestand"
                         subheader=""
+                        backgroundImage="images/glasWhite.jpg"
+                        frameType="TwoByOne"
                         press=".onTilePress">
                     <TileContent
                             unit="Liter"
