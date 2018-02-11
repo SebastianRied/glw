@@ -18,3 +18,7 @@
 .glwImageTile.glwTextBright .sapMGTSubHdrTxt {
 	color: #EEE;
 }
+
+.glwImageTile.TwoByOne .sapMNC{
+	width: 20rem;
+}

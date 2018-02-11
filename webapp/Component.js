@@ -24,7 +24,7 @@ sap.ui.define([
 					quantityFieldProperties: {
 						stepInputStep: 0.5,
 						stepInputLargerStep: 1,
-						stepInputDisplayValuePrecision: 1
+						stepInputDisplayValuePrecision: 2
 					}
 				}), "viewModel");
 				this.dbName = "glw";
