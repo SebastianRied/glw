@@ -31,7 +31,7 @@
                               ariaLabelledBy="formTitle">
                     <f:toolbar>
                         <Toolbar>
-                            <Title id="formTitle" text="Schnaps Umlagern" level="H2" titleStyle="H2"/>
+                            <Title id="formTitle" text="Schnaps Umfüllen" level="H2" titleStyle="H2"/>
                         </Toolbar>
                     </f:toolbar>
                     <f:content>
@@ -92,6 +92,7 @@
                                    largerStep="{viewModel>/quantityFieldProperties/stepInputLargerStep}"
                                    displayValuePrecision="{viewModel>/quantityFieldProperties/stepInputDisplayValuePrecision}"
                                    change=".onQuantityChange"
+                                   validationMode="LiveChange"
                                    enabled="{/moveAllowed}"
                                    value="{path: '/candidate/quantity/value', type: 'sap.ui.model.type.Float',formatOptions: {maxFractionDigits: 2, emptyString: 0}, constraints: {minimum: 0, maximum: {path: '/sourceStock/quantity'}}}"
                                    valueState="{/candidate/quantity/valueState}"
@@ -105,7 +106,7 @@
 
 
                         <Label text=""/>
-                        <Button text="Umlagern" type="Emphasized" press=".onGoodsMove"
+                        <Button text="Umfüllen" type="Emphasized" press=".onGoodsMove"
                                 enabled="{= !!${/moveAllowed} &amp;&amp; ${/candidate/quantity/value} &gt; 0}">
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
@@ -128,7 +129,7 @@
                             horizontal="false"
                             vertical="true"
                             focusable="false"
-                            visible="{= !!${/candidate/sourceContainer/value}}">
+                            visible="{= !!${/candidate/sourceContainer/value} || ${/movedQuantity} !== null}">
                         <content>
                             <List>
                                 <ObjectListItem

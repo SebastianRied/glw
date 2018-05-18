@@ -21,6 +21,7 @@ sap.ui.define([
 				this.setModel(new JSONModel({
 					totalQuantity: 0,
 					filteredQuantity: 0,
+					inventoryCheck: false,
 					quantityFieldProperties: {
 						stepInputStep: 0.5,
 						stepInputLargerStep: 1,

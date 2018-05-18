@@ -113,6 +113,7 @@ sap.ui.define([
 				}
 			}
 
+
 			oModel.setProperty("/sourceStock", oSourceStock);
 			oModel.setProperty("/sourceContainer", oSourceItem.getBindingContext("container").getProperty("value"));
 		},
@@ -120,6 +121,7 @@ sap.ui.define([
 		onGoodsMove: function () {
 			var oView = this.getView();
 			var oModel = oView.getModel();
+			oModel.setProperty("/candidate/quantity/value", Math.min(oModel.getProperty("/candidate/quantity/value"), oModel.getProperty("/sourceStock/quantity")));
 			var iQuantity = oModel.getProperty("/candidate/quantity/value");
 
 			// find stock
@@ -234,6 +236,7 @@ sap.ui.define([
 		onQuantityChange: function () {
 			var oModel = this.getView().getModel();
 			oModel.setProperty("/newQuantity", null);
+			oModel.setProperty("/candidate/quantity/value", Math.min(oModel.getProperty("/candidate/quantity/value"), oModel.getProperty("/sourceStock/quantity")));
 			this.onContainerSelect();
 		},
 

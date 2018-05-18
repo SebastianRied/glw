@@ -137,6 +137,7 @@
                         </subHeader>
                         <content>
                             <Table
+                                    mode="{= ${viewModel>/inventoryCheck} ? 'MultiSelect' : 'None'}"
                                     id="stockListDetailsTable"
                                     noDataText="Kein Bestand"
                                     items="{path: 'stock>/list', sorter: [{path: 'productCategoryName'}, {path: 'batch/batchDate'}, {path: 'quantity'}], events:{change:'.onStockListDetailsBindingChange'}}">
@@ -148,6 +149,7 @@
                                                 id="searchFieldDetails"
                                                 liveChange=".onSearchStockListDetails"
                                                 search=".onSearchStockListDetails"/>
+                                        <Button text="Inventur {= ${viewModel>/inventoryCheck} ? 'beenden' : 'starten'}" press=".onInvetoryCheck"/>
                                     </Toolbar>
                                 </headerToolbar>
                                 <columns>

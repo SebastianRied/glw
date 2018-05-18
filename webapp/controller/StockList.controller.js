@@ -257,6 +257,11 @@ sap.ui.define([
 			this._filterModel(oFacetFilter);
 		},
 
+		onInvetoryCheck: function () {
+			var oModel = this.getView().getModel("viewModel");
+			oModel.setProperty("/inventoryCheck", !oModel.getProperty("/inventoryCheck"));
+		},
+
 		_getTable: function () {
 			return this.byId("stockListTable");
 		},
