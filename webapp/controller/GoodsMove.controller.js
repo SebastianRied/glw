@@ -15,11 +15,15 @@ sap.ui.define([
 		onInit: function () {
 			var oModel = new JSONModel();
 			var oData = {
-				stock: null,
-				container: null,
+				sourceStock: null,
+				targetStock: null,
+				sourceContainer: null,
+				targetContainer: null,
 				candidate: this._createCandidateObject(),
-				newQuantity: null,
-				issuedQuantity: null
+				newQuantitySource: null,
+				newQuantityTarget: null,
+				movedQuantity: null,
+				moveAllowed: false
 			};
 
 			oModel.setData(oData);
@@ -33,7 +37,12 @@ sap.ui.define([
 
 		_createCandidateObject: function (oBatch) {
 			return {
-				container: {
+				sourceContainer: {
+					value: "",
+					valueState: ValueState.None,
+					valueStateText: ""
+				},
+				targetContainer: {
 					value: "",
 					valueState: ValueState.None,
 					valueStateText: ""
@@ -46,67 +55,155 @@ sap.ui.define([
 			};
 		},
 
-		onContainerSelectSource: function () {
-			var oItem = this.byId("containerSelectSource").getSelectedItem();
+		onContainerSelect: function () {
+			var oSourceItem = this.byId("sourceContainerSelect").getSelectedItem();
+			var oTargetItem = this.byId("targetContainerSelect").getSelectedItem();
+
 			var oModel = this.getView().getModel();
-			oModel.setProperty("/newQuantity", null);
+			oModel.setProperty("/newQuantitySource", null);
+			oModel.setProperty("/newQuantityTarget", null);
+			oModel.setProperty("/movedQuantity", null);
 
-			// pre-fill the input field for storage bin with the current location of the selected container
-			var sStorageBin = oItem.getBindingContext("container").getProperty("value/storageBin");
-			oModel.setProperty("/candidate/storageBin/value", sStorageBin);
-
-			// get stock info of the container to check whether it is already in use
-			var sContainer = this.getView().getModel().getProperty("/candidate/container/value");
-			var oStock = this.getOwnerComponent().findEntity("stock", "/list", function (oObject) {
-				return oObject.container === sContainer && oObject.quantity > 0;
-			});
-
-			if (oStock) {
-				oStock = JSON.parse(JSON.stringify(oStock));
-				oStock.batch.batchDate = new Date(oStock.batch.batchDate);
+			var sSourceContainer, sTargetContainer;
+			if (oSourceItem) {
+				// get stock info of the container to check whether it is already in use
+				sSourceContainer = oModel.getProperty("/candidate/sourceContainer/value");
+				var oSourceStock = this.getOwnerComponent().findEntity("stock", "/list", function (oObject) {
+					return oObject.container === sSourceContainer && oObject.quantity > 0;
+				});
 			}
 
-			oModel.setProperty("/stock", oStock);
-			oModel.setProperty("/container", oItem.getBindingContext("container").getProperty("value"));
+			if (oTargetItem) {
+				// get stock info of the container to check whether it is already in use
+				sTargetContainer = oModel.getProperty("/candidate/targetContainer/value");
+				var oTargetStock = this.getOwnerComponent().findEntity("stock", "/list", function (oObject) {
+					return oObject.container === sTargetContainer && oObject.quantity > 0;
+				});
+			}
+
+			oModel.setProperty("/candidate/targetContainer/valueState", ValueState.None);
+			oModel.setProperty("/candidate/targetContainer/valueStateText", "");
+			oModel.setProperty("/moveAllowed", true);
+
+			if (oSourceStock) {
+				oSourceStock = JSON.parse(JSON.stringify(oSourceStock));
+				oSourceStock.batch.batchDate = new Date(oSourceStock.batch.batchDate);
+			}
+
+			if (sSourceContainer && sSourceContainer === sTargetContainer) {
+				oModel.setProperty("/candidate/targetContainer/valueState", ValueState.Error);
+				oModel.setProperty("/candidate/targetContainer/valueStateText", "Entnahmebehälter und Zielbehälter dürfen nicht identisch sein.");
+				oModel.setProperty("/moveAllowed", true);
+			} else {
+				if (oTargetStock) {
+					oTargetStock = JSON.parse(JSON.stringify(oTargetStock));
+					oTargetStock.batch.batchDate = new Date(oTargetStock.batch.batchDate);
+
+					// target and source stock must be of the same batch. Otherwise goods move is not allowed
+					if (oSourceStock.batch._id !== oTargetStock.batch._id) {
+						oModel.setProperty("/candidate/targetContainer/valueState", ValueState.Error);
+						oModel.setProperty("/candidate/targetContainer/valueStateText", "Zielbehälter enthält: " + oTargetStock.productCategoryName + " (" + oTargetStock.year + "). " + "Er muss leer sein oder bereits die gleiche Charge wie der Entnahmebehälter beinhalten.");
+						oModel.setProperty("/moveAllowed", false);
+					} else {
+						oModel.setProperty("/candidate/targetContainer/valueState", ValueState.Warning);
+						oModel.setProperty("/candidate/targetContainer/valueStateText", "Zielbehälter enthält bereits " + oTargetStock.quantity + " " + oTargetStock.numberUnit + " " + oTargetStock.productCategoryName + " (" + oTargetStock.year + "). ");
+					}
+				} else {
+					oModel.setProperty("/moveAllowed", true);
+				}
+			}
+
+			oModel.setProperty("/sourceStock", oSourceStock);
+			oModel.setProperty("/sourceContainer", oSourceItem.getBindingContext("container").getProperty("value"));
 		},
 
-		onGoodsIssue: function () {
-			return;
-			var oModel = this.getView().getModel();
+		onGoodsMove: function () {
+			var oView = this.getView();
+			var oModel = oView.getModel();
 			var iQuantity = oModel.getProperty("/candidate/quantity/value");
 
 			// find stock
-			var sContainer = this.getView().getModel().getProperty("/candidate/container/value");
-			var oStock = this.getOwnerComponent().findEntity("stock", "/rows", function (oObject) {
-				return oObject.value.container === sContainer && oObject.value.quantity > 0;
+			var sSourceContainer = this.getView().getModel().getProperty("/candidate/sourceContainer/value");
+			var oSourceStock = this.getOwnerComponent().findEntity("stock", "/rows", function (oObject) {
+				return oObject.value.container === sSourceContainer && oObject.value.quantity > 0;
 			});
-			if (oStock && iQuantity) {
+
+			var sTargetContainer = this.getView().getModel().getProperty("/candidate/targetContainer/value");
+			var oTargetStock = this.getOwnerComponent().findEntity("stock", "/rows", function (oObject) {
+				return oObject.value.container === sTargetContainer && oObject.value.quantity > 0;
+			});
+
+
+			if (oSourceStock && iQuantity) {
 				// reduce stock by entered quantity
-				oStock = oStock.value;
-				oStock.quantity -= iQuantity;
+				oSourceStock = oSourceStock.value;
+				oSourceStock.quantity -= iQuantity;
 				var oComponent = this.getOwnerComponent();
 
+				var oTargetStockPromise;
+				if (oTargetStock) {
+					oTargetStock = oTargetStock.value;
+					oTargetStock.quantity += iQuantity;
+					oTargetStockPromise = oComponent.putDocument(oTargetStock);
+
+				} else {
+					// create new stock
+					var oCandidate = this.getView().getModel().getProperty("/candidate");
+					oTargetStock = {
+						container: oCandidate.targetContainer.value,
+						batch: oSourceStock.batch,
+						quantity: oCandidate.quantity.value,
+						actionDate: new Date(),
+						action: "goodsMove"
+					};
+					oTargetStockPromise = oComponent.postDocument("stock", oTargetStock);
+				}
+
+				oModel.setProperty("/targetStock", oTargetStock || null);
+
+				var oSourceStockPromise;
+				if (oSourceStock.quantity <= 0) {
+					oSourceStockPromise = oComponent.deleteDocument(oSourceStock);
+				} else {
+					oSourceStockPromise = oComponent.putDocument(oSourceStock);
+				}
+
 				var fnSaveHandler = function () {
+					// avoid duplicate bookings, reset the quantity after successful booking
 					oModel.setProperty("/candidate/quantity/value", 0);
 					// reload stock model
 					oComponent.reloadModel("stock");
 
 					// write log entry
-					oComponent.postDocument("log", this._createJournalEntry(oStock));
+					oComponent.postDocument("log", this._createJournalEntry(oSourceStock));
+					oComponent.postDocument("log", this._createJournalEntry(oTargetStock));
 
-					oModel.setProperty("/newQuantity", oStock.quantity);
-					oModel.setProperty("/issuedQuantity", iQuantity);
-					MessageToast.show("Schnaps wurde ausgelagert. Der Behälter befindet sich noch im Lager.", {
+					oModel.setProperty("/newQuantitySource", oSourceStock.quantity);
+					oModel.setProperty("/newQuantityTarget", oTargetStock.quantity);
+					oModel.setProperty("/movedQuantity", iQuantity);
+					oModel.setProperty("/candidate/targetContainer/value", null);
+					oModel.setProperty("/candidate/targetContainer/valueState", ValueState.None);
+					oModel.setProperty("/candidate/targetContainer/valueStateText", "");
+					oModel.setProperty("/moveAllowed", false);
+
+					if (oSourceStock.quantity <= 0) {
+						oModel.setProperty("/candidate/sourceContainer/value", null);
+						window.setTimeout(function () {
+							oView.byId("sourceContainerSelect").focus();
+						}, 0);
+					} else {
+						window.setTimeout(function () {
+							oView.byId("targetContainerSelect").focus();
+						}, 0);
+					}
+
+					MessageToast.show("Schnaps wurde umgelagert.", {
 						width: "30rem",
 						duration: 2000
 					});
 				}.bind(this);
 
-				if (oStock.quantity <= 0) {
-					oComponent.deleteDocument(oStock).then(fnSaveHandler);
-				} else {
-					oComponent.putDocument(oStock).then(fnSaveHandler);
-				}
+				Promise.all([oSourceStockPromise, oTargetStockPromise]).then(fnSaveHandler);
 			}
 		},
 
@@ -117,7 +214,7 @@ sap.ui.define([
 			});
 		},
 
-		_createJournalEntry: function (oStock) {
+		_createJournalEntry: function (oStock, bTarget) {
 			var oBatch = this._getBatch(oStock.batch);
 			var oComponent = this.getOwnerComponent();
 			var oContainer = oComponent.findEntity("container", "/rows", function (oObject) {
@@ -130,26 +227,14 @@ sap.ui.define([
 				batch: oBatch,
 				quantity: oStock.quantity,
 				actionDate: new Date(),
-				action: "goodsIssue"
+				action: "goodsMove" + (bTarget ? "To" : "From")
 			};
 		},
 
 		onQuantityChange: function () {
 			var oModel = this.getView().getModel();
 			oModel.setProperty("/newQuantity", null);
-			this.onContainerSelectSource();
-		},
-
-		onConfirmSource: function () {
-			this.byId("columnLayout").setLayout(LayoutType.TwoColumnsMidExpanded);
-		},
-
-		onBackToSource: function () {
-			this.byId("columnLayout").setLayout(LayoutType.TwoColumnsBeginExpanded);
-		},
-
-		onGoodsMove: function () {
-			this.byId("columnLayout").setLayout(LayoutType.EndColumnFullScreen);
+			this.onContainerSelect();
 		},
 
 		onFinishMove: function () {

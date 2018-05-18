@@ -76,7 +76,7 @@
                         id="tileGM"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
                         header="Schnaps"
-                        subheader="umlagern"
+                        subheader="umfüllen"
                         press=".onTilePress">
                     <TileContent
                             unit=""
