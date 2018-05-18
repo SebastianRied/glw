@@ -23,7 +23,8 @@ sap.ui.define([
 				newQuantitySource: null,
 				newQuantityTarget: null,
 				movedQuantity: null,
-				moveAllowed: false
+				moveAllowed: false,
+				batch: null
 			};
 
 			oModel.setData(oData);
@@ -32,6 +33,8 @@ sap.ui.define([
 
 		onNavBack: function () {
 			this.getView().getModel().setProperty("/candidate", this._createCandidateObject());
+			this.getView().getModel().setProperty("/movedQuantity", null);
+
 			this.getOwnerComponent().onNavBack();
 		},
 
@@ -88,6 +91,7 @@ sap.ui.define([
 			if (oSourceStock) {
 				oSourceStock = JSON.parse(JSON.stringify(oSourceStock));
 				oSourceStock.batch.batchDate = new Date(oSourceStock.batch.batchDate);
+				oModel.setProperty("/batch", oSourceStock.batch);
 			}
 
 			if (sSourceContainer && sSourceContainer === sTargetContainer) {
@@ -238,12 +242,6 @@ sap.ui.define([
 			oModel.setProperty("/newQuantity", null);
 			oModel.setProperty("/candidate/quantity/value", Math.min(oModel.getProperty("/candidate/quantity/value"), oModel.getProperty("/sourceStock/quantity")));
 			this.onContainerSelect();
-		},
-
-		onFinishMove: function () {
-			this.getView().getModel().setProperty("/candidate", this._createCandidateObject());
-			this.getView().getModel().setProperty("/stock", null);
-			this.byId("columnLayout").setLayout(LayoutType.TwoColumnsBeginExpanded);
 		}
 
 	});

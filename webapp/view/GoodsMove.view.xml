@@ -154,19 +154,19 @@
                                         visible="{= !!${/sourceStock} &amp;&amp; ${/movedQuantity} !== null}"
                                         highlight="Warning"
                                         number="{path: '/movedQuantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                        numberUnit="{parts: ['/sourceStock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                                        numberUnit="{parts: ['/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
                                         title="Umgelagert"/>
                                 <ObjectListItem
                                         visible="{= !!${/sourceStock} &amp;&amp; ${/newQuantitySource} !== null}"
                                         highlight="Success"
                                         number="{path: '/newQuantitySource', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                        numberUnit="{parts: ['/sourceStock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                                        numberUnit="{parts: ['/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
                                         title="Bestand Entnahmebehälter"/>
                                 <ObjectListItem
                                         visible="{= !!${/targetStock} &amp;&amp; ${/newQuantityTarget} !== null}"
                                         highlight="Success"
                                         number="{path: '/newQuantityTarget', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                        numberUnit="{parts: ['/targetStock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                                        numberUnit="{parts: ['/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
                                         title="Bestand Zielbehälter"/>
                             </List>
                         </content>
@@ -175,7 +175,7 @@
                         </layoutData>
                     </ScrollContainer>
                     <Text text="Bitte einen Behälter scannen oder eingeben."
-                          visible="{= !${/candidate/sourceContainer/value}}" class="sapUiMediumMargin"/>
+                          visible="{= !${/candidate/sourceContainer/value} &amp;&amp; ${/movedQuantity} === null}" class="sapUiMediumMargin"/>
                 </VBox>
 
             </l:sideContent>
