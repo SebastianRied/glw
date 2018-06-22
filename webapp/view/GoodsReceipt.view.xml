@@ -31,55 +31,69 @@
                               ariaLabelledBy="formTitle">
                     <f:toolbar>
                         <Toolbar>
-                            <Title id="formTitle" text="Schnaps Einlagern" level="H2" titleStyle="H2"/>
+                            <Title id="formTitle" text="{i18n>goodsReceipt}" level="H2" titleStyle="H2"/>
                             <ToolbarSpacer/>
                             <Button text="Journal" press=".onJournalShow" visible="{= !${/showSideContent}}"/>
                         </Toolbar>
                     </f:toolbar>
                     <f:content>
 
-                        <Label text="Behälter"/>
+                        <Label text="{i18n>container}"/>
                         <ComboBox
                                 id="containerSelect"
                                 forceSelection="false"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
-                                items="{path: 'container>/rows', sorter: {path: 'value/barCode'}}"
+                                items="{path: 'main>/container', sorter: {path: 'barCode'}}"
                                 selectedKey="{/candidate/container/value}"
                                 valueState="{/candidate/container/valueState}"
                                 valueStateText="{/candidate/container/valueStateText}"
                                 selectionChange=".onContainerSelect">
                             <items>
-                                <core:ListItem text="{container>value/barCode}"
-                                               additionalText="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
-                                               key="{container>value/barCode}"/>
+                                <core:ListItem text="{main>barCode}"
+                                               additionalText="{main>productCategory/name}"
+                                               key="{main>_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </ComboBox>
                         <Text
-                                text="{parts: ['/candidate/container/value', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'}"
+                                text="{path: '/candidate/container/value', formatter: '.formatter.formatProductCategoryByContainerId'}"
                                 class="sapUiTinyMarginBegin"/>
 
-                        <Label text="Lagerplatz"/>
+                        <Label text="{i18n>fillingLevel}"
+                               visible="{= !!${/containerStockDetails/quantity}}"/>
+                        <Text
+                                hAlign="Right"
+                                visible="{= !!${/containerStockDetails/quantity}}"
+                                text="{/containerStockDetails/quantity}">
+                            <layoutData>
+                                <l:GridData span="XL6 L6 M6 S12"/>
+                            </layoutData>
+                        </Text>
+                        <Text visible="{= !!${/containerStockDetails/quantity}}"
+                                text="{/containerStockDetails/batch/productCategory/productGroup/numberUnit/value}"
+                                class="sapUiTinyMarginBegin"/>
+
+                        <Label text="{i18n>storageBin}"/>
                         <ComboBox forceSelection="false"
-                                  items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}"
+                                  items="{path: 'main>/storageBin', sorter: {path: 'id'}}"
                                   selectedKey="{/candidate/storageBin/value}"
                                   valueState="{/candidate/storageBin/valueState}"
                                   valueStateText="{/candidate/storageBin/valueStateText}">
                             <items>
-                                <core:Item text="{storageBins>value/id}" key="{storageBins>value/id}"/>
+                                <core:Item text="{main>id}" key="{main>_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </ComboBox>
 
-                        <Label text="Charge"/>
+                        <Label text="{i18n>batch}"/>
                         <Select
                                 id="batchSelect"
-                                items="{path: 'batches>/list', sorter: [{path: 'batchDate', descending: true}, {path: 'productCategoryName'}]}"
+                                items="{path: 'main>/batch', sorter: [{path: 'batchDate', descending: true}, {path: 'productCategory/name'}]}"
                                 showSecondaryValues="true"
                                 selectedKey="{/candidate/batch/value}"
                                 forceSelection="false"
@@ -88,17 +102,20 @@
                                 valueStateText="{/candidate/batch/valueStateText}">
                             <items>
                                 <core:ListItem
-                                        text="{batches>productCategoryName} ({path: 'batches>batchDate', type:'sap.ui.model.type.Date', formatOptions: {pattern: 'yyyy'}})"
-                                        additionalText="{path: 'batches>batchDate', type:'sap.ui.model.type.Date'}"
-                                        key="{batches>_id}"/>
+                                        text="{main>productCategory/name} ({path: 'main>batchDate', type:'sap.ui.model.type.Date', formatOptions: {pattern: 'yyyy'}})"
+                                        additionalText="{path: 'main>batchDate', type:'sap.ui.model.type.Date'}"
+                                        key="{main>_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </Select>
+                        <Text
+                                text="{path: '/candidate/batchObject/batchDate', type: 'sap.ui.model.type.Date'}"
+                                class="sapUiTinyMarginBegin"/>
 
 
-                        <Label text="Füllenge"/>
+                        <Label text="{i18n>fillingQuantity}"/>
                         <StepInput textAlign="End"
                                    min="0"
                                    step="{viewModel>/quantityFieldProperties/stepInputStep}"
@@ -111,19 +128,10 @@
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </StepInput>
-                        <Text text="{parts: ['/candidate/batchObject/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                        <Text text="{/candidate/batchObject/productCategory/productGroup/numberUnit/value}"
                               class="sapUiTinyMarginBegin"/>
 
-
-                        <Label text="Chargendatum"/>
-                        <Text textAlign="Right"
-                              text="{path: '/candidate/batchObject/batchDate', type: 'sap.ui.model.type.Date'}">
-                            <layoutData>
-                                <l:GridData span="XL6 L6 M6 S12"/>
-                            </layoutData>
-                        </Text>
-
-                        <Label text="Alkoholgehalt"/>
+                        <Label text="{i18n>alcoholContent}"/>
                         <ObjectNumber
                                 textAlign="Right"
                                 number="{path: '/candidate/batchObject/vol', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2, emptyString: 0}}"
@@ -146,9 +154,9 @@
             <l:sideContent>
                 <VBox fitContainer="true" renderType="Bare">
                     <Toolbar>
-                        <Title level="H2" titleStyle="H2" text="Journal ({= ${/journal}.length})"/>
+                        <Title level="H2" titleStyle="H2" text="{i18n>journal} ({= ${/journal}.length})"/>
                         <ToolbarSpacer/>
-                        <Button text="Schließen" type="Transparent" press="onJournalHide"/>
+                        <Button text="{i18n>close}" type="Transparent" press="onJournalHide"/>
                         <layoutData>
                             <FlexItemData shrinkFactor="0" growFactor="0"/>
                         </layoutData>
@@ -164,16 +172,16 @@
                                     items="{/journal}">
                                 <ObjectListItem
                                         number="{path: 'quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                        numberUnit="{parts: ['batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
-                                        title="{parts: ['batch/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
-                                        text="{batch}">
+                                        numberUnit="{batch/productCategory/productGroup/numberUnit/value}"
+                                        title="{batch/productCategory/name}"
+                                        text="{batch/name}">
                                     <attributes>
-                                        <ObjectAttribute title="Behälter"
-                                                         text="{parts: ['container', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container})"/>
-                                        <ObjectAttribute title="Lagerplatz" text="{storageBin}"/>
-                                        <ObjectAttribute title="Charge"
+                                        <ObjectAttribute title="{i18n>container}"
+                                                         text="{container/productCategory/name} ({container/barCode})"/>
+                                        <ObjectAttribute title="{i18n>storageBin}" text="{storageBin/id}"/>
+                                        <ObjectAttribute title="{i18n>batchDate}"
                                                          text="{path: 'batch/batchDate', type: 'sap.ui.model.type.Date'}"/>
-                                        <ObjectAttribute title="Alkoholgehalt" text="{batch/vol}"/>
+                                        <ObjectAttribute title="{i18n>alcoholContent}" text="{batch/vol}%"/>
                                     </attributes>
                                 </ObjectListItem>
                             </List>

@@ -42,22 +42,22 @@
                                 forceSelection="false"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
-                                items="{path: 'container>/rows', sorter: {path: 'value/barCode'}}"
+                                items="{path: 'main>/container', sorter: {path: 'barCode'}}"
                                 selectedKey="{/candidate/sourceContainer/value}"
                                 valueState="{/candidate/sourceContainer/valueState}"
                                 valueStateText="{/candidate/sourceContainer/valueStateText}"
                                 selectionChange=".onContainerSelect">
                             <items>
-                                <core:ListItem text="{container>value/barCode}"
-                                               additionalText="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
-                                               key="{container>value/barCode}"/>
+                                <core:ListItem text="{main>barCode}"
+                                               additionalText="{main>productCategory/name}"
+                                               key="{main>_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </ComboBox>
                         <Text
-                                text="{parts: ['/candidate/sourceContainer/value', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'}"
+                                text="{path: '/candidate/sourceContainer/value', formatter: '.formatter.formatProductCategoryByContainerId'}"
                                 class="sapUiTinyMarginBegin"/>
 
                         <Label text="Zielbehälter"/>
@@ -66,22 +66,22 @@
                                 forceSelection="false"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
-                                items="{path: 'container>/rows', sorter: {path: 'value/barCode'}}"
+                                items="{path: 'main>/container', sorter: {path: 'barCode'}}"
                                 selectedKey="{/candidate/targetContainer/value}"
                                 valueState="{/candidate/targetContainer/valueState}"
                                 valueStateText="{/candidate/targetContainer/valueStateText}"
                                 selectionChange=".onContainerSelect">
                             <items>
-                                <core:ListItem text="{container>value/barCode}"
-                                               additionalText="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
-                                               key="{container>value/barCode}"/>
+                                <core:ListItem text="{main>barCode}"
+                                               additionalText="{main>productCategory/name}"
+                                               key="{main>_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </ComboBox>
                         <Text
-                                text="{parts: ['/candidate/targetContainer/value', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'}"
+                                text="{path: '/candidate/targetContainer/value', formatter: '.formatter.formatProductCategoryByContainerId'}"
                                 class="sapUiTinyMarginBegin"/>
 
                         <Label text="Umfüllmenge"/>
@@ -101,9 +101,8 @@
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </StepInput>
-                        <Text text="{parts: ['/sourceStock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                        <Text text="{/sourceStock/batch/productCategory/productGroup/numberUnit/value}"
                               class="sapUiTinyMarginBegin"/>
-
 
                         <Label text=""/>
                         <Button text="Umfüllen" type="Emphasized" press=".onGoodsMove"
@@ -134,12 +133,12 @@
                             <List>
                                 <ObjectListItem
                                         number="{path: '/sourceStock/quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                        numberUnit="{parts: ['/sourceStock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
-                                        title="{= ${/sourceStock/batch/productCategoryName} !== undefined ? ${/sourceStock/batch/productCategoryName} : '- Kein Bestand -'}">
+                                        numberUnit="{/sourceStock/batch/productCategory/productGroup/numberUnit/value}"
+                                        title="{= ${/sourceStock/batch/productCategory/name} !== undefined ? ${/sourceStock/batch/productCategory/name} + ' ' + ${/sourceStock/batch/year} : '- Kein Bestand -'}">
                                     <attributes>
-                                        <ObjectAttribute title="Behälter"
-                                                         text="{parts: ['/sourceContainer/barCode', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({/sourceContainer/barCode})"/>
-                                        <ObjectAttribute title="Lagerplatz" text="{/sourceContainer/storageBin}"/>
+                                        <ObjectAttribute title="{i18n>container}"
+                                                         text="{/sourceStock/container/productCategory/name} ({/sourceStock/container/barCode})"/>
+                                        <ObjectAttribute title="{i18n>storageBin}" text="{/sourceStock/container/storageBin/id}"/>
                                         <ObjectAttribute
                                                 visible="{= !!${/sourceStock}}"
                                                 title="Charge"
@@ -147,7 +146,7 @@
                                         <ObjectAttribute
                                                 visible="{= !!${/sourceStock}}"
                                                 title="Alkoholgehalt"
-                                                text="{/sourceStock/batch/vol}"/>
+                                                text="{/sourceStock/batch/vol}%"/>
                                     </attributes>
                                 </ObjectListItem>
                                 <ObjectListItem

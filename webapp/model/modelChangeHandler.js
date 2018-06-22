@@ -1,4 +1,4 @@
-sap.ui.define(["./formatter"], function (Formatter) {
+sap.ui.define(["./documentTemplate"], function (template) {
 	"use strict";
 	var ChangeHandler = function () {
 		// the constructor must not be used. The ChangeHandler is a collection of event handlers called with the component context.
@@ -13,129 +13,276 @@ sap.ui.define(["./formatter"], function (Formatter) {
 		return oObject;
 	}
 
-	ChangeHandler.prototype.batchesModelChanged = function (oModel) {
-		this.models.productCategories.loaded.then(function () {
-			var aBatches = oModel.getObject("/rows");
-			var aList = [];
-			var aProductCategories = this.getModel("productCategories").getObject("/rows");
-			for (var i = 0; i < aBatches.length; i++) {
-				aList.push(getBatchListItem.call(this, aBatches[i], aProductCategories));
-			}
+	ChangeHandler.prototype.feedModelChanged = function (oModel, sUri) {
+		var oData = oModel.getData();
+		var oMainModel = this.getModel("main");
+		var oMappedData = oMainModel.getData();
+		var aRows = [];
+		for (var i = 0; i < oData.results.length; i++) {
+			aRows.push({value: oData.results[i].doc});
+		}
 
-			oModel.setProperty("/list", aList);
-		}.bind(this));
+		if (aRows.length > 0) {
+			mapTypesToContainers(aRows, oMappedData);
+			createDataRelationship(oMappedData);
+			oMainModel.setData(oMappedData);
+		}
+
+		sUri = sUri.replace(/since=now/i, "since=" + oData.last_seq);
+		oModel.loadData(sUri);
 	};
 
-	ChangeHandler.prototype.storageBinsModelChanged = function (oModel) {
-		var mModels = this.models;
-		Promise.all([mModels.container.loaded, mModels.storageBins.loaded]).then(function () {
-			var mStorageBins = {};
-			var aContainer = mModels.container.model.getObject("/rows");
-			for (var i = 0; i < aContainer.length; i++) {
-				mStorageBins[aContainer[i].value.storageBin] = true;
+	function mapTypesToContainers(aRows, oMappedData) {
+		if (!aRows) {
+			return;
+		}
+		// go throug the result set and put them with their ID into the corresponding type containers.
+		var j;
+		for (var i = 0; i < aRows.length; i++) {
+
+			var oValue = undefined;
+			if (!aRows[i].value._deleted) {
+				oValue = aRows[i].value;
+			}
+			var sId = aRows[i].value._id;
+			var sType = aRows[i].value.type;
+			if (!sType) {
+				sType = getTypeById(sId, oMappedData);
 			}
 
-			var aStorageBins = JSON.parse(JSON.stringify(mModels.storageBins.model.getObject("/rows")));
-			for (var j = 0; j < aStorageBins.length; j++) {
-				aStorageBins[j].value.used = mStorageBins[aStorageBins[j].value.id] || false;
-			}
+			if (sType === "validValues") {
+				oMappedData.validValues = oValue;
+			} else if (sType && oMappedData["_" + sType]) {
+				if (oValue && !oMappedData["_" + sType][sId]) {
+					oMappedData[sType].push(oValue);
+				} else if (oMappedData["_" + sType][sId]) {
+					for (j = 0; j < oMappedData[sType].length; j++) {
+						if (oMappedData[sType][j]._id === sId) {
+							if (oValue) {
+								oMappedData[sType].splice(j, 1, oValue);
+							} else {
+								oMappedData[sType].splice(j, 1);
+							}
 
-			mModels.storageBins.model.setProperty("/list", aStorageBins);
-		});
-	};
-
-	ChangeHandler.prototype.containerModelChanged = function (oModel) {
-		ChangeHandler.prototype.stockModelChanged.call(this, this.getModel("stock"));
-		ChangeHandler.prototype.storageBinsModelChanged.call(this, this.getModel("storageBins"));
-
-		Promise.all([this.models.stock.loaded, this.models.container.loaded, this.models.productCategories.loaded, this.models.validValues.loaded]).then(function () {
-			var oStockModel = this.getModel("stock");
-			var aStock = oStockModel.getObject("/rows");
-			var mStock = {};
-			for (var i = 0; i < aStock.length; i++) {
-				if (!mStock[aStock[i].value.container]) {
-					mStock[aStock[i].value.container] = aStock[i].value.quantity > 0;
-				}
-			}
-
-			var aProductCategories = this.getModel("productCategories").getObject("/rows");
-			var oValidValues = this.getModel("validValues").getObject("/");
-			var aContainer = oModel.getObject("/rows");
-			for (var j = 0; j < aContainer.length; j++) {
-				aContainer[j].value.empty = !mStock[aContainer[j].value.barCode] ? "yes" : "no";
-				aContainer[j].value.productCategoryName = Formatter.formatProductCategory(aContainer[j].value.productCategory, aProductCategories);
-				aContainer[j].value.productGroup = Formatter.formatProductGroupByProductCategoryId(aContainer[j].value.productCategory, aProductCategories, oValidValues);
-			}
-			oModel.setProperty("/list", aContainer);
-		}.bind(this));
-	};
-
-	ChangeHandler.prototype.stockModelChanged = function (oModel) {
-		Promise.all([this.models.stock.loaded, this.models.productCategories.loaded, this.models.batches.loaded, this.models.container.loaded, this.models.validValues.loaded]).then(function() {
-			var aBatches = this.models.batches.model.getObject("/rows");
-			var mBatches = {};
-			var aProductCategories = this.models.productCategories.model.getObject("/rows");
-			var aContainer = this.getModel("container").getObject("/rows");
-			for (var i = 0; i < aBatches.length; i++) {
-				mBatches[aBatches[i].value._id] = getBatchListItem.call(this, aBatches[i], aProductCategories);
-			}
-
-			var aStock = oModel.getObject("/rows");
-			var aList = [];
-			var oAggregatedStock = {};
-			var oYears = {};
-			var iTotal = 0;
-			var oValidValues = this.models.validValues.model.getObject("/");
-			for (var j = 0; j < aStock.length; j++) {
-				var oStock = aStock[j].value;
-				var oObject = JSON.parse(JSON.stringify(oStock));
-				oObject.batch = mBatches[oStock.batch];
-				if (!oObject.batch) {
-					continue;
-				}
-				oObject.productCategoryName = Formatter.formatProductCategory(oObject.batch.productCategory, aProductCategories);
-				oObject.containerName = Formatter.formatProductCategoryByContainerBarCode(oStock.container, aContainer, aProductCategories);
-				oObject.containerVolume = Formatter.formatContainerVolume(oObject.container, aContainer, aProductCategories);
-				oObject.storageBin = Formatter.formatStorageBinByContainerBarCode(oStock.container, aContainer);
-				oObject.year = oObject.batch.batchDate.getFullYear();
-				oObject.numberUnit = Formatter.formatNumberUnitByProductCategoryId(oObject.batch.productCategory, aProductCategories, oValidValues);
-
-				// aggregted stock calculation
-				var sKey = oObject.batch.productCategory + "_" + oObject.year;
-				if (!oAggregatedStock[sKey]) {
-					var iBatchQuantity = parseFloat(oObject.batch.quantity);
-					if (isNaN(iBatchQuantity)) {
-						iBatchQuantity = 10000000;
+							break;
+						}
 					}
-					oAggregatedStock[sKey] = {
-						productCategory: oObject.batch.productCategory,
-						productCategoryName: oObject.productCategoryName,
-						batchDate: oObject.batch.batchDate,
-						batchQuantity: iBatchQuantity,
-						year: oObject.year,
-						quantity: 0,
-						numberUnit: oObject.numberUnit
-					};
 				}
-
-				if (!oYears[oAggregatedStock[sKey].year]) {
-					oYears[oAggregatedStock[sKey].year] = {year: oAggregatedStock[sKey].year.toString()};
+				oMappedData["_" + sType]._length = oMappedData[sType].length || 0;
+				if (oValue) {
+					oMappedData["_" + sType][sId] = oValue;
+				} else {
+					delete oMappedData["_" + sType][sId];
 				}
+			}
+		}
+	}
 
-				oAggregatedStock[sKey].quantity += oStock.quantity;
-				iTotal += oStock.quantity;
-				oModel.setProperty("/aggregatedStock", oAggregatedStock);
-				this.getModel("viewModel").setProperty("/totalQuantity", iTotal);
-				oModel.setProperty("/years", oYears);
-				oModel.setProperty("/totalCount", Object.getOwnPropertyNames(oAggregatedStock).length);
+	function getTypeById(sId, oMappedData) {
+		var aProperties = Object.getOwnPropertyNames(oMappedData);
+		for (var i = 0; i < aProperties.length; i++) {
+			var sProperty = aProperties[i];
+			if (sProperty[0] === "_" && oMappedData[sProperty][sId]) {
+				return sProperty.split("_")[1];
+			}
+		}
+	}
 
+	function createDataRelationship(oMappedData, mFilter) {
+		processProductGroup(oMappedData, mFilter);
+		processProductCategory(oMappedData, mFilter);
+		processStorageBin(oMappedData, mFilter);
+		processContainer(oMappedData, mFilter);
+		processBatch(oMappedData, mFilter);
+		processStock(oMappedData, mFilter);
+	}
 
-				aList.push(oObject);
+	function processStorageBin(oMappedData, mFilter) {
+		if (!oMappedData._storageBinIdReferences) {
+			oMappedData._storageBinIdReferences = {};
+		}
+
+		for (var i = 0; i < oMappedData.storageBin.length; i++) {
+			if (mFilter && !mFilter[oMappedData.storageBin[i]._id]) {
+				continue;
+			}
+			var sId = oMappedData.storageBin[i].id;
+			var sInternalId = oMappedData.storageBin[i]._id;
+			oMappedData.storageBin[i].used = false;
+			oMappedData._storageBinIdReferences[sId] = sInternalId;
+		}
+	}
+
+	function processProductCategory(oMappedData, mFilter) {
+		for (var i = 0; i < oMappedData.productCategory.length; i++) {
+			var oCategory = oMappedData.productCategory[i];
+			if (mFilter && !mFilter[oCategory._id]) {
+				continue;
 			}
 
-			oModel.setProperty("/list", aList);
-			oModel.refresh(true);
-		}.bind(this));
+			var sProductGroupId = typeof oCategory.productGroup === "string" ? oCategory.productGroup : oCategory.productGroup.id;
+			oCategory.productGroup = oMappedData.validValues.productGroups[sProductGroupId];
+		}
+	}
+
+	function processContainer(oMappedData, mFilter) {
+		if (!oMappedData._containerIdReferences) {
+			oMappedData._containerIdReferences = {};
+		}
+		for (var i = 0; i < oMappedData.container.length; i++) {
+			var oContainer = oMappedData.container[i];
+			if (mFilter && !mFilter[oContainer._id]) {
+				continue;
+			}
+
+			var sId = oContainer.barCode;
+			oMappedData._containerIdReferences[sId] = oContainer._id;
+			// map the storage bin
+			if (oContainer.storageBin) {
+				var sStorageBinId = template.getId(oContainer.storageBin);
+
+				sStorageBinInternalId = sStorageBinId;
+				if (sStorageBinId.length < 32) {
+					var sStorageBinInternalId = oMappedData._storageBinIdReferences[sStorageBinId];
+				}
+
+				if (oMappedData._storageBin[sStorageBinInternalId]) {
+					oMappedData._storageBin[sStorageBinInternalId].used = true;
+					oContainer.storageBin = oMappedData._storageBin[sStorageBinInternalId];
+
+					if (!oMappedData._storageBin[sStorageBinInternalId].container) {
+						oMappedData._storageBin[sStorageBinInternalId].container = []
+					}
+					oMappedData._storageBin[sStorageBinInternalId].container.push(oContainer);
+
+				} else {
+					oContainer.storageBin = {id: "#"};
+				}
+			}
+
+			// map the product category
+			if (oContainer.productCategory) {
+				var sProductCategoryId = typeof oContainer.productCategory === "string" ? oContainer.productCategory : oContainer.productCategory._id;
+				oContainer.productCategory = oMappedData._productCategory[sProductCategoryId];
+			}
+
+			// by default, every container is empty. When the stock is processed, this property will be updated.
+			oContainer.empty = "yes";
+		}
+	}
+
+	function processStock(oMappedData, mFilter) {
+		oMappedData._stock._totalQuantity = 0;
+		var oAggregatedStock = {};
+		var oYears = {};
+		oMappedData._aggregatedStock = {_length: 0};
+		for (var i = 0; i < oMappedData.stock.length; i++) {
+			var oStock = oMappedData.stock[i];
+
+
+			var sContainerId = template.getId(oStock.container);
+			var sInternalContainerId;
+			if (sContainerId.length === 32) {
+				// in older versions, the barCode was used to map the container to stock. For compatibility this is checked by assuming that the barCode has not
+				// exactly 32 characters like the internal id
+				sInternalContainerId = sContainerId;
+			} else {
+				sInternalContainerId = oMappedData._containerIdReferences[sContainerId];
+			}
+
+			if (oMappedData._container[sInternalContainerId]) {
+				oMappedData._container[sInternalContainerId].empty = "no";
+				oMappedData._stock._totalQuantity += oStock.quantity;
+			} else {
+				oStock._unkownContainer = true;
+			}
+
+			var sBatchId = typeof oStock.batch === "string" ? oStock.batch : oStock.batch._id;
+			oStock.batch = oMappedData._batch[sBatchId];
+			oStock.container = oMappedData._container[sInternalContainerId];
+
+			// we need to aggregate the stock numbers for the overview page
+			var sKey = oStock.batch.productCategory._id + "_" + oStock.batch.year;
+			if (!oAggregatedStock[sKey]) {
+				oMappedData._aggregatedStock._length++;
+				var iBatchQuantity = parseFloat(oStock.batch.quantity);
+				if (isNaN(iBatchQuantity)) {
+					iBatchQuantity = 10000000;
+				}
+
+				oAggregatedStock[sKey] = {
+					batch: oStock.batch,
+					batchQuantity: iBatchQuantity,
+					quantity: 0
+				};
+			}
+
+			// for filtering the stock by year
+			if (!oYears[oAggregatedStock[sKey].batch.year]) {
+				oYears[oAggregatedStock[sKey].batch.year] = {year: oAggregatedStock[sKey].batch.year.toString()};
+			}
+
+			oAggregatedStock[sKey].quantity += oStock.quantity;
+		}
+
+		oMappedData.aggregatedStock = oAggregatedStock;
+		oMappedData._stock.years = oYears;
+	}
+
+	function processProductGroup(oMappedData, mFilter) {
+		if (!oMappedData.validValues || !oMappedData.validValues.productGroups) {
+			return;
+		}
+		var oProductGroups = oMappedData.validValues.productGroups;
+		var aProductGroupIds = Object.getOwnPropertyNames(oProductGroups);
+		for (var i = 0; i < aProductGroupIds.length; i++) {
+			if (mFilter && !mFilter[aProductGroupIds[i]]) {
+				continue;
+			}
+			if (typeof oProductGroups[aProductGroupIds[i]].numberUnit === "string") {
+				oProductGroups[aProductGroupIds[i]].numberUnit = oMappedData.validValues.numberUnits[oProductGroups[aProductGroupIds[i]].numberUnit];
+			}
+		}
+	}
+
+	function processBatch(oMappedData, mFilter) {
+		for (var i = 0; i < oMappedData.batch.length; i++) {
+			var oBatch = oMappedData.batch[i];
+			if (mFilter && !mFilter[oBatch._id]) {
+				continue;
+			}
+
+			if (oBatch.batchDate) {
+				oBatch.batchDate = new Date(oBatch.batchDate);
+				oBatch.year = oBatch.batchDate.getFullYear();
+			}
+			var sProductCategoryId = template.getId(oBatch.productCategory);
+			oBatch.productCategory = oMappedData._productCategory[sProductCategoryId];
+			oBatch.totalFee = oBatch.distillerFee + oBatch.taxes;
+		}
+	}
+
+	ChangeHandler.prototype.mainModelChanged = function (oModel) {
+		var oData = oModel.getData();
+		var oMappedData = {
+			_container: {_length: 0},
+			_batch: {_length: 0},
+			_stock: {_length: 0},
+			_productCategory: {_length: 0},
+			_storageBin:{_length: 0},
+			_validValues: {_length: 0},
+			container: [],
+			batch: [],
+			stock: [],
+			productCategory: [],
+			storageBin:[],
+			validValues: []
+		};
+
+		mapTypesToContainers(oData.rows, oMappedData);
+		createDataRelationship(oMappedData);
+
+		oModel.setData(oMappedData);
 	};
 
 	return ChangeHandler;

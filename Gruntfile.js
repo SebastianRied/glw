@@ -49,12 +49,14 @@ module.exports = function (grunt) {
 		openui5_connect: {
 			src: {
 				options: {
-					appresources: 'webapp'
+					appresources: 'webapp',
+					resources: 'resources'
 				}
 			},
 			dist: {
 				options: {
-					appresources: 'dist'
+					appresources: 'dist',
+					resources: 'resources'
 				}
 			}
 		},
@@ -96,7 +98,8 @@ module.exports = function (grunt) {
 					cwd: 'webapp',
 					src: [
 						'**',
-						'!test/**'
+						'!test/**',
+						'!resources/**'
 					],
 					dest: 'dist'
 				}]

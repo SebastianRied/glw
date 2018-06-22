@@ -8,80 +8,80 @@
                 noDataText="Keine Charge vorhanden"
                 mode="Delete"
                 delete=".onDeleteBatchPress"
-                items="{path: 'batches>/list', sorter: {path: 'productCategoryName'}}">
+                items="{path: 'main>/batch', sorter: {path: 'productCategory/name'}, key: '_id'}">
             <headerToolbar>
                 <Toolbar>
-                    <Title text="Chargen ({batches>/total_rows})" level="H2" width="9rem"/>
+                    <Title text="{parts: ['i18n>batches', 'main>/_batch/_length'], formatter: 'jQuery.sap.formatMessage'}" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
-                    <SearchField liveChange=".onSearchBatch" search=".onSearchBatch"/>
-                    <Button icon="sap-icon://duplicate" tooltip="Charge splitten" press=".onOpenSplitBatchDialogPress"/>
-                    <Button icon="sap-icon://add" tooltip="Charge anlegen" press=".onOpenAddBatchDialogPress"/>
+                    <SearchField id="searchField" liveChange=".onSearchTable" search=".onSearchTable"/>
+                    <Button icon="sap-icon://duplicate" tooltip="Charge splitten" press=".onOpenSplitBatchDialogPress" visible="false"/>
+                    <Button icon="sap-icon://add" tooltip="{i18n>createBatch}" press=".onOpenAddBatchDialogPress"/>
                 </Toolbar>
             </headerToolbar>
             <columns>
                 <Column
                         width="12em">
-                    <Text text="Produkt"/>
+                    <Text text="{i18n>product}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
-                    <Text text="Chargendatum"/>
+                    <Text text="{i18n>batchDate}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true"
                         hAlign="Right">
-                    <Text text="Menge"/>
+                    <Text text="{i18n>quantity}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true"
                         hAlign="Right">
-                    <Text text="Alkoholgehalt"/>
+                    <Text text="{i18n>alcoholContent}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true"
                         hAlign="Right">
-                    <Text text="Brennerlohn"/>
+                    <Text text="{i18n>distillersFee}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true"
                         hAlign="Right">
-                    <Text text="Steuer"/>
+                    <Text text="{i18n>tax}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true"
                         hAlign="Right">
-                    <Text text="Sonstige"/>
+                    <Text text="{i18n>otherCosts}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true"
                         hAlign="Right">
-                    <Text text="Summe"/>
+                    <Text text="{i18n>totalCosts}"/>
                 </Column>
 
             </columns>
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{batches>productCategoryName}"/>
-                        <Text text="{path: 'batches>batchDate', type:'sap.ui.model.type.Date'}"/>
+                        <Text text="{main>productCategory/name}"/>
+                        <Text text="{path: 'main>batchDate', type:'sap.ui.model.type.Date'}"/>
                         <ObjectNumber
-                                number="{path: 'batches>quantity', type:'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                numberUnit="{parts: ['batches>productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"/>
+                                number="{path: 'main>quantity', type:'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                numberUnit="{main>productCategory/productGroup/numberUnit/value}"/>
                         <ObjectNumber
-                                number="{path: 'batches>vol', type:'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                number="{path: 'main>vol', type:'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                 numberUnit="%"/>
-                        <u:Currency value="{path: 'batches>distillerFee', type:'sap.ui.model.type.Float'}"
+                        <u:Currency value="{path: 'main>distillerFee', type:'sap.ui.model.type.Float'}"
                                     currency="EUR"/>
-                        <u:Currency value="{path: 'batches>taxes', type:'sap.ui.model.type.Float'}" currency="EUR"/>
-                        <u:Currency value="{path: 'batches>otherCosts', type:'sap.ui.model.type.Float'}" currency="EUR"/>
-                        <u:Currency value="{path: 'batches>totalFee', type:'sap.ui.model.type.Float'}" currency="EUR"/>
+                        <u:Currency value="{path: 'main>taxes', type:'sap.ui.model.type.Float'}" currency="EUR"/>
+                        <u:Currency value="{path: 'main>otherCosts', type:'sap.ui.model.type.Float'}" currency="EUR"/>
+                        <u:Currency value="{path: 'main>totalFee', type:'sap.ui.model.type.Float'}" currency="EUR"/>
                     </cells>
                 </ColumnListItem>
 

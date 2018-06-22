@@ -24,24 +24,24 @@
                           columnsM="1"
                           singleContainerFullSize="false">
                 <f:content>
-                    <Label text="Produkt"/>
+                    <Label text="{i18n>product}"/>
                     <Input
                             id="productCategoryInput"
                             value="{/productCategoryName/value}"
                             valueState="{/productCategoryName/valueState}"
                             valueStateText="{/productCategoryName/valueStateText}"/>
-                    <Label text="Produktgruppe"/>
+                    <Label text="{i18n>productGroup}"/>
                     <Select
-                            items="{path: 'validValues>/productGroups'}"
+                            items="{path: 'main>/validValues/productGroups'}"
                             selectedKey="{/productGroup/value}"
                             forceSelection="false"
                             valueState="{/productGroup/valueState}"
                             valueStateText="{/productGroup/valueStateText}">
                         <items>
-                            <core:Item text="{validValues>value}" key="{validValues>id}"/>
+                            <core:Item text="{main>value}" key="{main>id}"/>
                         </items>
                     </Select>
-                    <Label text="Volumen" visible="{= !${/productGroup/value}}"/>
+                    <Label text="{i18n>volume}" visible="{= !${/productGroup/value}}"/>
                     <Input
                             textAlign="Right"
                             visible="{= ${/productGroup/value}.indexOf('VERP') === 0}"
@@ -52,23 +52,23 @@
                             <l:GridData span="XL6 L6 M6 S6"/>
                         </layoutData>
                     </Input>
-                    <Text text="Liter"
+                    <Text text="{i18n>tileUnit_Liter}"
                           visible="{= ${/productGroup/value}.indexOf('VERP') === 0}">
                         <layoutData>
                             <l:GridData span="XL6 L6 M6 S6"/>
                         </layoutData>
                     </Text>
                     <Label
-                            text="Einheit"
+                            text="{i18n>unit}"
                             visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
                     <Text
-                            text="{parts: ['/productGroup/value', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductGroupId'}"
+                            text="{path: '/productGroup/value', formatter: '.formatter.formatNumberUnitByProductGroupId'}"
                             visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
                     <Label
-                            text="Veredelung"
+                            text="{i18n>finishing}"
                             visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
                     <Text
-                            text="{parts: ['/productGroup/value', 'validValues>/'], formatter: '.formatter.formatFinishingByProductGroupId'}"
+                            text="{path: '/productGroup/value', formatter: '.formatter.formatFinishingByProductGroupId'}"
                             visible="{path: '/productGroup/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
                 </f:content>
 

@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"./BaseController",
 	"../model/formatter",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
@@ -12,29 +12,21 @@ sap.ui.define([
 
 	return Controller.extend('glw.controller.ContainerList', {
 		formatter: Formatter,
+		filterProperties: ["barCode"],
 		onInit: function () {
-			var oView = this.getView();
-			oView.attachAfterRendering(function () {
-				window.setTimeout(function () {
-					oView.byId("searchField").focus();
-				}, 0);
-			});
-		},
-
-		onNavBack: function () {
-			this.getOwnerComponent().onNavBack();
+			this.focusControl("searchField");
 		},
 
 		onContainerDeletePress: function (oEvent) {
 			var oComponent = this.getOwnerComponent();
-			var oContext = oEvent.getParameter("listItem").getBindingContext("container");
+			var oContext = oEvent.getParameter("listItem").getBindingContext("main");
+			var that = this;
 			var fnHandler = function (oResponse) {
 				if (oResponse.response.ok) {
-					MessageToast.show("Der Behälter '" + oContext.getProperty("value/barCode") + "' wurde gelöscht", {
+					MessageToast.show(that.getText("messageContainerDeleted", oContext.getProperty("barCode")), {
 						width: "30rem",
 						duration: 2000
 					});
-					oComponent.reloadModel("container");
 				} else {
 					MessageToast.show(oResponse.errorText, {
 						width: "30rem",
@@ -43,11 +35,11 @@ sap.ui.define([
 				}
 			};
 			if (this._checkDeleteConditions(oContext.getProperty())) {
-				oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+				oComponent.deleteDocument(oContext.getProperty()).then(fnHandler, fnHandler);
 			} else {
 				var bCompact = !!this.getView().$().closest(".sapUiSizeCompact").length;
 				MessageBox.error(
-					"Der Behälter ist noch befüllt und kann daher nicht gelöscht werden.",
+					this.getText("messageContainerStillInUse"),
 					{
 						styleClass: bCompact ? "sapUiSizeCompact" : ""
 					}
@@ -56,8 +48,8 @@ sap.ui.define([
 		},
 
 		_checkDeleteConditions: function (oObject) {
-			return !this.getOwnerComponent().findEntity("stock", "/rows", function (oStock) {
-				return oObject.value.barCode === oStock.value.container && oStock.value.quantity > 0;
+			return !this.getOwnerComponent().findEntity("main", "/stock", function (oStock) {
+				return oObject.barCode === oStock.container.barCode && oStock.quantity > 0;
 			});
 		},
 
@@ -102,23 +94,23 @@ sap.ui.define([
 			oModel.setProperty("/containerBarCode/valueStateText", "");
 			oModel.setProperty("/productCategory/valueState", ValueState.None);
 			oModel.setProperty("/productCategory/valueStateText", "");
-
+			var that = this;
 			var oObject = oModel.getObject("/");
 			oObject.containerBarCode.value = jQuery.trim(oObject.containerBarCode.value);
 			if (oObject.containerBarCode.value && oObject.productCategory.value) {
 				var oInputField = this.byId("containerBarCodeInput");
 				// check barcode allready used
 				var bBarCodeUsed = false;
-				var aContainers = this.getView().getModel("container").getProperty("/rows");
+				var aContainers = this.getView().getModel("main").getProperty("/container");
 				for (var i = 0; i < aContainers.length; i++) {
-					if (aContainers[i].value.barCode === oObject.containerBarCode.value) {
+					if (aContainers[i].barCode === oObject.containerBarCode.value) {
 						bBarCodeUsed = true;
 						break;
 					}
 				}
 				if (bBarCodeUsed) {
 					oModel.setProperty("/containerBarCode/valueState", ValueState.Error);
-					oModel.setProperty("/containerBarCode/valueStateText", "Der Barcode wird bereits verwendet");
+					oModel.setProperty("/containerBarCode/valueStateText", this.getText("messageBarcodeAlreadyInUse"));
 				} else {
 					var oComponent = this.getOwnerComponent();
 					oComponent.postDocument("container", {
@@ -127,12 +119,11 @@ sap.ui.define([
 						storageBin: oObject.storageBin.value
 					}).then(function (oResponse) {
 						if (oResponse.response.ok) {
-							MessageToast.show("Behälter '" + oObject.containerBarCode.value + "' wurde angelegt", {
+							MessageToast.show(that.getText("messageCreated", that.getText("container"), oObject.containerBarCode.value), {
 								width: "30rem",
 								duration: 2000
 							});
 							oModel.setProperty("/containerBarCode/value", null);
-							oComponent.reloadModel("container");
 							oInputField && oInputField.focus();
 						} else {
 							MessageToast.show(oResponse.errorText, {
@@ -182,55 +173,30 @@ sap.ui.define([
 			}
 
 			oModel = oDialog.getModel();
-			oModel.setProperty("/storageBin/value", oEvent.getSource().getBindingContext("container").getProperty("value/storageBin"));
-			oDialog.setBindingContext(oEvent.getSource().getBindingContext("container"), "container");
+			oModel.setProperty("/storageBin/value", oEvent.getSource().getBindingContext("main").getProperty("storageBin/_id"));
+			oDialog.setBindingContext(oEvent.getSource().getBindingContext("main"), "main");
 			oDialog.open();
 		},
 
 		onSaveContainerStorageBinAssignmentPress: function () {
 			var oDialog = this._getStorageBinAssignmentDialog();
-			var oContainer = oDialog.getBindingContext("container").getProperty("value");
-			var oModel = oDialog.getModel();
-			oContainer.storageBin = oModel.getProperty("/storageBin/value");
+			var oDialogModel = oDialog.getModel();
+			var oContainer = oDialog.getBindingContext("main").getProperty();
+			oContainer.storageBin = oDialogModel.getProperty("/storageBin/value");
+
 			var oComponent = this.getOwnerComponent();
 			if (this._storageBinFound) {
-				oModel.setProperty("/storageBin/valueState", ValueState.None);
-				oModel.setProperty("/storageBin/valueStateText", "");
+				oDialogModel.setProperty("/storageBin/valueState", ValueState.None);
+				oDialogModel.setProperty("/storageBin/valueStateText", "");
 				oComponent.putDocument(oContainer).then(function () {
 					oDialog.close();
 					MessageToast.show("Lagerplatz zugeordnet");
-					oComponent.reloadModel("container");
 				});
 			} else {
 				MessageToast.show("Der angegebene Lagerplatz existiert nicht.");
-				oModel.setProperty("/storageBin/valueState", ValueState.Error);
-				oModel.setProperty("/storageBin/valueStateText", "Bitte einen gültigen Lagerplatz wählen");
+				oDialogModel.setProperty("/storageBin/valueState", ValueState.Error);
+				oDialogModel.setProperty("/storageBin/valueStateText", this.getText("chooseStorageBin"));
 			}
-
-		},
-
-		onSearchContainer: function (oEvent) {
-			var sValue = oEvent.getParameter("newValue") || oEvent.getParameter("query");
-			var oTable = this._getTable();
-			var oBinding = oTable.getBinding("items");
-			if (!oBinding) {
-				return;
-			}
-			var oFilter;
-			if (sValue) {
-				oFilter = new Filter({path: "value/barCode", operator: FilterOperator.Contains, value1: sValue});
-			}
-
-			this._searchFilters = oFilter;
-			if (this._facetFilters) {
-				if (oFilter) {
-					oFilter = new Filter([oFilter, this._facetFilters], true);
-				} else {
-					oFilter = this._facetFilters;
-				}
-			}
-
-			oBinding.filter(oFilter);
 		},
 
 		_getTable: function () {
@@ -249,62 +215,11 @@ sap.ui.define([
 			return this.byId("ContainerAddDialog");
 		},
 
-		compareStringAsInt: function () {
-			return this.getOwnerComponent().compareStringAsInt.apply(this, arguments);
-		},
-
 		onStorageBinChange: function (oEvent) {
 			var sValue = oEvent.getParameter("value");
-			this._storageBinFound  = !(sValue && !this.getOwnerComponent().findEntity("storageBins", "/rows", function (oStorageBin) {
-					return sValue === oStorageBin.value.id;
+			this._storageBinFound  = !(sValue && !this.getOwnerComponent().findEntity("main", "/storageBin", function (oStorageBin) {
+					return sValue === oStorageBin.id;
 				}));
-		},
-
-		onConfirmFacetFilter: function () {
-			var oFacetFilter = this.byId("idFacetFilter");
-			this._filterModel(oFacetFilter);
-		},
-
-		_filterModel: function (oFacetFilter) {
-			var mFacetFilterLists = oFacetFilter.getLists().filter(function (oList) {
-				return oList.getSelectedItems().length;
-			});
-
-			if (mFacetFilterLists.length) {
-				// Build the nested filter with ORs between the values of each group and
-				// ANDs between each group
-				var oFilter = new Filter(mFacetFilterLists.map(function (oList) {
-					return new Filter(oList.getSelectedItems().map(function (oItem) {
-						return new Filter(oList.getKey(), "EQ", oItem.getKey());
-					}), false);
-				}), true);
-				this._applyFilter(oFilter);
-			} else {
-				this._applyFilter();
-			}
-		},
-
-		_applyFilter: function (oFilter) {
-			var oTable = this._getTable();
-			this._facetFilters = oFilter;
-
-			if (this._searchFilters) {
-				if (oFilter) {
-					oFilter = new Filter([oFilter, this._searchFilters], true);
-				} else {
-					oFilter = this._searchFilters;
-				}
-			}
-			oTable.getBinding("items").filter(oFilter);
-		},
-
-		onResetFacetFilter: function () {
-			var oFacetFilter = this.byId("idFacetFilter");
-			var aFacetFilterLists = oFacetFilter.getLists();
-			for (var i = 0; i < aFacetFilterLists.length; i++) {
-				aFacetFilterLists[i].setSelectedKeys();
-			}
-			this._applyFilter();
 		},
 
 		handleListClose: function (oEvent) {

@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"./BaseController",
 	"../model/formatter",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
@@ -29,13 +29,14 @@ sap.ui.define([
 
 			oModel.setData(oData);
 			this.getView().setModel(oModel);
+			this.focusControl("sourceContainerSelect");
 		},
 
 		onNavBack: function () {
 			this.getView().getModel().setProperty("/candidate", this._createCandidateObject());
 			this.getView().getModel().setProperty("/movedQuantity", null);
 
-			this.getOwnerComponent().onNavBack();
+			glw.BaseController.prototype.onNavBack.apply(this, arguments);
 		},
 
 		_createCandidateObject: function (oBatch) {
@@ -71,16 +72,16 @@ sap.ui.define([
 			if (oSourceItem) {
 				// get stock info of the container to check whether it is already in use
 				sSourceContainer = oModel.getProperty("/candidate/sourceContainer/value");
-				var oSourceStock = this.getOwnerComponent().findEntity("stock", "/list", function (oObject) {
-					return oObject.container === sSourceContainer && oObject.quantity > 0;
+				var oSourceStock = this.getOwnerComponent().findEntity("main", "/stock", function (oObject) {
+					return oObject.container._id === sSourceContainer && oObject.quantity > 0;
 				});
 			}
 
 			if (oTargetItem) {
 				// get stock info of the container to check whether it is already in use
 				sTargetContainer = oModel.getProperty("/candidate/targetContainer/value");
-				var oTargetStock = this.getOwnerComponent().findEntity("stock", "/list", function (oObject) {
-					return oObject.container === sTargetContainer && oObject.quantity > 0;
+				var oTargetStock = this.getOwnerComponent().findEntity("main", "/stock", function (oObject) {
+					return oObject.container._id === sTargetContainer && oObject.quantity > 0;
 				});
 			}
 
@@ -88,67 +89,54 @@ sap.ui.define([
 			oModel.setProperty("/candidate/targetContainer/valueStateText", "");
 			oModel.setProperty("/moveAllowed", true);
 
-			if (oSourceStock) {
-				oSourceStock = JSON.parse(JSON.stringify(oSourceStock));
-				oSourceStock.batch.batchDate = new Date(oSourceStock.batch.batchDate);
-				oModel.setProperty("/batch", oSourceStock.batch);
-			}
-
 			if (sSourceContainer && sSourceContainer === sTargetContainer) {
 				oModel.setProperty("/candidate/targetContainer/valueState", ValueState.Error);
 				oModel.setProperty("/candidate/targetContainer/valueStateText", "Entnahmebehälter und Zielbehälter dürfen nicht identisch sein.");
 				oModel.setProperty("/moveAllowed", true);
 			} else {
 				if (oTargetStock) {
-					oTargetStock = JSON.parse(JSON.stringify(oTargetStock));
-					oTargetStock.batch.batchDate = new Date(oTargetStock.batch.batchDate);
-
 					// target and source stock must be of the same batch. Otherwise goods move is not allowed
-					if (oSourceStock.batch._id !== oTargetStock.batch._id) {
+					if (oSourceStock && oSourceStock.batch._id !== oTargetStock.batch._id) {
 						oModel.setProperty("/candidate/targetContainer/valueState", ValueState.Error);
-						oModel.setProperty("/candidate/targetContainer/valueStateText", "Zielbehälter enthält: " + oTargetStock.productCategoryName + " (" + oTargetStock.year + "). " + "Er muss leer sein oder bereits die gleiche Charge wie der Entnahmebehälter beinhalten.");
+						oModel.setProperty("/candidate/targetContainer/valueStateText", "Zielbehälter enthält: " + oTargetStock.batch.productCategory.name + " (" + oTargetStock.batch.year + "). " + "Er muss leer sein oder bereits die gleiche Charge wie der Entnahmebehälter beinhalten.");
 						oModel.setProperty("/moveAllowed", false);
 					} else {
 						oModel.setProperty("/candidate/targetContainer/valueState", ValueState.Warning);
-						oModel.setProperty("/candidate/targetContainer/valueStateText", "Zielbehälter enthält bereits " + oTargetStock.quantity + " " + oTargetStock.numberUnit + " " + oTargetStock.productCategoryName + " (" + oTargetStock.year + "). ");
+						oModel.setProperty("/candidate/targetContainer/valueStateText", "Zielbehälter enthält bereits " + oTargetStock.quantity + " " + oTargetStock.batch.productCategory.productGroup.numberUnit.value + " " + oTargetStock.batch.productCategory.name + " (" + oTargetStock.batch.year + "). ");
 					}
 				} else {
 					oModel.setProperty("/moveAllowed", true);
 				}
 			}
 
-
 			oModel.setProperty("/sourceStock", oSourceStock);
-			oModel.setProperty("/sourceContainer", oSourceItem.getBindingContext("container").getProperty("value"));
+			oModel.setProperty("/sourceContainer", oSourceItem.getBindingContext("main").getProperty());
 		},
 
 		onGoodsMove: function () {
 			var oView = this.getView();
 			var oModel = oView.getModel();
+			var oComponent = this.getOwnerComponent();
 			oModel.setProperty("/candidate/quantity/value", Math.min(oModel.getProperty("/candidate/quantity/value"), oModel.getProperty("/sourceStock/quantity")));
 			var iQuantity = oModel.getProperty("/candidate/quantity/value");
 
 			// find stock
-			var sSourceContainer = this.getView().getModel().getProperty("/candidate/sourceContainer/value");
-			var oSourceStock = this.getOwnerComponent().findEntity("stock", "/rows", function (oObject) {
-				return oObject.value.container === sSourceContainer && oObject.value.quantity > 0;
+			var sSourceContainer = oModel.getProperty("/candidate/sourceContainer/value");
+			var oSourceStock = oComponent.findEntity("main", "/stock", function (oObject) {
+				return oObject.container._id === sSourceContainer && oObject.quantity > 0;
 			});
 
-			var sTargetContainer = this.getView().getModel().getProperty("/candidate/targetContainer/value");
-			var oTargetStock = this.getOwnerComponent().findEntity("stock", "/rows", function (oObject) {
-				return oObject.value.container === sTargetContainer && oObject.value.quantity > 0;
+			var sTargetContainer = oModel.getProperty("/candidate/targetContainer/value");
+			var oTargetStock = oComponent.findEntity("main", "/stock", function (oObject) {
+				return oObject.container._id === sTargetContainer && oObject.quantity > 0;
 			});
-
 
 			if (oSourceStock && iQuantity) {
 				// reduce stock by entered quantity
-				oSourceStock = oSourceStock.value;
 				oSourceStock.quantity -= iQuantity;
-				var oComponent = this.getOwnerComponent();
 
 				var oTargetStockPromise;
 				if (oTargetStock) {
-					oTargetStock = oTargetStock.value;
 					oTargetStock.quantity += iQuantity;
 					oTargetStockPromise = oComponent.putDocument(oTargetStock);
 
@@ -156,7 +144,7 @@ sap.ui.define([
 					// create new stock
 					var oCandidate = this.getView().getModel().getProperty("/candidate");
 					oTargetStock = {
-						container: oCandidate.targetContainer.value,
+						container: this.getModel("main").getProperty("/_container/" + sTargetContainer),
 						batch: oSourceStock.batch,
 						quantity: oCandidate.quantity.value,
 						actionDate: new Date(),
@@ -177,8 +165,6 @@ sap.ui.define([
 				var fnSaveHandler = function () {
 					// avoid duplicate bookings, reset the quantity after successful booking
 					oModel.setProperty("/candidate/quantity/value", 0);
-					// reload stock model
-					oComponent.reloadModel("stock");
 
 					// write log entry
 					oComponent.postDocument("log", this._createJournalEntry(oSourceStock));
@@ -215,22 +201,16 @@ sap.ui.define([
 
 		_getBatch: function (sId) {
 			var oComponent = this.getOwnerComponent();
-			return oComponent.findEntity("batches", "/list", function (oObject) {
+			return oComponent.findEntity("main", "/batch", function (oObject) {
 				return oObject._id === sId;
 			});
 		},
 
 		_createJournalEntry: function (oStock, bTarget) {
-			var oBatch = this._getBatch(oStock.batch);
-			var oComponent = this.getOwnerComponent();
-			var oContainer = oComponent.findEntity("container", "/rows", function (oObject) {
-				return oObject.value.barCode === oStock.container;
-			});
-
 			return {
 				container: oStock.container,
-				storageBin: oContainer.value.storageBin,
-				batch: oBatch,
+				storageBin: oStock.container.storageBin,
+				batch: oStock.batch,
 				quantity: oStock.quantity,
 				actionDate: new Date(),
 				action: "goodsMove" + (bTarget ? "To" : "From")

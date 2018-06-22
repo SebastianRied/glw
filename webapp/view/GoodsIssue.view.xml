@@ -36,21 +36,21 @@
                     </f:toolbar>
                     <f:content>
 
-                        <Label text="Behälter"/>
+                        <Label text="{i18n>container}"/>
                         <ComboBox
                                 id="containerSelect"
                                 forceSelection="false"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
-                                items="{path: 'container>/rows', sorter: {path: 'value/barCode'}}"
+                                items="{path: 'main>/container', sorter: {path: 'barCode'}}"
                                 selectedKey="{/candidate/container/value}"
                                 valueState="{/candidate/container/valueState}"
                                 valueStateText="{/candidate/container/valueStateText}"
                                 selectionChange=".onContainerSelect">
                             <items>
-                                <core:ListItem text="{container>value/barCode}"
-                                               additionalText="{parts: ['container>value/productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"
-                                               key="{container>value/barCode}"/>
+                                <core:ListItem text="{main>barCode}"
+                                               additionalText="{main>productCategory/name}"
+                                               key="{main>_id}"/>
                             </items>
                             <layoutData>
                                 <l:GridData span="XL6 L6 M6 S12"/>
@@ -76,7 +76,7 @@
                                 <l:GridData span="XL6 L6 M6 S12"/>
                             </layoutData>
                         </StepInput>
-                        <Text text="{parts: ['/stock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
+                        <Text text="{/stock/batch/productCategory/productGroup/numberUnit/value}"
                               class="sapUiTinyMarginBegin"/>
 
 
@@ -108,19 +108,19 @@
                             <List>
                                 <ObjectListItem
                                         number="{path: '/stock/quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                        numberUnit="{parts: ['/stock/batch/productCategory', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatNumberUnitByProductCategoryId'}"
-                                        title="{= ${/stock/batch/productCategoryName} !== undefined ? ${/stock/batch/productCategoryName} : '- Kein Bestand -'}">
+                                        numberUnit="{/stock/batch/productCategory/productGroup/numberUnit/value}"
+                                        title="{= ${/stock/batch/productCategory/name} !== undefined ? ${/stock/batch/productCategory/name} : '- Kein Bestand -'}">
                                     <attributes>
-                                        <ObjectAttribute title="Behälter"
+                                        <ObjectAttribute title="{i18n>container}"
                                                          text="{parts: ['/container/barCode', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({/container/barCode})"/>
-                                        <ObjectAttribute title="Lagerplatz" text="{/container/storageBin}"/>
+                                        <ObjectAttribute title="{i18n>storageBin}" text="{/container/storageBin}"/>
                                         <ObjectAttribute
                                                 visible="{= !!${/stock}}"
                                                 title="Charge"
                                                 text="{path: '/stock/batch/batchDate', type: 'sap.ui.model.type.Date'}"/>
                                         <ObjectAttribute
                                                 visible="{= !!${/stock}}"
-                                                title="Alkoholgehalt"
+                                                title="{i18n>alcoholContent}"
                                                 text="{/stock/batch/vol}"/>
                                     </attributes>
                                 </ObjectListItem>

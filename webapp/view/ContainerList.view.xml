@@ -6,7 +6,6 @@
         <subHeader>
             <OverflowToolbar>
                 <FacetFilter
-                        id="idFacetFilter"
                         type="Simple"
                         showPopoverOKButton="true"
                         showPersonalization="true"
@@ -15,49 +14,49 @@
                         confirm="onConfirmFacetFilter">
                     <lists>
                         <FacetFilterList
-                                title="Lagerplatz"
-                                key="value/storageBin"
+                                title="{i18n>storageBin}"
+                                key="storageBin/id"
                                 growing="false"
                                 mode="MultiSelect"
-                                items="{path:'storageBins>/rows', templateShareable: 'false'}">
+                                items="{path:'main>/storageBin', templateShareable: 'false', sorter: [{path: 'id'}]}">
                             <items>
                                 <FacetFilterItem
-                                        text="{storageBins>value/id}"
-                                        key="{storageBins>value/id}"/>
+                                        text="{main>id}"
+                                        key="{main>id}"/>
                             </items>
                         </FacetFilterList>
 
                         <FacetFilterList
-                                title="Typ"
-                                key="value/productCategory"
+                                title="{i18n>type}"
+                                key="productCategory/_id"
                                 growing="false"
                                 mode="MultiSelect"
-                                items="{path:'productCategories>/rows', filters: {path: 'value/productGroup', operator: 'StartsWith', value1: 'VERP'}, templateShareable: 'false'}">
+                                items="{path:'main>/productCategory', filters: {path: 'productGroup/id', operator: 'StartsWith', value1: 'VERP'}, templateShareable: 'false'}">
                             <items>
                                 <FacetFilterItem
-                                        text="{productCategories>value/name}"
-                                        key="{productCategories>value/_id}"/>
-                            </items>
-                        </FacetFilterList>
-
-
-                        <FacetFilterList
-                                title="Produktgruppe"
-                                key="value/productGroup"
-                                growing="false"
-                                mode="MultiSelect"
-                                items="{path:'validValues>/productGroups', filters: {path: 'id', operator: 'StartsWith', value1: 'VERP'}, templateShareable: 'false'}">
-                            <items>
-                                <FacetFilterItem
-                                        text="{validValues>value}"
-                                        key="{validValues>value}"/>
+                                        text="{main>name}"
+                                        key="{main>_id}"/>
                             </items>
                         </FacetFilterList>
 
 
                         <FacetFilterList
-                                title="Leer"
-                                key="value/empty"
+                                title="{i18n>productGroup}"
+                                key="productCategory/productGroup/id"
+                                growing="false"
+                                mode="MultiSelect"
+                                items="{path:'main>/validValues/productGroups', filters: {path: 'id', operator: 'StartsWith', value1: 'VERP'}, templateShareable: 'false'}">
+                            <items>
+                                <FacetFilterItem
+                                        text="{main>value}"
+                                        key="{main>id}"/>
+                            </items>
+                        </FacetFilterList>
+
+
+                        <FacetFilterList
+                                title="{i18n>empty}"
+                                key="empty"
                                 growing="false"
                                 mode="MultiSelect">
                             <items>
@@ -78,61 +77,72 @@
         <Table
                 id="containerTable"
                 mode="Delete"
-                noDataText="Keine Behälter gefunden"
+                noDataText="{i18n>noContainersFound}"
                 delete="onContainerDeletePress"
-                items="{path: 'container>/list', sorter: {path: 'value/volume'}}">
+                items="{path: 'main>/container', sorter: {path: 'productCategory/volume'}, key: '_id'}">
             <headerToolbar>
                 <Toolbar>
-                    <Title text="Behälter ({container>/total_rows})" level="H2" width="7rem"/>
+                    <Title text="{i18n>containerTableTitle} ({main>/_container/_length})" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
-                    <SearchField id="searchField" liveChange=".onSearchContainer" search=".onSearchContainer"/>
-                    <Button icon="sap-icon://add" tooltip="Behälter anlegen" press=".onOpenAddContainerDialogPress"/>
+                    <SearchField id="searchField" liveChange=".onSearchTable" search=".onSearchTable"/>
+                    <Button icon="sap-icon://add" tooltip="{i18n>createContainer}" press=".onOpenAddContainerDialogPress"/>
                 </Toolbar>
             </headerToolbar>
             <columns>
                 <Column
                         width="12em">
-                    <Text text="Lagerplatz"/>
+                    <Text text="{i18n>storageBin}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true"
                         hAlign="End">
-                    <Text text="Behälter"/>
+                    <Text text="{i18n>container}"/>
                 </Column>
 
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
-                    <Text text="Typ"/>
+                    <Text text="{i18n>type}"/>
                 </Column>
 
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
-                    <Text text="Produktgruppe"/>
+                    <Text text="{i18n>productGroup}"/>
                 </Column>
 
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
-                    <Text text="Leer"/>
+                    <Text text="{i18n>volume}"/>
+                </Column>
+
+                <Column
+                        minScreenWidth="Tablet"
+                        demandPopin="true">
+                    <Text text="{i18n>empty}"/>
                 </Column>
             </columns>
             <items>
                 <ColumnListItem vAlign="Middle">
                     <cells>
                         <HBox alignItems="Center">
-                            <Button tooltip="Lagerplatz zuordnen" icon="sap-icon://map" type="Transparent"
+                            <Button tooltip="{i18n>assignStorageBin}" icon="sap-icon://map" type="Transparent"
                                     press=".onAssignStorageBinPress"/>
-                            <Text text="{container>value/storageBin}" class="sapUiSmallMarginBegin"/>
+                            <Text text="{main>storageBin/id}" class="sapUiSmallMarginBegin"/>
                         </HBox>
-                        <Text text="{container>value/barCode}"/>
-                        <Text text="{container>value/productCategoryName}"/>
-                        <Text text="{container>value/productGroup}"/>
+                        <Text text="{main>barCode}"/>
+                        <Text text="{main>productCategory/name}"/>
+                        <Text text="{main>productCategory/productGroup/value}"/>
+                        <ObjectNumber
+                                visible="{= !!${main>productCategory/volume}}"
+                                number="{path: 'main>productCategory/volume', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                unit="{i18n>tileUnit_Liter}"/>
+
                         <core:Icon
-                                src="{= ${container>value/empty} === 'yes' ? 'sap-icon://complete' : 'sap-icon://border'}"
-                                color="#333333" decorative="false" tooltip="Flasche leer"/>
+                                src="{= ${main>empty} === 'yes' ? 'sap-icon://complete' : 'sap-icon://border'}"
+                                color="#333333" decorative="false" tooltip="{i18n>empty}"/>
                     </cells>
                 </ColumnListItem>
             </items>

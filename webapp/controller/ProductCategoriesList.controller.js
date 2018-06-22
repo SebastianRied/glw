@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"./BaseController",
 	"../model/formatter",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
@@ -12,29 +12,21 @@ sap.ui.define([
 
 	return Controller.extend('glw.controller.ProductCategoriesList', {
 		formatter: Formatter,
+		filterProperties: ["name"],
 		onInit: function () {
-			var oView = this.getView();
-			oView.attachAfterRendering(function () {
-				window.setTimeout(function () {
-					oView.byId("searchField").focus();
-				}, 0);
-			});
-		},
-
-		onNavBack: function () {
-			this.getOwnerComponent().onNavBack();
+			this.focusControl("searchField");
 		},
 
 		onDeleteProductCategoryPress: function (oEvent) {
 			var oComponent = this.getOwnerComponent();
-			var oContext = oEvent.getParameter("listItem").getBindingContext("productCategories");
+			var oContext = oEvent.getParameter("listItem").getBindingContext("main");
+			var that = this;
 			var fnHandler = function (oResponse) {
 				if (oResponse.response.ok) {
-					MessageToast.show("Das Produkt '" + oContext.getProperty("value/name") + "' wurde gelöscht", {
+					MessageToast.show(that.getText("messageDeleted", that.getText("product"), oContext.getProperty("name")), {
 						width: "30rem",
 						duration: 2000
 					});
-					oComponent.reloadModel("productCategories");
 				} else {
 					MessageToast.show(oResponse.errorText, {
 						width: "30rem",
@@ -43,11 +35,11 @@ sap.ui.define([
 				}};
 
 			if (this._checkDeleteConditions(oContext.getProperty())) {
-				oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+				oComponent.deleteDocument(oContext.getProperty()).then(fnHandler, fnHandler);
 			} else {
 				var bCompact = !!this.getView().$().closest(".sapUiSizeCompact").length;
 				MessageBox.error(
-					"Dieses Produkt wurde bereits eingelagert und kann daher nicht gelöscht werden.",
+					that.getText("messageProductInStock"),
 					{
 						styleClass: bCompact ? "sapUiSizeCompact" : ""
 					}
@@ -56,10 +48,10 @@ sap.ui.define([
 		},
 
 		_checkDeleteConditions: function (oObject) {
-			return !this.getOwnerComponent().findEntity("container", "/rows", function (oContainer) {
-				return oObject.value._id === oContainer.value.productCategory;
-			}) && !this.getOwnerComponent().findEntity("stock", "/list", function (oStock) {
-					return oObject.value._id === oStock.batch.productCategory;
+			return !this.getOwnerComponent().findEntity("main", "/container", function (oContainer) {
+				return oObject._id === oContainer.productCategory._id;
+			}) && !this.getOwnerComponent().findEntity("main", "/stock", function (oStock) {
+					return oObject._id === oStock.batch.productCategory._id;
 				});
 		},
 
@@ -106,21 +98,20 @@ sap.ui.define([
 			var oObject = oModel.getObject("/");
 			var oInputField = this.byId("productCategoryInput");
 			if (this._checkSaveConditions(oObject, oModel)) {
-				var oValidValues = this.getView().getModel("validValues").getObject("/");
+				var oValidValues = this.getView().getModel("main").getObject("/validValues");
 				var sProductGroupText = oValidValues.productGroups[oObject.productGroup.value].value;
 				var oComponent = this.getOwnerComponent();
-				oComponent.postDocument("productCategory", {
+				oComponent.postDocument("productCategory", this.template.getDocument("productCategory", {
 					name: oObject.productCategoryName.value,
 					volume: oObject.volume.value,
 					productGroup: oObject.productGroup.value
-				}).then(function (oResponse) {
+				})).then(function (oResponse) {
 					if (oResponse.response.ok) {
 						MessageToast.show("Produkt '" + oObject.productCategoryName.value + "' wurde in der Produktgruppe '" + sProductGroupText + "' angelegt", {
 							width: "30rem",
 							duration: 2000
 						});
 						oModel.setProperty("/productCategoryName/value", "");
-						oComponent.reloadModel("productCategories");
 						oInputField.focus();
 					} else {
 						MessageToast.show(oResponse.errorText, {
@@ -152,9 +143,9 @@ sap.ui.define([
 			}
 
 			// storageBinId must be unique
-			if (this.getOwnerComponent().findEntity("productCategories", "/rows", function (oProductCategory) {
-					return oObject.productCategoryName.value.toLowerCase() === oProductCategory.value.name.toLowerCase()
-						&& oObject.productGroup.value === oProductCategory.value.productGroup;
+			if (this.getOwnerComponent().findEntity("main", "/productCategory", function (oProductCategory) {
+					return oObject.productCategoryName.value.toLowerCase() === oProductCategory.name.toLowerCase()
+						&& oObject.productGroup.value === oProductCategory.productGroup;
 				})) {
 				oModel.setProperty("/productCategoryName/valueState", ValueState.Error);
 				oModel.setProperty("/productCategoryName/valueStateText", "Ein Produkt mit dieser Bezeichnung existiert bereits.");
@@ -167,20 +158,6 @@ sap.ui.define([
 		_getAddDialog: function () {
 			return this.byId("ProductCategoryAddDialog");
 
-		},
-		onSearchProductCategory: function (oEvent) {
-			var sValue = oEvent.getParameter("newValue") || oEvent.getParameter("query");
-			var oTable = this._getTable();
-			var oBinding = oTable.getBinding("items");
-			if (!oBinding) {
-				return;
-			}
-			var oFilter;
-			if (sValue) {
-				oFilter = new Filter({path: "value/name", operator: FilterOperator.Contains, value1: sValue});
-			}
-
-			oBinding.filter(oFilter);
 		},
 
 		_getTable: function () {

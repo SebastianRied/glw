@@ -4,8 +4,9 @@ sap.ui.define([
 		"./model/formatter",
 		"./model/modelChangeHandler",
 		"sap/ui/model/json/JSONModel",
-		"sap/m/MessageToast"],
-	function (UIComponent, History, Formatter, ModelChangeHandler, JSONModel, MessageToast) {
+		"sap/m/MessageToast",
+		"./model/documentTemplate"],
+	function (UIComponent, History, Formatter, ModelChangeHandler, JSONModel, MessageToast, template) {
 		"use strict";
 		return UIComponent.extend('glw.Component', {
 			metadata: {
@@ -17,7 +18,7 @@ sap.ui.define([
 				// call the init function of the parent
 				UIComponent.prototype.init.apply(this, arguments);
 				this._initModelPromises();
-				this.models.validValues.loaded.then(this._checkAndInstallValidValues.bind(this));
+				this.models.main.loaded.then(this._checkAndInstallValidValues.bind(this));
 				this.setModel(new JSONModel({
 					totalQuantity: 0,
 					filteredQuantity: 0,
@@ -38,11 +39,12 @@ sap.ui.define([
 
 			_initModelPromises: function () {
 				var that = this;
+				var mModels = this.getManifestEntry("sap.ui5").models;
 				var fnGetPromise = function (sModelName) {
 					return new Promise(function (resolve) {
 						that.models[sModelName].model.attachRequestCompleted(function () {
 							if (typeof ModelChangeHandler.prototype[sModelName + "ModelChanged"] === "function") {
-								ModelChangeHandler.prototype[sModelName + "ModelChanged"].call(that, that.models[sModelName].model);
+								ModelChangeHandler.prototype[sModelName + "ModelChanged"].call(that, that.models[sModelName].model,  mModels[sModelName].uri);
 							}
 							resolve(that.models[sModelName]);
 						});
@@ -50,7 +52,6 @@ sap.ui.define([
 				};
 
 				this.models = {};
-				var mModels = this.getManifestEntry("sap.ui5").models;
 				var aModelNames = Object.getOwnPropertyNames(mModels);
 				for (var i = 0; i < aModelNames.length; i++) {
 					if (mModels[aModelNames[i]].uri && mModels[aModelNames[i]].uri.indexOf("couchDB") === 0) {
@@ -64,18 +65,6 @@ sap.ui.define([
 				}
 			},
 
-			onNavBack: function () {
-				var oHistory = History.getInstance();
-				var sPreviousHash = oHistory.getPreviousHash();
-
-				if (sPreviousHash !== undefined) {
-					window.history.go(-1);
-				} else {
-					var oRouter = this.getRouter();
-					oRouter.navTo("launchpad", {}, true);
-				}
-			},
-
 			postDocument: function (sType, oDocument) {
 				if (this._allowedTypes.indexOf(sType) < 0) {
 					throw "Document type " + sType + " not supported!";
@@ -84,6 +73,8 @@ sap.ui.define([
 				if (typeof oDocument !== "object") {
 					throw "oDocument must be an object!";
 				}
+
+				oDocument = template.getDocument(sType, oDocument);
 
 				return new Promise(function (resolve, reject) {
 					oDocument.type = sType;
@@ -127,6 +118,8 @@ sap.ui.define([
 				if (typeof oDocument !== "object") {
 					throw "oDocument must be an object!";
 				}
+
+				oDocument = template.getDocument(sType, oDocument);
 
 				return new Promise(function (resolve, reject) {
 					oDocument.type = sType;

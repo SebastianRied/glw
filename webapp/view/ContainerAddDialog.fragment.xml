@@ -5,7 +5,7 @@
         xmlns:core="sap.ui.core">
     <Dialog
             id="ContainerAddDialog"
-            title="Behälter anlegen"
+            title="{i18n>createContainer}"
             class="sapUiResponsiveContentPadding">
         <content>
             <f:SimpleForm editable="true"
@@ -24,52 +24,52 @@
                           columnsM="1"
                           singleContainerFullSize="false">
                 <f:content>
-                    <Label text="Behälter (Barcode)"/>
+                    <Label text="{i18n>containerBarCode}"/>
                     <Input
                             id="containerBarCodeInput"
                             value="{path: '/containerBarCode/value', type: 'sap.ui.model.type.Integer', formatOptions: {emptyString: null}}"
                             type="Number"
                             valueState="{/containerBarCode/valueState}"
                             valueStateText="{/containerBarCode/valueStateText}"/>
-                    <Label text="Lagerplatz"/>
+                    <Label text="{i18n>storageBin}"/>
                     <ComboBox forceSelection="false"
                               change=".onStorageBinChange"
-                              items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}"
+                              items="{path: 'main>/storageBin', sorter: {path: 'id'}}"
                               selectedKey="{/storageBin/value}"
                               valueState="{/storageBin/valueState}"
                               valueStateText="{/productCategory/valueStateText}">
                         <items>
-                            <core:Item text="{storageBins>value/id}" key="{storageBins>value/id}"/>
+                            <core:Item text="{main>id}" key="{main>_id}"/>
                         </items>
                     </ComboBox>
-                    <Label text="Typ"/>
+                    <Label text="{i18n>type}"/>
                     <Select forceSelection="false"
-                            items="{path: 'productCategories>/rows', filters: {path: 'value/productGroup', operator: 'Contains', value1: 'VERP'}}"
+                            items="{path: 'main>/productCategory', filters: {path: 'productGroup/id', operator: 'Contains', value1: 'VERP'}}"
                             selectedKey="{/productCategory/value}"
                             valueState="{/productCategory/valueState}"
                             valueStateText="{/productCategory/valueStateText}">
                         <items>
-                            <core:Item text="{productCategories>value/name}" key="{productCategories>value/_id}"/>
+                            <core:Item text="{main>name}" key="{main>_id}"/>
                         </items>
                     </Select>
                     <Label
                             text="Produktgruppe"
                             visible="{path: '/productCategory/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
                     <Text
-                            text="{parts: ['/productCategory/value', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatProductGroupByProductCategoryId'}"
+                            text="{parts: ['/productCategory/value', 'main>/productCategory', 'main>/validValues'], formatter: '.formatter.formatProductGroupByProductCategoryId'}"
                             visible="{path: '/productCategory/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
                     <Label
                             text="Veredelung"
                             visible="{path: '/productCategory/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
                     <Text
-                            text="{parts: ['/productCategory/value', 'productCategories>/rows', 'validValues>/'], formatter: '.formatter.formatFinishingByProductCategoryId'}"
+                            text="{parts: ['/productCategory/value', 'main>/productCategory', 'main>/validValues'], formatter: '.formatter.formatFinishingByProductCategoryId'}"
                             visible="{path: '/productCategory/value', formatter: '.formatter.formatTrueIfNotEmpty'}"/>
                 </f:content>
 
             </f:SimpleForm>
         </content>
         <beginButton>
-            <Button text="Anlegen" press=".onSaveNewContainerPress"/>
+            <Button text="{i18n>create}" press=".onSaveNewContainerPress"/>
 
         </beginButton>
         <endButton>

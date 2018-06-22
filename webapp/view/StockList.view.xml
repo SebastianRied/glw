@@ -12,17 +12,17 @@
                 <IconTabFilter
                         key="overview"
                         icon="sap-icon://sys-find"
-                        count="{stock>/totalCount}"
-                        text="Übersicht">
+                        count="{main>/_aggregatedStock/_length}"
+                        text="{i18n>overview}">
                     <Page showHeader="false" class="sapUiResponsiveContentPadding">
                         <Table
                                 id="stockListTable"
                                 itemPress="onItemPress"
-                                noDataText="Kein Bestand"
-                                items="{path: 'stock>/aggregatedStock', sorter: [{path: 'productCategoryName'}, {path: 'batchDate'}], events:{change:'.onStockListBindingChange'}}">
+                                noDataText="{i18n>noStock}"
+                                items="{path: 'main>/aggregatedStock', sorter: [{path: 'batch/productCategory/name'}, {path: 'batch/batchDate'}], events:{change:'.onStockListBindingChange'}}">
                             <headerToolbar>
                                 <Toolbar>
-                                    <Title text="Bestand" level="H2" width="9rem"/>
+                                    <Title text="{i18n>stock}" level="H2" width="9rem"/>
                                     <ToolbarSpacer/>
                                     <SearchField
                                             id="searchFieldOverview"
@@ -33,26 +33,26 @@
                             <columns>
                                 <Column
                                         width="12em">
-                                    <Text text="Produkt"/>
+                                    <Text text="{i18n>product}"/>
                                 </Column>
                                 <Column
                                         width="12em">
-                                    <Text text="Charge"/>
+                                    <Text text="{i18n>batch}"/>
                                 </Column>
                                 <Column
                                         hAlign="End">
-                                    <Text text="Füllmenge"/>
+                                    <Text text="{i18n>fillingQuantity}"/>
                                 </Column>
                             </columns>
                             <items>
                                 <ColumnListItem type="Navigation"
-                                                highlight="{parts: ['stock>quantity', 'stock>batchQuantity'], formatter: '.formatter.formatStockListCriticalQuantity'}">
+                                                highlight="{parts: ['main>quantity', 'main>batchQuantity'], formatter: '.formatter.formatStockListCriticalQuantity'}">
                                     <cells>
-                                        <Text text="{parts: ['stock>productCategory', 'productCategories>/rows'], formatter: '.formatter.formatProductCategory'}"/>
-                                        <Text text="{path: 'stock>batchDate', type: 'sap.ui.model.type.Date'}"/>
+                                        <Text text="{main>batch/productCategory/name}"/>
+                                        <Text text="{path: 'main>batch/batchDate', type: 'sap.ui.model.type.Date'}"/>
                                         <ObjectNumber
-                                                number="{path: 'stock>quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                                unit="{stock>numberUnit}"/>
+                                                number="{path: 'main>quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                                unit="{main>batch/productCategory/productGroup/numberUnit/value}"/>
                                     </cells>
                                 </ColumnListItem>
 
@@ -65,8 +65,8 @@
                         key="details"
                         icon="sap-icon://begin"
                         iconColor="Positive"
-                        count="{stock>/total_rows}"
-                        text="Details">
+                        count="{main>/_stock/_length}"
+                        text="{i18n>details}">
                     <Page showHeader="false" class="sapUiResponsiveContentPadding">
                         <subHeader>
                             <OverflowToolbar>
@@ -80,54 +80,54 @@
                                         confirm="onConfirmFacetFilter">
                                     <lists>
                                         <FacetFilterList
-                                                title="Produkt"
-                                                key="batch/productCategory"
+                                                title="{i18n>product}"
+                                                key="batch/productCategory/_id"
                                                 mode="MultiSelect"
                                                 growing="false"
-                                                items="{path:'productCategories>/rows', filters: {path: 'value/productGroup', operator: 'StartsWith', value1: 'FERT'}, templateShareable: 'false'}">
+                                                items="{path:'main>/productCategory', filters: {path: 'productGroup/id', operator: 'StartsWith', value1: 'FERT'}, templateShareable: 'false'}">
                                             <items>
                                                 <FacetFilterItem
-                                                        text="{productCategories>value/name}"
-                                                        key="{productCategories>value/_id}"/>
+                                                        text="{main>name}"
+                                                        key="{main>_id}"/>
                                             </items>
                                         </FacetFilterList>
 
                                         <FacetFilterList
-                                                title="Jahrgang"
-                                                key="year"
+                                                title="{i18n>year}"
+                                                key="batch/year"
                                                 mode="MultiSelect"
                                                 growing="false"
-                                                items="{path:'stock>/years', templateShareable: 'false'}">
+                                                items="{path:'main>/_stock/years', templateShareable: 'false'}">
                                             <items>
                                                 <FacetFilterItem
-                                                        text="{stock>year}"
-                                                        key="{path: 'stock>year', type: 'sap.ui.model.type.String'}"/>
+                                                        text="{main>year}"
+                                                        key="{path: 'main>year', type: 'sap.ui.model.type.String'}"/>
                                             </items>
                                         </FacetFilterList>
 
                                         <FacetFilterList
-                                                title="Behälter"
-                                                key="container"
+                                                title="{i18n>container}"
+                                                key="container/barCode"
                                                 mode="MultiSelect"
                                                 growing="false"
-                                                items="{path:'container>/rows', templateShareable: 'false'}">
+                                                items="{path:'main>/container', templateShareable: 'false'}">
                                             <items>
                                                 <FacetFilterItem
-                                                        text="{parts: ['container>value/barCode', 'container>/rows', 'productCategories>/rows'], formatter: '.formatter.formatProductCategoryByContainerBarCode'} ({container>value/barCode})"
-                                                        key="{container>value/barCode}"/>
+                                                        text="{main>productCategory/name} ({main>barCode})"
+                                                        key="{main>barCode}"/>
                                             </items>
                                         </FacetFilterList>
 
                                         <FacetFilterList
-                                                title="Lagerplatz"
-                                                key="storageBin"
+                                                title="{i18n>storageBin}"
+                                                key="container/storageBin/id"
                                                 mode="MultiSelect"
                                                 growing="false"
-                                                items="{path:'storageBins>/rows', templateShareable: 'false'}">
+                                                items="{path:'main>/storageBin', templateShareable: 'false'}">
                                             <items>
                                                 <FacetFilterItem
-                                                        text="{storageBins>value/id}"
-                                                        key="{storageBins>value/id}"/>
+                                                        text="{main>id}"
+                                                        key="{main>id}"/>
                                             </items>
                                         </FacetFilterList>
 
@@ -139,11 +139,11 @@
                             <Table
                                     mode="{= ${viewModel>/inventoryCheck} ? 'MultiSelect' : 'None'}"
                                     id="stockListDetailsTable"
-                                    noDataText="Kein Bestand"
-                                    items="{path: 'stock>/list', sorter: [{path: 'productCategoryName'}, {path: 'batch/batchDate'}, {path: 'quantity'}], events:{change:'.onStockListDetailsBindingChange'}}">
+                                    noDataText="{i18n>noStock}"
+                                    items="{path: 'main>/stock', sorter: [{path: 'batch/productCategory/name'}, {path: 'batch/batchDate'}, {path: 'quantity'}], events:{change:'.onStockListDetailsBindingChange'}}">
                                 <headerToolbar>
                                     <Toolbar>
-                                        <Title text="Bestand" level="H2" width="15rem"/>
+                                        <Title text="{i18n>stock}" level="H2" width="15rem"/>
                                         <ToolbarSpacer/>
                                         <SearchField
                                                 id="searchFieldDetails"
@@ -155,48 +155,48 @@
                                 <columns>
                                     <Column
                                             width="12em">
-                                        <Text text="Produkt"/>
+                                        <Text text="{i18n>product}"/>
                                     </Column>
                                     <Column
                                             width="12em">
-                                        <Text text="Charge"/>
+                                        <Text text="{i18n>batch}"/>
                                     </Column>
                                     <Column
                                             width="12em">
-                                        <Text text="Lagerplatz"/>
+                                        <Text text="{i18n>storageBin}"/>
                                     </Column>
                                     <Column
                                             width="12em">
-                                        <Text text="Behälter"/>
+                                        <Text text="{i18n>container}"/>
                                     </Column>
                                     <Column
                                             hAlign="Right"
                                             width="12em">
-                                        <Text text="Behältervolumen"/>
+                                        <Text text="{i18n>containerVolume}"/>
                                     </Column>
                                     <Column
                                             hAlign="Right">
-                                        <Text text="Füllmenge"/>
+                                        <Text text="{i18n>fillingQuantity}"/>
                                     </Column>
                                 </columns>
                                 <items>
                                     <ColumnListItem>
                                         <cells>
                                             <ObjectIdentifier
-                                                    title="{stock>productCategoryName}"
-                                                    text="{stock>year}"/>
-                                            <Text text="{path: 'stock>batch/batchDate', type: 'sap.ui.model.type.Date'}"/>
-                                            <Text text="{stock>storageBin}"/>
+                                                    title="{main>batch/productCategory/name}"
+                                                    text="{main>batch/year}"/>
+                                            <Text text="{path: 'main>batch/batchDate', type: 'sap.ui.model.type.Date'}"/>
+                                            <Text text="{main>container/storageBin/id}"/>
                                             <ObjectIdentifier
-                                                    title="{stock>containerName}"
-                                                    text="{stock>container}"/>
+                                                    title="{main>container/productCategory/name}"
+                                                    text="{main>container/barCode}"/>
                                             <ObjectNumber
-                                                    visible="{= !!${stock>containerVolume}}"
-                                                    number="{path: 'stock>containerVolume', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                                    visible="{= !!${main>container/productCategory/volume}}"
+                                                    number="{path: 'main>container/productCategory/volume', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                                     unit="Liter"/>
                                             <ObjectNumber
-                                                    number="{path: 'stock>quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
-                                                    unit="{stock>numberUnit}"/>
+                                                    number="{path: 'main>quantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                                    unit="{main>batch/productCategory/productGroup/numberUnit/value}"/>
                                         </cells>
                                     </ColumnListItem>
                                 </items>

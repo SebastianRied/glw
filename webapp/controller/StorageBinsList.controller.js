@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"./BaseController",
 	"../model/formatter",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
@@ -12,29 +12,21 @@ sap.ui.define([
 
 	return Controller.extend('glw.controller.StorageBinsList', {
 		formatter: Formatter,
+		filterProperties: ["id"],
 		onInit: function () {
-			var oView = this.getView();
-			oView.attachAfterRendering(function () {
-				window.setTimeout(function () {
-					oView.byId("searchField").focus();
-				}, 0);
-			});
-		},
-
-		onNavBack: function () {
-			this.getOwnerComponent().onNavBack();
+			this.focusControl("searchField");
 		},
 
 		onDeleteStorageBinPress: function (oEvent) {
 			var oComponent = this.getOwnerComponent();
-			var oContext = oEvent.getParameter("listItem").getBindingContext("storageBins");
+			var oContext = oEvent.getParameter("listItem").getBindingContext("main");
+			var that = this;
 			var fnHandler = function (oResponse) {
 				if (oResponse.response.ok) {
-					MessageToast.show("Der Lagerplatz '" + oContext.getProperty("value/id") + "' wurde gelöscht", {
+					MessageToast.show(that.getText("messageStorageBinDeleted", oContext.getProperty("id")), {
 						width: "30rem",
 						duration: 2000
 					});
-					oComponent.reloadModel("storageBins");
 				} else {
 					MessageToast.show(oResponse.errorText, {
 						width: "30rem",
@@ -44,11 +36,11 @@ sap.ui.define([
 			};
 
 			if (this._checkDeleteConditions(oContext.getProperty())) {
-				oComponent.deleteDocument(oContext.getProperty("value")).then(fnHandler, fnHandler);
+				oComponent.deleteDocument(oContext.getProperty()).then(fnHandler, fnHandler);
 			} else {
 				var bCompact = !!this.getView().$().closest(".sapUiSizeCompact").length;
 				MessageBox.error(
-					"Der Lagerplatz wird noch von mindestens einem Behälter belegt",
+					this.getText("messageStorageBinStillInUse"),
 					{
 						styleClass: bCompact ? "sapUiSizeCompact" : ""
 					}
@@ -57,8 +49,8 @@ sap.ui.define([
 		},
 
 		_checkDeleteConditions: function (oObject) {
-			return !this.getOwnerComponent().findEntity("container", "/rows", function (oContainer) {
-				return oObject.value.id === oContainer.value.storageBin;
+			return !this.getOwnerComponent().findEntity("main", "/container", function (oContainer) {
+				return oContainer.storageBin && oObject.id === oContainer.storageBin.id;
 			});
 		},
 
@@ -101,13 +93,12 @@ sap.ui.define([
 					id: oObject.storageBinId.value
 				}).then(function (oResponse) {
 					if (oResponse.response.ok) {
-						MessageToast.show("Lagerplatz '" + oObject.storageBinId.value + "' wurde angelegt", {
+						MessageToast.show(that.getText("messageStorageBinCreated", oObject.storageBinId.value), {
 							width: "30rem",
 							duration: 2000
 						});
 						oModel.setProperty("/storageBinId/value", "");
 						that.byId("storageBinIdInput").focus();
-						oComponent.reloadModel("storageBins");
 					} else {
 						MessageToast.show(oResponse.errorText, {
 							width: "30rem",
@@ -125,16 +116,16 @@ sap.ui.define([
 			// storageBinId must not be empty
 			if (!oObject.storageBinId.value) {
 				oModel.setProperty("/storageBinId/valueState", ValueState.Error);
-				oModel.setProperty("/storageBinId/valueStateText", "Bitte eine Lagerplatznummer eingeben");
+				oModel.setProperty("/storageBinId/valueStateText", this.getText("messageEnterStorageBinNumber"));
 				bReturn = false;
 			}
 
 			// storageBinId must be unique
-			if (this.getOwnerComponent().findEntity("storageBins", "/rows", function (oStorageBin) {
-					return oObject.storageBinId.value === oStorageBin.value.id;
+			if (this.getOwnerComponent().findEntity("main", "/storageBin", function (oStorageBin) {
+					return oObject.storageBinId.value === oStorageBin.id;
 				})) {
 				oModel.setProperty("/storageBinId/valueState", ValueState.Error);
-				oModel.setProperty("/storageBinId/valueStateText", "Die Lagerplatznummer existiert bereits");
+				oModel.setProperty("/storageBinId/valueStateText", this.getText("messageStorageBinExists"));
 				bReturn = false;
 			}
 
@@ -143,21 +134,6 @@ sap.ui.define([
 
 		_getAddDialog: function () {
 			return this.byId("StorageBinAddDialog");
-		},
-
-		onSearchStorageBin: function (oEvent) {
-			var sValue = oEvent.getParameter("newValue") || oEvent.getParameter("query");
-			var oTable = this._getTable();
-			var oBinding = oTable.getBinding("items");
-			if (!oBinding) {
-				return;
-			}
-			var oFilter;
-			if (sValue) {
-				oFilter = new Filter({path: "value/id", operator: FilterOperator.Contains, value1: sValue});
-			}
-
-			oBinding.filter(oFilter);
 		},
 
 		_getTable: function () {

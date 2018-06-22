@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"./BaseController",
 	"../model/formatter",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
@@ -12,24 +12,21 @@ sap.ui.define([
 
 	return Controller.extend('glw.controller.BatchList', {
 		formatter: Formatter,
+		filterProperties: ["productCategory/name"],
 		onInit: function () {
-
-		},
-
-		onNavBack: function () {
-			this.getOwnerComponent().onNavBack();
+			this.focusControl("searchField");
 		},
 
 		onDeleteBatchPress: function (oEvent) {
 			var oComponent = this.getOwnerComponent();
-			var oContext = oEvent.getParameter("listItem").getBindingContext("batches");
+			var oContext = oEvent.getParameter("listItem").getBindingContext("main");
+			var that = this;
 			var fnHandler = function (oResponse) {
 				if (oResponse.response.ok) {
-					MessageToast.show("Die Charge '" + oContext.getProperty("productCategoryName") + " " + oContext.getProperty("batchDate").getFullYear() + "' wurde gelöscht", {
+					MessageToast.show(that.getText("messageBatchDeleted", oContext.getProperty("productCategory/name"), oContext.getProperty("batchDate").getFullYear()), {
 						width: "30rem",
 						duration: 2000
 					});
-					oComponent.reloadModel("batches");
 				} else {
 					MessageToast.show(oResponse.errorText, {
 						width: "30rem",
@@ -43,7 +40,7 @@ sap.ui.define([
 			} else {
 				var bCompact = !!this.getView().$().closest(".sapUiSizeCompact").length;
 				MessageBox.error(
-					"Die Charge ist noch im Bestand und kann nicht gelöscht werden.",
+					that.getText("messageBatchStillInStock"),
 					{
 						styleClass: bCompact ? "sapUiSizeCompact" : ""
 					}
@@ -52,8 +49,8 @@ sap.ui.define([
 		},
 
 		_checkDeleteConditions: function (oObject) {
-			return !this.getOwnerComponent().findEntity("stock", "/rows", function (oStock) {
-				return oStock.value.batch === oObject._id;
+			return !this.getOwnerComponent().findEntity("main", "/stock", function (oStock) {
+				return oStock.batch._id === oObject._id;
 			});
 		},
 
@@ -112,8 +109,7 @@ sap.ui.define([
 		},
 
 		onCancelAddBatchDialogPress: function () {
-			var oDialog = this._getAddDialog();
-			oDialog.close();
+			this._getAddDialog().close();
 		},
 
 		onSaveNewBatchPress: function () {
@@ -121,10 +117,11 @@ sap.ui.define([
 			var oModel = oDialog.getModel();
 
 			var oObject = oModel.getObject("/");
+			var that = this;
 
 			if (this._checkSaveConditions(oObject, oModel)) {
 				var oComponent = this.getOwnerComponent();
-				oComponent.postDocument("batch", {
+				oComponent.postDocument("batch", this.template.getDocument("batch", {
 					productCategory: oObject.productCategory.value,
 					batchDate: oObject.batchDate.value,
 					quantity: oObject.quantity.value,
@@ -132,14 +129,13 @@ sap.ui.define([
 					distillerFee: oObject.distillerFee.value,
 					taxes: oObject.taxes.value,
 					otherCosts: oObject.otherCosts.value
-				}).then(function (oResponse) {
+				})).then(function (oResponse) {
 					if (oResponse.response.ok) {
-						MessageToast.show("Charge wurde angelegt", {
+						MessageToast.show(that.getText("messageBatchCreated"), {
 							width: "30rem",
 							duration: 2000
 						});
 
-						oComponent.reloadModel("batches");
 						oDialog.close();
 					} else {
 						MessageToast.show(oResponse.errorText, {
@@ -202,21 +198,6 @@ sap.ui.define([
 
 		_getAddDialog: function () {
 			return this.byId("BatchAddDialog");
-		},
-
-		onSearchBatch: function (oEvent) {
-			var sValue = oEvent.getParameter("newValue") || oEvent.getParameter("query");
-			var oTable = this._getTable();
-			var oBinding = oTable.getBinding("items");
-			if (!oBinding) {
-				return;
-			}
-			var oFilter;
-			if (sValue) {
-				oFilter = new Filter({path: "productCategoryName", operator: FilterOperator.Contains, value1: sValue});
-			}
-
-			oBinding.filter(oFilter);
 		},
 
 		_getTable: function () {

@@ -8,40 +8,40 @@
 				noDataText="Keine Produkte gefunden"
                 mode="Delete"
                 delete=".onDeleteProductCategoryPress"
-                items="{path: 'productCategories>/rows', sorter: [{path: 'value/productGroup'}, {path: 'value/name'}]}">
+                items="{path: 'main>/productCategory', sorter: [{path: 'productGroup/value'}, {path: 'name'}], key: '_id'}">
             <headerToolbar>
                 <Toolbar>
-                    <Title text="Produkte ({productCategories>/total_rows})" level="H2" width="7rem"/>
+                    <Title text="{parts: ['i18n>products', 'main>/_productCategory/_length'], formatter: 'jQuery.sap.formatMessage'}" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
-					<SearchField id="searchField" liveChange=".onSearchProductCategory" search=".onSearchProductCategory"/>
-                    <Button icon="sap-icon://add" tooltip="Produkt anlegen" press="onOpenAddProductDialogPress"/>
+					<SearchField id="searchField" liveChange=".onSearchTable" search=".onSearchTable"/>
+                    <Button icon="sap-icon://add" tooltip="{i18n>createProduct}" press="onOpenAddProductDialogPress"/>
                 </Toolbar>
             </headerToolbar>
             <columns>
                 <Column
                         width="12em">
-                    <Text text="Produkt"/>
+                    <Text text="{i18n>product}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
-                    <Text text="Produktgruppe"/>
+                    <Text text="{i18n>productGroup}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
-                    <Text text="Volumen"/>
+                    <Text text="{i18n>volume}"/>
                 </Column>
 
             </columns>
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{productCategories>value/name}"/>
-                        <Text text="{parts: ['productCategories>value/productGroup', 'validValues>/productGroups'], formatter: '.formatter.formatValidValue'}"/>
+                        <Text text="{main>name}"/>
+                        <Text text="{main>productGroup/value}"/>
                         <ObjectNumber
-                                number="{productCategories>value/volume}"
-                                numberUnit="{= ${productCategories>value/volume} ? 'Liter' : ''}" />
+                                number="{main>volume}"
+                                numberUnit="{= ${main>volume} ? ${main>/validValues/numberUnits/l/value} : ''}" />
                     </cells>
                 </ColumnListItem>
 

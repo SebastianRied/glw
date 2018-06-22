@@ -136,84 +136,67 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 		}).join("\n");
 	};
 
-	Formatter.formatNumberUnitByProductGroupId = function (sProductGroupId, oValidValues) {
-		if (sProductGroupId && oValidValues) {
-			var sNumberUnitId = oValidValues.productGroups[sProductGroupId].numberUnit;
-			return oValidValues.numberUnits[sNumberUnitId].value || "";
+	Formatter.formatNumberUnitByProductGroupId = function (sProductGroupId) {
+		var oModel = this.getModel("main");
+		if (oModel && sProductGroupId) {
+			return oModel.getProperty("/validValues/productGroups/" + sProductGroupId + "/numberUnit/value");
+		} else {
+			return sProductGroupId;
+		}
+	};
+
+	Formatter.formatFinishingByProductGroupId = function (sProductGroupId) {
+		var oModel = this.getModel("main");
+		if (oModel && sProductGroupId) {
+			return oModel.getProperty("/validValues/productGroups/" + sProductGroupId + "/finishing") ? this.getText("yes") : this.getText("no");
+		} else {
+			return sProductGroupId;
+		}
+	};
+
+	Formatter.formatFinishingByProductCategoryId = function (sProductCategoryId) {
+		var oModel = this.getModel("main");
+		if (oModel && sProductCategoryId) {
+			return oModel.getProperty("/_productCategory/" + sProductCategoryId + "/productGroup/finishing") ? this.getText("yes") : this.getText("no");
+		} else {
+			return sProductCategoryId;
+		}
+	};
+
+	Formatter.formatProductGroupByProductCategoryId = function (sProductCategoryId) {
+		var oModel = this.getModel("main");
+		if (oModel && sProductCategoryId) {
+			return oModel.getProperty("/_productCategory/" + sProductCategoryId + "/productGroup/value");
+		} else {
+			return sProductCategoryId;
+		}
+	};
+
+	Formatter.formatNumberUnitByProductCategoryId = function (sProductCategoryId) {
+		var oModel = this.getModel("main");
+		if (oModel && sProductCategoryId) {
+			return oModel.getProperty("/_productCategory/" + sProductCategoryId + "/productGroup/numberUnit/value");
 		} else {
 			return "";
 		}
 	};
 
-	Formatter.formatFinishingByProductGroupId = function (sProductGroupId, oValidValues) {
-		if (sProductGroupId && oValidValues && oValidValues.productGroups[sProductGroupId] && oValidValues.productGroups[sProductGroupId].finishing) {
-			return "Ja";
+	Formatter.formatProductCategory = function (sProductCategoryId) {
+		var oModel = this.getModel("main");
+		if (oModel && sProductCategoryId) {
+			return oModel.getProperty("/_productCategory/" + sProductCategoryId);
 		} else {
-			return "Nein";
+			return sProductCategoryId;
 		}
 	};
 
-	Formatter.formatFinishingByProductCategoryId = function (sProductCategoryId, aProductCategories, oValidValues) {
-		if (jQuery.isArray(aProductCategories)) {
-			for (var i = 0; i < aProductCategories.length; i++) {
-				if (aProductCategories[i].id === sProductCategoryId) {
-					var sProductGroup = aProductCategories[i].value.productGroup;
-					return Formatter.formatFinishingByProductGroupId(sProductGroup, oValidValues);
-				}
-			}
+	Formatter.formatProductCategoryByContainerId = function (sContainerId) {
+		var oModel = this.getModel("main");
+		if (oModel && sContainerId) {
+			return oModel.getProperty("/_container/" + sContainerId + "/productCategory/name") || "";
+		} else {
+			return sContainerId;
 		}
-
-		return "No";
-	};
-
-	Formatter.formatProductGroupByProductCategoryId = function (sProductCategoryId, aProductCategories, oValidValues) {
-		if (jQuery.isArray(aProductCategories)) {
-			for (var i = 0; i < aProductCategories.length; i++) {
-				if (aProductCategories[i].id === sProductCategoryId) {
-					var sProductGroup = aProductCategories[i].value.productGroup;
-					return oValidValues.productGroups[sProductGroup].value || "";
-				}
-			}
-		}
-
-		return sProductCategoryId;
-	};
-
-	Formatter.formatNumberUnitByProductCategoryId = function (sProductCategoryId, aProductCategories, oValidValues) {
-		if (jQuery.isArray(aProductCategories)) {
-			for (var i = 0; i < aProductCategories.length; i++) {
-				if (aProductCategories[i].id === sProductCategoryId) {
-					var sProductGroup = aProductCategories[i].value.productGroup;
-					return Formatter.formatNumberUnitByProductGroupId(oValidValues.productGroups[sProductGroup].id, oValidValues);
-				}
-			}
-		}
-
-		return "";
-	};
-
-	Formatter.formatProductCategory = function (sProductCategoryId, aProductCategories) {
-		if (jQuery.isArray(aProductCategories)) {
-			for (var i = 0; i < aProductCategories.length; i++) {
-				if (aProductCategories[i].id === sProductCategoryId) {
-					return aProductCategories[i].value.name;
-				}
-			}
-		}
-
-		return sProductCategoryId;
-	};
-
-	Formatter.formatProductCategoryByContainerBarCode = function (sContainerBarCode, aContainers, aProductCategories) {
-		if (jQuery.isArray(aContainers)) {
-			for (var i = 0; i < aContainers.length; i++) {
-				if (aContainers[i].value.barCode === sContainerBarCode) {
-					return Formatter.formatProductCategory(aContainers[i].value.productCategory, aProductCategories);
-				}
-			}
-		}
-
-		return "";
 	};
 
 	Formatter.formatContainerVolume = function (sContainerBarCode, aContainers, aProductCategories) {
@@ -238,8 +221,8 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function(DateFormat) {
 	Formatter.formatStorageBinByContainerBarCode = function (sContainerBarCode, aContainers) {
 		if (jQuery.isArray(aContainers)) {
 			for (var i = 0; i < aContainers.length; i++) {
-				if (aContainers[i].value.barCode === sContainerBarCode) {
-					return aContainers[i].value.storageBin;
+				if (aContainers[i].barCode === sContainerBarCode) {
+					return aContainers[i].storageBin;
 				}
 			}
 		}

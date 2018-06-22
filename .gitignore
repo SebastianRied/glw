@@ -65,4 +65,5 @@ deploy/
 
 node_modules/
 webapp/resources/
+resources/
 /CouchDB

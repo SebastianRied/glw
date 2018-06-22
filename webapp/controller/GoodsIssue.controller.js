@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"./BaseController",
 	"../model/formatter",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
@@ -24,16 +24,12 @@ sap.ui.define([
 			var oView = this.getView();
 			oModel.setData(oData);
 			oView.setModel(oModel);
-			oView.attachAfterRendering(function () {
-				window.setTimeout(function () {
-					oView.byId("containerSelect").focus();
-				}, 0);
-			});
+			this.focusControl("containerSelect");
 		},
 
 		onNavBack: function () {
 			this.getView().getModel().setProperty("/candidate", this._createCandidateObject());
-			this.getOwnerComponent().onNavBack();
+			glw.BaseController.prototype.onNavBack.apply(this, arguments);
 		},
 
 		_createCandidateObject: function () {
@@ -57,22 +53,17 @@ sap.ui.define([
 			oModel.setProperty("/newQuantity", null);
 
 			// pre-fill the input field for storage bin with the current location of the selected container
-			var sStorageBin = oItem.getBindingContext("container").getProperty("value/storageBin");
+			var sStorageBin = oItem.getBindingContext("main").getProperty("storageBin/id");
 			oModel.setProperty("/candidate/storageBin/value", sStorageBin);
 
 			// get stock info of the container to check whether it is already in use
 			var sContainer = this.getView().getModel().getProperty("/candidate/container/value");
-			var oStock = this.getOwnerComponent().findEntity("stock", "/list", function (oObject) {
-				return oObject.container === sContainer && oObject.quantity > 0;
+			var oStock = this.getOwnerComponent().findEntity("main", "/stock", function (oObject) {
+				return oObject.container._id === sContainer && oObject.quantity > 0;
 			});
 
-			if (oStock) {
-				oStock = JSON.parse(JSON.stringify(oStock));
-				oStock.batch.batchDate = new Date(oStock.batch.batchDate);
-			}
-
 			oModel.setProperty("/stock", oStock);
-			oModel.setProperty("/container", oItem.getBindingContext("container").getProperty("value"));
+			oModel.setProperty("/container", oItem.getBindingContext("main").getProperty());
 		},
 
 		onGoodsIssue: function () {
@@ -81,20 +72,16 @@ sap.ui.define([
 
 			// find stock
 			var sContainer = this.getView().getModel().getProperty("/candidate/container/value");
-			var oStock = this.getOwnerComponent().findEntity("stock", "/rows", function (oObject) {
-				return oObject.value.container === sContainer && oObject.value.quantity > 0;
+			var oStock = this.getOwnerComponent().findEntity("main", "/stock", function (oObject) {
+				return oObject.container._id === sContainer && oObject.quantity > 0;
 			});
 			if (oStock && iQuantity) {
 				// reduce stock by entered quantity
-				oStock = oStock.value;
 				oStock.quantity -= iQuantity;
 				var oComponent = this.getOwnerComponent();
 
 				var fnSaveHandler = function () {
 					oModel.setProperty("/candidate/quantity/value", 0);
-					// reload stock model
-					oComponent.reloadModel("stock");
-
 					// write log entry
 					oComponent.postDocument("log", this._createJournalEntry(oStock));
 
@@ -114,24 +101,11 @@ sap.ui.define([
 			}
 		},
 
-		_getBatch: function (sId) {
-			var oComponent = this.getOwnerComponent();
-			return oComponent.findEntity("batches", "/list", function (oObject) {
-				return oObject._id === sId;
-			});
-		},
-
 		_createJournalEntry: function (oStock) {
-			var oBatch = this._getBatch(oStock.batch);
-			var oComponent = this.getOwnerComponent();
-			var oContainer = oComponent.findEntity("container", "/rows", function (oObject) {
-				return oObject.value.barCode === oStock.container;
-			});
-
 			return {
 				container: oStock.container,
-				storageBin: oContainer.value.storageBin,
-				batch: oBatch,
+				storageBin: oStock.container.storageBin,
+				batch: oStock.batch,
 				quantity: oStock.quantity,
 				actionDate: new Date(),
 				action: "goodsIssue"

@@ -5,7 +5,7 @@
         xmlns:core="sap.ui.core">
     <Dialog
             id="StorageBinAddDialog"
-            title="Lagerplatz anlegen"
+            title="{i18n>createStorageBin}"
             class="sapUiResponsiveContentPadding">
         <content>
             <f:SimpleForm editable="true"
@@ -24,7 +24,7 @@
                           columnsM="1"
                           singleContainerFullSize="false">
                 <f:content>
-                    <Label text="Lagerplatznummer"/>
+                    <Label text="{i18n>storageBinNumber}"/>
                     <Input
                             id="storageBinIdInput"
                             value="{path: '/storageBinId/value'}"
@@ -35,7 +35,7 @@
             </f:SimpleForm>
         </content>
         <beginButton>
-            <Button text="Anlegen" press=".onSaveNewStorageBinPress"/>
+            <Button text="{i18n>create}" press=".onSaveNewStorageBinPress"/>
 
         </beginButton>
         <endButton>

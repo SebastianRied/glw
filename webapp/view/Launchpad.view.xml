@@ -1,5 +1,5 @@
 <mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" controllerName="glw.controller.App"
-          displayBlock="true">
+          displayBlock="true" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
     <Page title="{i18n>appTitle}">
         <headerContent>
             <Button icon="sap-icon://log" press=".onLogout" text="Logout"/>
@@ -12,58 +12,58 @@
         >
             <HBox width="800px" class="glwLaunchpadTileContainer">
                 <GenericTile
-                        id="tileStock"
+                        app:navTarget="stockList"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout glwImageTile"
-                        header="Bestand"
+                        header="{i18n>tileHeader_Stock}"
                         subheader=""
-                        backgroundImage="images/glasWhite.jpg"
+                        backgroundImage="images/glassWhite.jpg"
                         frameType="TwoByOne"
                         press=".onTilePress">
                     <TileContent
-                            unit="Liter"
+                            unit="{i18n>tileUnit_Liter}"
                             footer="">
                         <NumericContent
                                 truncateValueTo="10"
-                                value="{path: 'viewModel>/totalQuantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
+                                value="{path: 'main>/_stock/_totalQuantity', type: 'sap.ui.model.type.Float', formatOptions: {maxFractionDigits: 2}}"
                                 icon="sap-icon://sys-find"/>
                     </TileContent>
                 </GenericTile>
 
                 <GenericTile
-                        id="tileProductCategories"
+                        app:navTarget="productCategoriesList"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                        header="Produkte"
-                        subheader="anlegen, anzeigen, löschen"
+                        header="{i18n>tileHeader_ProductCategories}"
+                        subheader="{i18n>tileSubHeader_ProductCategories}"
                         press=".onTilePress">
                     <TileContent
                             unit=""
                             footer="">
                         <NumericContent
-                                value="{productCategories>/total_rows}"
+                                value="{main>/_productCategory/_length}"
                                 icon=""/>
                     </TileContent>
                 </GenericTile>
 
                 <GenericTile
-                        id="tileBatches"
+                        app:navTarget="batches"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                        header="Chargen"
-                        subheader="anlegen, anzeigen, löschen"
+                        header="{i18n>tileHeader_Batches}"
+                        subheader="{i18n>tileSubHeader_Batches}"
                         press=".onTilePress">
                     <TileContent
                             unit=""
                             footer="">
                         <NumericContent
-                                value="{batches>/total_rows}"
+                                value="{main>/_batch/_length}"
                                 icon="sap-icon://numbered-text"/>
                     </TileContent>
                 </GenericTile>
 
                 <GenericTile
-                        id="tileGR"
+                        app:navTarget="goodsReceipt"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                        header="Schnaps"
-                        subheader="einlagern"
+                        header="{i18n>tileHeader_GoodsReceipt}"
+                        subheader="{i18n>tileSubHeader_GoodsReceipt}"
                         press=".onTilePress">
                     <TileContent
                             unit=""
@@ -73,10 +73,10 @@
                 </GenericTile>
 
                 <GenericTile
-                        id="tileGM"
+                        app:navTarget="goodsMove"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                        header="Schnaps"
-                        subheader="umfüllen"
+                        header="{i18n>tileHeader_GoodsMove}"
+                        subheader="{i18n>tileSubHeader_GoodsMove}"
                         press=".onTilePress">
                     <TileContent
                             unit=""
@@ -90,10 +90,10 @@
 
 
                 <GenericTile
-                        id="tileGI"
+                        app:navTarget="goodsIssue"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-                        header="Schnaps"
-                        subheader="auslagern"
+                        header="{i18n>tileHeader_GoodsIssue}"
+                        subheader="{i18n>tileSubHeader_GoodsIssue}"
                         press=".onTilePress">
                     <TileContent
                             unit=""
@@ -103,36 +103,45 @@
                 </GenericTile>
 
                 <GenericTile
-                        id="tileContainer"
+                        app:navTarget="containerList"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout glwImageTile glwTextBright"
-                        header="Behälter"
+                        header="{i18n>tileHeader_Container}"
                         backgroundImage="images/barrel.jpg"
-                        subheader="anlegen, anzeigen, löschen"
+                        subheader="{i18n>tileSubHeader_Container}"
                         press=".onTilePress">
                     <TileContent
                             unit="Stück"
                             footer="">
                         <NumericContent
-                                value="{container>/total_rows}"
+                                value="{main>/_container/_length}"
                                 icon="sap-icon://sap-box"/>
                     </TileContent>
                 </GenericTile>
 
                 <GenericTile
-                        id="tileStorageBin"
+                        app:navTarget="storageBinsList"
                         class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout glwImageTile glwTextBright"
-                        header="Lagerplätze"
+                        header="{i18n>tileHeader_StorageBins}"
                         backgroundImage="images/storageBinsWide.jpg"
-                        subheader="anlegen, anzeigen, löschen"
+                        subheader="{i18n>tileSubHeader_StorageBins}"
                         frameType="TwoByOne"
                         press=".onTilePress">
                     <TileContent
                             unit=""
                             footer="">
                         <NumericContent
-                                value="{storageBins>/total_rows}"
+                                value="{main>/_storageBin/_length}"
                                 icon="sap-icon://map"/>
                     </TileContent>
+                </GenericTile>
+
+                <GenericTile
+                        app:navTarget="ui5Con"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout glwImageTile"
+                        backgroundImage="images/UI5Con.png"
+                        frameType="TwoByOne"
+                        press=".onTilePress">
+
                 </GenericTile>
 
             </HBox>

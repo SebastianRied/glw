@@ -5,37 +5,37 @@
           class="sapUiResponsiveContentPadding">
         <Table
                 id="storageBinTable"
-				noDataText="Keine Lagerplätze vorhanden"
+				noDataText="{i18n>noStorageBinsFound}"
                 mode="Delete"
                 delete=".onDeleteStorageBinPress"
-                items="{path: 'storageBins>/list', sorter: {path: 'value/id'}}">
+                items="{path: 'main>/storageBin', sorter: {path: 'id'}, key: '_id'}">
             <headerToolbar>
                 <Toolbar>
-                    <Title text="Lagerplätze ({storageBins>/total_rows})" level="H2" width="9rem"/>
+                    <Title text="{i18n>storageBins} ({main>/_storageBin/_length})" level="H2" width="9rem"/>
                     <ToolbarSpacer/>
-					<SearchField id="searchField" liveChange=".onSearchStorageBin" search=".onSearchStorageBin"/>
-                    <Button icon="sap-icon://add" tooltip="Lagerplatz anlegen" press=".onOpenAddStorageBinDialogPress"/>
+					<SearchField id="searchField" liveChange=".onSearchTable" search=".onSearchTable"/>
+                    <Button icon="sap-icon://add" tooltip="{i18n>createStorageBin}" press=".onOpenAddStorageBinDialogPress"/>
                 </Toolbar>
             </headerToolbar>
             <columns>
                 <Column
                         width="12em">
-                    <Text text="Lagerplatznummer"/>
+                    <Text text="{i18n>storageBinNumber}"/>
                 </Column>
                 <Column
                         minScreenWidth="Tablet"
                         demandPopin="true">
-                    <Text text="Belegt"/>
+                    <Text text="{i18n>used}"/>
                 </Column>
 
             </columns>
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{storageBins>value/id}"/>
+                        <Text text="{main>id}"/>
                         <core:Icon
-                                src="{= ${storageBins>value/used} ? 'sap-icon://complete' : 'sap-icon://border'}"
-                                color="#333333" decorative="false" tooltip="Lagerplatz belegt"/>
+                                src="{= ${main>used} ? 'sap-icon://complete' : 'sap-icon://border'}"
+                                color="#333333" decorative="false" tooltip="{i18n>storageBinUsed}"/>
                     </cells>
                 </ColumnListItem>
 

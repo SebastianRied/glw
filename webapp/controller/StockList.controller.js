@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"./BaseController",
 	"../model/formatter",
 	"sap/ui/core/routing/History",
 	"sap/ui/model/json/JSONModel",
@@ -33,7 +33,7 @@ sap.ui.define([
 		},
 
 		onNavBack: function () {
-			var oRouter = this.getOwnerComponent().getRouter();
+			var oRouter = this.getRouter();
 			var oIconTabBar = this.byId("idIconTabBar");
 
 			if (oIconTabBar.getSelectedKey() === "details") {
@@ -45,7 +45,7 @@ sap.ui.define([
 
 		onIconTabBarSelect: function (oEvent) {
 			var sKey = oEvent.getParameter("key");
-			var oRouter = this.getOwnerComponent().getRouter();
+			var oRouter = this.getRouter();
 			if (sKey === "details") {
 				this._updateFilteredQuantity(this._getDetailsTable(), "value/quantity");
 				oRouter.navTo("stockListDetails", {}, true);
@@ -73,7 +73,7 @@ sap.ui.define([
 			var sValue;
 			for (var i = 0; i < aLists.length; i++) {
 				var sListKey = aLists[i].getKey();
-				if (sListKey === "batch/productCategory") {
+				if (sListKey === "batch/productCategory/_id") {
 					sValue = aParts[0];
 				} else if (sListKey === "year") {
 					sValue = aParts[1];
@@ -118,11 +118,11 @@ sap.ui.define([
 					var iValue = parseInt(vValue, 10);
 					if (!isNaN(iValue)) {
 						if (iValue > 1000 && iValue < 10000) {
-							return new Filter({path: "year", operator: FilterOperator.EQ, value1: iValue});
+							return new Filter({path: "batch/year", operator: FilterOperator.EQ, value1: iValue});
 						}
 					} else {
 						return new Filter({
-							path: "productCategoryName",
+							path: "batch/productCategory/name",
 							operator: FilterOperator.Contains,
 							value1: vValue
 						});
@@ -159,17 +159,17 @@ sap.ui.define([
 					var iValue = parseInt(vValue, 10);
 					if (!isNaN(iValue)) {
 						if (iValue > 1000 && iValue < 10000) {
-							return new Filter({path: "year", operator: FilterOperator.EQ, value1: iValue});
+							return new Filter({path: "batch/year", operator: FilterOperator.EQ, value1: iValue});
 						} else {
 							return new Filter({
-								path: "container",
+								path: "container/barCode",
 								operator: FilterOperator.Contains,
 								value1: vValue
 							});
 						}
 					} else {
 						return new Filter({
-							path: "productCategoryName",
+							path: "batch/productCategory/name",
 							operator: FilterOperator.Contains,
 							value1: vValue
 						});
@@ -272,7 +272,7 @@ sap.ui.define([
 
 		onItemPress: function (oEvent) {
 			var oItem = oEvent.getParameter("listItem");
-			var oContext = oItem.getBindingContext("stock");
+			var oContext = oItem.getBindingContext("main");
 			this.getOwnerComponent().getRouter().navTo("stockListDetails", {"key*": oContext.getPath().split("/").pop()});
 		},
 		onStockListBindingChange: function () {

@@ -25,29 +25,13 @@
 					"bundleName": "glw.i18n.i18n"
 				}
 			},
-			"container": {
+			"main": {
 				"type": "sap.ui.model.json.JSONModel",
-				"uri": "couchDB/glw/_design/docs/_view/container"
+				"uri": "couchDB/glw/_design/docs/_view/main"
 			},
-			"storageBins": {
+			"feed": {
 				"type": "sap.ui.model.json.JSONModel",
-				"uri": "couchDB/glw/_design/docs/_view/storageBins"
-			},
-			"productCategories": {
-				"type": "sap.ui.model.json.JSONModel",
-				"uri": "couchDB/glw/_design/docs/_view/productCategories"
-			},
-			"validValues": {
-				"type": "sap.ui.model.json.JSONModel",
-				"uri": "couchDB/glw/validValues"
-			},
-			"stock": {
-				"type": "sap.ui.model.json.JSONModel",
-				"uri": "couchDB/glw/_design/docs/_view/stock"
-			},
-			"batches": {
-				"type": "sap.ui.model.json.JSONModel",
-				"uri": "couchDB/glw/_design/docs/_view/batches"
+				"uri": "couchDB/glw/_changes?since=now&include_docs=true&feed=longpoll"
 			},
 			"log": {
 				"type": "sap.ui.model.json.JSONModel",
@@ -122,6 +106,10 @@
 					"pattern": "Logout",
 					"name": "logout",
 					"target": "logout"
+				}, {
+					"pattern": "UI5Con",
+					"name": "ui5Con",
+					"target": "ui5Con"
 				}
 			],
 			"targets": {
@@ -179,6 +167,11 @@
 					"viewName": "Logout",
 					"viewLevel": 2,
 					"viewId": "logout"
+				},
+				"ui5Con": {
+					"viewName": "UI5Con",
+					"viewLevel": 2,
+					"viewId": "UI5Con"
 				}
 			}
 		}

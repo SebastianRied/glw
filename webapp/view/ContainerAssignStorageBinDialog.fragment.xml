@@ -1,11 +1,10 @@
 <core:FragmentDefinition
         xmlns="sap.m"
         xmlns:f="sap.ui.layout.form"
-        xmlns:l="sap.ui.layout"
         xmlns:core="sap.ui.core">
     <Dialog
             id="ContainerAssignStorageBinDialog"
-            title="Lagerplatz zuordnen"
+            title="{i18n>assignStorageBin}"
             class="sapUiResponsiveContentPadding">
         <content>
             <f:SimpleForm editable="true"
@@ -24,22 +23,22 @@
                           columnsM="1"
                           singleContainerFullSize="false">
                 <f:content>
-                    <Label text="Lagerplatz"/>
+                    <Label text="{i18n>storageBin}"/>
                     <ComboBox forceSelection="false"
                               change=".onStorageBinChange"
-                              items="{path: 'storageBins>/rows', sorter: {path: 'value/id'}}"
+                              items="{path: 'main>/storageBin', sorter: {path: 'id'}}"
                               selectedKey="{/storageBin/value}"
                               valueState="{/storageBin/valueState}"
-                              valueStateText="{/productCategory/valueStateText}">
+                              valueStateText="{/storageBin/valueStateText}">
                         <items>
-                            <core:Item text="{storageBins>value/id}" key="{storageBins>value/id}"/>
+                            <core:Item text="{main>id}" key="{main>_id}"/>
                         </items>
                     </ComboBox>
                 </f:content>
             </f:SimpleForm>
         </content>
         <beginButton>
-            <Button text="Zuordnen" press=".onSaveContainerStorageBinAssignmentPress"/>
+            <Button text="{i18n>dialogAssignButtonText}" press=".onSaveContainerStorageBinAssignmentPress"/>
 
         </beginButton>
         <endButton>
