@@ -75,7 +75,7 @@ module.exports = function (grunt) {
 							'**/*.view.html',
 							'**/*.view.json',
 							'**/*.view.xml',
-							'**/*.properties',
+							'!**/*.properties',
 							'manifest.json',
 							'!test/**',
 							'!resources/**'

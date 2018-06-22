@@ -75,7 +75,7 @@ sap.ui.define([
 				var sListKey = aLists[i].getKey();
 				if (sListKey === "batch/productCategory/_id") {
 					sValue = aParts[0];
-				} else if (sListKey === "year") {
+				} else if (sListKey === "batch/year") {
 					sValue = aParts[1];
 				} else {
 					continue;
